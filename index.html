@@ -124,7 +124,7 @@
 <!-- WARNINGS -->
 <div class="warning alert-red">
     <div>&#9888;&#65039;</div>
-    <div><strong style="color: var(--red)">AOV 9% unter Ziel!</strong> Aktuell 44,70€ vs. Ziel 49,15€. AOV-Booster Plugin ist der kritische Hebel für Q1.</div>
+    <div><strong style="color: var(--red)">AOV 8% unter Ziel!</strong> Aktuell 45,03€ vs. Ziel 49,15€. AOV-Booster Plugin ist der kritische Hebel für Q1.</div>
 </div>
 <div class="warning">
     <div>&#9888;&#65039;</div>
@@ -136,13 +136,13 @@
 <div class="card">
     <div class="goal-row">
         <div class="goal-label">AOV (Warenkorb)</div>
-        <div class="goal-bar-wrap"><div class="goal-bar"><div class="goal-fill" style="width: 91%; background: linear-gradient(90deg, var(--red), var(--orange));">91%</div></div></div>
-        <div class="goal-values"><strong>44,70 €</strong> / 49,15 €</div>
+        <div class="goal-bar-wrap"><div class="goal-bar"><div class="goal-fill" style="width: 92%; background: linear-gradient(90deg, var(--red), var(--orange));">92%</div></div></div>
+        <div class="goal-values"><strong>45,03 €</strong> / 49,15 €</div>
     </div>
     <div class="goal-row">
         <div class="goal-label">Conversion Rate</div>
-        <div class="goal-bar-wrap"><div class="goal-bar"><div class="goal-fill" style="width: 96%; background: linear-gradient(90deg, var(--yellow), var(--green));">96%</div></div></div>
-        <div class="goal-values"><strong>2,70 %</strong> / 2,81 %</div>
+        <div class="goal-bar-wrap"><div class="goal-bar"><div class="goal-fill" style="width: 97%; background: linear-gradient(90deg, var(--yellow), var(--green));">97%</div></div></div>
+        <div class="goal-values"><strong>2,74 %</strong> / 2,81 %</div>
     </div>
     <div class="goal-row">
         <div class="goal-label">Home-Umsatzanteil</div>
@@ -387,9 +387,12 @@ function renderAll() {
     const fData = focus.data;
     const fUmsatz = sum(fData, 'umsatz');
     const fBest = sum(fData, 'bestellungen');
-    const fAov = avg(fData, 'aov');
-    const fCrVals = fData.filter(d => d.cr != null);
-    const fCr = fCrVals.length ? fCrVals.reduce((s,d) => s+d.cr,0) / fCrVals.length : null;
+    const fAov = fBest > 0 ? fUmsatz / fBest : null;
+    // CR: nur Tage mit Besucherdaten (besucher > 0) berücksichtigen
+    const fDataVis = fData.filter(d => d.besucher > 0);
+    const fBesucher = sum(fDataVis, 'besucher');
+    const fBestVis = sum(fDataVis, 'bestellungen');
+    const fCr = fBesucher > 0 ? (fBestVis / fBesucher) * 100 : null;
     const fMetaSpend = sum(fData, 'meta_spend');
     const fMetaUmsatz = sum(fData, 'meta_umsatz');
     const fMetaRoas = fMetaSpend > 0 ? fMetaUmsatz / fMetaSpend : 0;
@@ -435,7 +438,7 @@ function renderAll() {
 
     // ===== AOV Chart =====
     destroyChart('aov');
-    const aovData = agg.data.map(g => avg(g, 'aov'));
+    const aovData = agg.data.map(g => { const b = sum(g,'bestellungen'); return b > 0 ? sum(g,'umsatz')/b : null; });
     charts.aov = new Chart(document.getElementById('aovChart'), {
         type: isSingle ? 'bar' : 'line',
         data: { labels: agg.labels, datasets: [
@@ -455,7 +458,7 @@ function renderAll() {
 
     // ===== CR Chart =====
     destroyChart('cr');
-    const crData = agg.data.map(g => avg(g,'cr'));
+    const crData = agg.data.map(g => { const gVis = g.filter(d => d.besucher > 0); const vis = sum(gVis,'besucher'); const ord = sum(gVis,'bestellungen'); return vis > 0 ? (ord/vis)*100 : null; });
     const crLabels = agg.labels;
     const crFiltered = []; const crLabelsF = [];
     crData.forEach((v,i) => { if(v!==null) { crFiltered.push(v); crLabelsF.push(crLabels[i]); }});
@@ -564,7 +567,8 @@ function renderAll() {
     thead.innerHTML = '<tr><th>'+colNames[currentMode]+'</th><th class="num">Tage</th><th class="num">Umsatz</th><th class="num">Bestell.</th><th class="num">Ø AOV</th><th class="num">Ø CR</th><th class="num">Meta Spend</th><th class="num">Google Spend</th><th class="num">Email €</th><th class="num">Meta ROAS</th></tr>';
     tbody.innerHTML = '';
     agg.data.forEach((g, i) => {
-        const u = sum(g,'umsatz'), b = sum(g,'bestellungen'), a = avg(g,'aov'), c = avg(g,'cr');
+        const u = sum(g,'umsatz'), b = sum(g,'bestellungen'), a = b > 0 ? u/b : null;
+        const gVis = g.filter(d => d.besucher > 0), visT = sum(gVis,'besucher'), bVis = sum(gVis,'bestellungen'), c = visT > 0 ? (bVis/visT)*100 : null;
         const ms = sum(g,'meta_spend'), mu = sum(g,'meta_umsatz'), gs = sum(g,'google_spend'), eu = sum(g,'email_umsatz');
         const mr = ms > 0 ? (mu/ms).toFixed(2) : '–';
         const ac = a >= 49.15 ? 'var(--green)' : a >= 45 ? 'var(--yellow)' : 'var(--red)';
@@ -576,12 +580,13 @@ function renderAll() {
 
     // Gesamtzeile nur wenn mehrere Perioden
     if (agg.data.length > 1 && !isTimeline) {
-        const totU = sum(raw,'umsatz'), totB = sum(raw,'bestellungen'), totA = avg(raw,'aov');
+        const totU = sum(raw,'umsatz'), totB = sum(raw,'bestellungen'), totA = totB > 0 ? totU/totB : null;
+        const rawVis = raw.filter(d => d.besucher > 0), totVis = sum(rawVis,'besucher'), totBVis = sum(rawVis,'bestellungen'), totCr = totVis > 0 ? (totBVis/totVis)*100 : null;
         const totMs = sum(raw,'meta_spend'), totMu = sum(raw,'meta_umsatz'), totGs = sum(raw,'google_spend'), totEu = sum(raw,'email_umsatz');
         const totMr = totMs>0?(totMu/totMs).toFixed(2):'–';
         const totTr = document.createElement('tr');
         totTr.style = 'font-weight:700;border-top:2px solid var(--accent)';
-        totTr.innerHTML = '<td>GESAMT</td><td class="num" style="color:var(--muted)">'+raw.length+'</td><td class="num" style="color:var(--accent)">'+fmt(Math.round(totU))+'€</td><td class="num">'+fmt(totB)+'</td><td class="num">'+fmt2(totA)+'€</td><td class="num">–</td><td class="num">'+fmt(Math.round(totMs))+'€</td><td class="num">'+fmt(Math.round(totGs))+'€</td><td class="num">'+fmt(Math.round(totEu))+'€</td><td class="num">'+totMr+'</td>';
+        totTr.innerHTML = '<td>GESAMT</td><td class="num" style="color:var(--muted)">'+raw.length+'</td><td class="num" style="color:var(--accent)">'+fmt(Math.round(totU))+'€</td><td class="num">'+fmt(totB)+'</td><td class="num">'+fmt2(totA)+'€</td><td class="num">'+(totCr!==null?fmt2(totCr)+'%':'–')+'</td><td class="num">'+fmt(Math.round(totMs))+'€</td><td class="num">'+fmt(Math.round(totGs))+'€</td><td class="num">'+fmt(Math.round(totEu))+'€</td><td class="num">'+totMr+'</td>';
         tbody.appendChild(totTr);
     }
 }
