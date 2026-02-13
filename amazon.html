@@ -1,0 +1,947 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Amazon J&L - Dashboard Q1 2026</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1"></script>
+    <style>
+        :root {
+            --bg: #0f1117;
+            --card: #1a1d27;
+            --border: #2a2d3a;
+            --text: #e4e4e7;
+            --muted: #8b8b9e;
+            --accent: #6366f1;
+            --green: #22c55e;
+            --yellow: #eab308;
+            --red: #ef4444;
+            --blue: #3b82f6;
+            --purple: #a855f7;
+            --orange: #f97316;
+            --cyan: #06b6d4;
+            --pink: #ec4899;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif;
+            background: var(--bg);
+            color: var(--text);
+            line-height: 1.6;
+            padding: 24px;
+        }
+
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 32px;
+            padding-bottom: 20px;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .header h1 {
+            font-size: 28px;
+            font-weight: 700;
+            background: linear-gradient(135deg, var(--accent), var(--purple));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .header .meta {
+            color: var(--muted);
+            font-size: 14px;
+            text-align: right;
+        }
+
+        .header .meta strong { color: var(--text); }
+
+        /* Grid */
+        .grid { display: grid; gap: 20px; margin-bottom: 24px; }
+        .grid-4 { grid-template-columns: repeat(4, 1fr); }
+        .grid-3 { grid-template-columns: repeat(3, 1fr); }
+        .grid-2 { grid-template-columns: repeat(2, 1fr); }
+        .grid-8 { grid-template-columns: repeat(8, 1fr); }
+
+        /* Cards */
+        .card {
+            background: var(--card);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 20px;
+        }
+
+        .card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 16px;
+        }
+
+        .card-header h3 {
+            font-size: 14px;
+            font-weight: 600;
+            color: var(--muted);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .card-header .badge {
+            font-size: 11px;
+            padding: 3px 10px;
+            border-radius: 20px;
+            font-weight: 600;
+        }
+
+        .badge-green { background: rgba(34,197,94,0.15); color: var(--green); }
+        .badge-yellow { background: rgba(234,179,8,0.15); color: var(--yellow); }
+        .badge-red { background: rgba(239,68,68,0.15); color: var(--red); }
+        .badge-blue { background: rgba(59,130,246,0.15); color: var(--blue); }
+
+        /* KPI Cards */
+        .kpi { text-align: center; }
+        .kpi .flag { font-size: 32px; margin-bottom: 8px; }
+        .kpi .country { font-size: 13px; color: var(--muted); font-weight: 600; text-transform: uppercase; letter-spacing: 1px; }
+        .kpi .value { font-size: 28px; font-weight: 700; margin: 4px 0; }
+        .kpi .label { font-size: 12px; color: var(--muted); }
+        .kpi .sub { font-size: 11px; color: var(--muted); margin-top: 4px; }
+
+        /* Total Banner */
+        .total-banner {
+            background: linear-gradient(135deg, rgba(99,102,241,0.15), rgba(168,85,247,0.15));
+            border: 1px solid rgba(99,102,241,0.3);
+            border-radius: 16px;
+            padding: 28px;
+            text-align: center;
+            margin-bottom: 24px;
+        }
+
+        .total-banner .label { font-size: 14px; color: var(--muted); text-transform: uppercase; letter-spacing: 1px; }
+        .total-banner .amount { font-size: 48px; font-weight: 800; margin: 8px 0; }
+        .total-banner .sub { font-size: 15px; color: var(--muted); }
+        .total-banner .sub strong { color: var(--accent); }
+
+        /* Section Title */
+        .section-title {
+            font-size: 20px;
+            font-weight: 700;
+            margin: 32px 0 16px;
+            padding-left: 12px;
+            border-left: 3px solid var(--accent);
+        }
+
+        /* Table */
+        .table-wrapper { overflow-x: auto; }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 13px;
+        }
+
+        th {
+            text-align: left;
+            padding: 10px 12px;
+            font-weight: 600;
+            color: var(--muted);
+            font-size: 11px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            border-bottom: 2px solid var(--border);
+        }
+
+        td {
+            padding: 10px 12px;
+            border-bottom: 1px solid var(--border);
+        }
+
+        tr:hover td { background: rgba(99,102,241,0.05); }
+
+        .num { text-align: right; font-variant-numeric: tabular-nums; }
+
+        .highlight { color: var(--accent); font-weight: 600; }
+
+        /* ROAS Indicator */
+        .roas-bar {
+            display: inline-block;
+            height: 6px;
+            border-radius: 3px;
+            margin-left: 8px;
+            vertical-align: middle;
+        }
+
+        /* Status Dots */
+        .dot {
+            display: inline-block;
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            margin-right: 6px;
+        }
+
+        .dot-green { background: var(--green); }
+        .dot-yellow { background: var(--yellow); }
+        .dot-red { background: var(--red); }
+
+        /* Chart Container */
+        .chart-container {
+            position: relative;
+            height: 300px;
+            margin-top: 12px;
+        }
+
+        .chart-container-lg {
+            position: relative;
+            height: 400px;
+            margin-top: 12px;
+        }
+
+        /* Country Color Bars */
+        .country-bar {
+            display: flex;
+            height: 40px;
+            border-radius: 8px;
+            overflow: hidden;
+            margin: 12px 0;
+        }
+
+        .country-bar div {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 11px;
+            font-weight: 700;
+            color: white;
+            transition: all 0.3s;
+        }
+
+        .country-bar div:hover { opacity: 0.8; }
+
+        /* Legend */
+        .legend {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 16px;
+            margin-top: 12px;
+        }
+
+        .legend-item {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            font-size: 12px;
+            color: var(--muted);
+        }
+
+        .legend-dot {
+            width: 10px;
+            height: 10px;
+            border-radius: 3px;
+        }
+
+        /* Warning Box */
+        .warning {
+            background: rgba(234,179,8,0.1);
+            border: 1px solid rgba(234,179,8,0.3);
+            border-radius: 10px;
+            padding: 16px 20px;
+            margin-bottom: 20px;
+            display: flex;
+            align-items: flex-start;
+            gap: 12px;
+        }
+
+        .warning .icon { font-size: 20px; }
+        .warning .text { font-size: 13px; }
+        .warning .text strong { color: var(--yellow); }
+
+        /* Footer */
+        .footer {
+            margin-top: 40px;
+            padding-top: 20px;
+            border-top: 1px solid var(--border);
+            color: var(--muted);
+            font-size: 12px;
+            text-align: center;
+        }
+
+        @media (max-width: 1200px) {
+            .grid-4 { grid-template-columns: repeat(2, 1fr); }
+            .grid-8 { grid-template-columns: repeat(4, 1fr); }
+        }
+
+        @media (max-width: 768px) {
+            .grid-4, .grid-3, .grid-2, .grid-8 { grid-template-columns: 1fr; }
+            body { padding: 12px; }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- HEADER -->
+    <div class="header">
+        <div>
+            <h1>Amazon J&L International Dashboard</h1>
+            <p style="color: var(--muted); margin-top: 4px;">Ads Budget Allocation & Performance | Alle Marktplaetze</p>
+        </div>
+        <div class="meta">
+            <strong>Marc Boehle</strong> | CDO<br>
+            Stand: 13.02.2026 | Q1 2026
+        </div>
+    </div>
+
+    <!-- TOTAL BANNER -->
+    <div class="total-banner">
+        <div class="label">Gesamtbudget Amazon Ads 2026 (alle Laender)</div>
+        <div class="amount">619.300 &euro;</div>
+        <div class="sub">
+            Umsatzprognose: <strong>11.300.000 &euro;</strong> |
+            8 Maerkte | DE &bull; UK &bull; FR &bull; ES &bull; IT &bull; NL &bull; SE &bull; USA
+        </div>
+    </div>
+
+    <!-- BUDGET PRO LAND -->
+    <div class="section-title">Budget pro Land 2026</div>
+
+    <div class="grid grid-8">
+        <div class="card kpi">
+            <div class="flag">&#127465;&#127466;</div>
+            <div class="country">Deutschland</div>
+            <div class="value" style="color: var(--accent)">320.000&euro;</div>
+            <div class="label">Ads Budget</div>
+            <div class="sub">51,7% vom Gesamtbudget</div>
+        </div>
+        <div class="card kpi">
+            <div class="flag">&#127468;&#127463;</div>
+            <div class="country">UK</div>
+            <div class="value" style="color: var(--blue)">100.000&euro;</div>
+            <div class="label">Ads Budget</div>
+            <div class="sub">16,2%</div>
+        </div>
+        <div class="card kpi">
+            <div class="flag">&#127467;&#127479;</div>
+            <div class="country">Frankreich</div>
+            <div class="value" style="color: var(--cyan)">39.800&euro;</div>
+            <div class="label">Ads Budget</div>
+            <div class="sub">6,4%</div>
+        </div>
+        <div class="card kpi">
+            <div class="flag">&#127466;&#127480;</div>
+            <div class="country">Spanien</div>
+            <div class="value" style="color: var(--orange)">46.800&euro;</div>
+            <div class="label">Ads Budget</div>
+            <div class="sub">7,6%</div>
+        </div>
+        <div class="card kpi">
+            <div class="flag">&#127470;&#127481;</div>
+            <div class="country">Italien</div>
+            <div class="value" style="color: var(--green)">50.400&euro;</div>
+            <div class="label">Ads Budget</div>
+            <div class="sub">8,1%</div>
+        </div>
+        <div class="card kpi">
+            <div class="flag">&#127475;&#127473;</div>
+            <div class="country">Niederlande</div>
+            <div class="value" style="color: var(--purple)">5.000&euro;</div>
+            <div class="label">Ads Budget</div>
+            <div class="sub">0,8%</div>
+        </div>
+        <div class="card kpi">
+            <div class="flag">&#127480;&#127466;</div>
+            <div class="country">Schweden</div>
+            <div class="value" style="color: var(--pink)">57.300&euro;</div>
+            <div class="label">Ads Budget</div>
+            <div class="sub">9,3%</div>
+        </div>
+        <div class="card kpi">
+            <div class="flag">&#127482;&#127480;</div>
+            <div class="country">USA</div>
+            <div class="value" style="color: var(--yellow)">TBD</div>
+            <div class="label">In Planung</div>
+            <div class="sub">Launch Q1</div>
+        </div>
+    </div>
+
+    <!-- BUDGET VERTEILUNG CHART -->
+    <div class="grid grid-2">
+        <div class="card">
+            <div class="card-header">
+                <h3>Budgetverteilung nach Land</h3>
+                <span class="badge badge-blue">2026</span>
+            </div>
+            <div class="chart-container">
+                <canvas id="budgetPieChart"></canvas>
+            </div>
+        </div>
+        <div class="card">
+            <div class="card-header">
+                <h3>Monatliches Budget DE vs. Rest EU</h3>
+                <span class="badge badge-blue">2026</span>
+            </div>
+            <div class="chart-container">
+                <canvas id="monthlyBudgetChart"></canvas>
+            </div>
+        </div>
+    </div>
+
+    <!-- DE DEEP DIVE -->
+    <div class="section-title">Deutschland - Deep Dive (Hauptmarkt)</div>
+
+    <div class="grid grid-3">
+        <div class="card">
+            <div class="card-header">
+                <h3>Budget 2026</h3>
+                <span class="badge badge-green">320.000&euro;</span>
+            </div>
+            <div style="font-size: 36px; font-weight: 700; margin: 12px 0;">320k&euro;</div>
+            <div style="color: var(--muted); font-size: 13px;">
+                Flex-Budget fuer Peak Seasons<br>
+                Jan Spend: 9.988&euro; von 18k (55,5%)
+            </div>
+        </div>
+        <div class="card">
+            <div class="card-header">
+                <h3>Jan. Auslastung</h3>
+                <span class="badge badge-yellow">55,5%</span>
+            </div>
+            <div style="margin-top: 20px;">
+                <div style="background: var(--border); border-radius: 6px; height: 20px; overflow: hidden;">
+                    <div style="background: var(--accent); height: 100%; width: 55.5%; border-radius: 6px;"></div>
+                </div>
+                <div style="display: flex; justify-content: space-between; margin-top: 8px; font-size: 12px; color: var(--muted);">
+                    <span>9.988&euro; ausgegeben</span>
+                    <span>8.012&euro; Rest</span>
+                </div>
+            </div>
+            <div style="color: var(--muted); font-size: 12px; margin-top: 12px;">
+                Budget: 18.000&euro; | 44,5% ungenutzt
+            </div>
+        </div>
+        <div class="card">
+            <div class="card-header">
+                <h3>Sales-Daten</h3>
+                <span class="badge badge-red">Fehlen!</span>
+            </div>
+            <div style="margin-top: 16px; text-align: center; padding: 20px;">
+                <div style="font-size: 40px;">&#9888;&#65039;</div>
+                <div style="color: var(--red); font-weight: 600; margin-top: 8px;">Sales nicht eingetragen</div>
+                <div style="color: var(--muted); font-size: 12px; margin-top: 4px;">ROAS kann nicht berechnet werden<br>Team muss Sales nachtragen!</div>
+            </div>
+        </div>
+    </div>
+
+    <div class="card" style="margin-bottom: 20px;">
+        <div class="card-header">
+            <h3>DE - Monatliche Budget Allocation 2026</h3>
+            <span class="badge badge-blue">Plan</span>
+        </div>
+        <div class="chart-container">
+            <canvas id="deBudgetChart"></canvas>
+        </div>
+    </div>
+
+    <!-- UK -->
+    <div class="section-title">UK - Wachstumsmarkt</div>
+
+    <div class="grid grid-2">
+        <div class="card">
+            <div class="card-header">
+                <h3>UK Budget &amp; Ziele 2026</h3>
+                <span class="badge badge-blue">100.000&euro;</span>
+            </div>
+            <table>
+                <tr><td style="color: var(--muted)">Jahresbudget</td><td class="num"><strong>100.000 &euro;</strong></td></tr>
+                <tr><td style="color: var(--muted)">Q1 Budget</td><td class="num">20.000 &euro;</td></tr>
+                <tr><td style="color: var(--muted)">ROAS Ziel (ohne Amalyze)</td><td class="num"><strong style="color: var(--yellow)">1,2</strong></td></tr>
+                <tr><td style="color: var(--muted)">ROAS Ziel (mit Amalyze)</td><td class="num"><strong style="color: var(--green)">4,0</strong></td></tr>
+                <tr><td style="color: var(--muted)">Shift Budget (Prime)</td><td class="num">20.000 &euro;</td></tr>
+                <tr><td style="color: var(--muted)">Status Fulfilmentcrowd</td><td class="num"><span class="dot dot-yellow"></span>In Verhandlung</td></tr>
+            </table>
+        </div>
+        <div class="card">
+            <div class="card-header">
+                <h3>UK Performance 2025 (Referenz)</h3>
+                <span class="badge badge-green">ROAS 1.08-1.81</span>
+            </div>
+            <div class="chart-container">
+                <canvas id="ukRoasChart"></canvas>
+            </div>
+        </div>
+    </div>
+
+    <!-- EU MAERKTE -->
+    <div class="section-title">EU-Maerkte - Performance 2025 &amp; Budget 2026</div>
+
+    <div class="grid grid-2">
+        <div class="card">
+            <div class="card-header">
+                <h3>ROAS Vergleich 2025 (nach Land)</h3>
+                <span class="badge badge-green">Performance</span>
+            </div>
+            <div class="chart-container-lg">
+                <canvas id="roasCompareChart"></canvas>
+            </div>
+        </div>
+        <div class="card">
+            <div class="card-header">
+                <h3>Sales 2025 (nach Land)</h3>
+                <span class="badge badge-blue">Umsatz</span>
+            </div>
+            <div class="chart-container-lg">
+                <canvas id="salesCompareChart"></canvas>
+            </div>
+        </div>
+    </div>
+
+    <!-- DETAIL TABELLE ALLE LAENDER -->
+    <div class="card" style="margin-top: 20px;">
+        <div class="card-header">
+            <h3>Alle Laender - Budget 2026 vs. Performance 2025</h3>
+        </div>
+        <div class="table-wrapper">
+            <table>
+                <thead>
+                    <tr>
+                        <th>Land</th>
+                        <th class="num">Budget 2026</th>
+                        <th class="num">Spend 2025</th>
+                        <th class="num">Sales 2025</th>
+                        <th class="num">Avg ROAS 2025</th>
+                        <th class="num">Umsatzziel 2026</th>
+                        <th>Status</th>
+                        <th>Besonderheiten</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td><strong>&#127465;&#127466; Deutschland</strong></td>
+                        <td class="num highlight">320.000 &euro;</td>
+                        <td class="num">246.803 &euro;</td>
+                        <td class="num">-</td>
+                        <td class="num">-</td>
+                        <td class="num">-</td>
+                        <td><span class="dot dot-yellow"></span>Sales fehlen</td>
+                        <td>Hauptmarkt, Peak-Fokus</td>
+                    </tr>
+                    <tr>
+                        <td><strong>&#127468;&#127463; UK</strong></td>
+                        <td class="num highlight">100.000 &euro;</td>
+                        <td class="num">38.007 &euro;</td>
+                        <td class="num">47.832 &euro;</td>
+                        <td class="num" style="color: var(--yellow)">1,26</td>
+                        <td class="num">-</td>
+                        <td><span class="dot dot-yellow"></span>Fulfilmentcrowd</td>
+                        <td>Budget +163% vs 2025</td>
+                    </tr>
+                    <tr>
+                        <td><strong>&#127466;&#127480; Spanien</strong></td>
+                        <td class="num highlight">46.800 &euro;</td>
+                        <td class="num">35.596 &euro;</td>
+                        <td class="num">156.791 &euro;</td>
+                        <td class="num" style="color: var(--green)">4,41</td>
+                        <td class="num">208.000 &euro;</td>
+                        <td><span class="dot dot-green"></span>Top Performer</td>
+                        <td>Bester ROAS aller Maerkte</td>
+                    </tr>
+                    <tr>
+                        <td><strong>&#127467;&#127479; Frankreich</strong></td>
+                        <td class="num highlight">39.800 &euro;</td>
+                        <td class="num">27.606 &euro;</td>
+                        <td class="num">82.048 &euro;</td>
+                        <td class="num" style="color: var(--green)">2,97</td>
+                        <td class="num">79.000 &euro;</td>
+                        <td><span class="dot dot-green"></span>Stabil</td>
+                        <td>Ziel bereits 2025 uebertroffen</td>
+                    </tr>
+                    <tr>
+                        <td><strong>&#127470;&#127481; Italien</strong></td>
+                        <td class="num highlight">50.400 &euro;</td>
+                        <td class="num">43.574 &euro;</td>
+                        <td class="num">167.391 &euro;</td>
+                        <td class="num" style="color: var(--green)">3,84</td>
+                        <td class="num">101.372 &euro;</td>
+                        <td><span class="dot dot-green"></span>Top Performer</td>
+                        <td>Ziel ROAS 3,8</td>
+                    </tr>
+                    <tr>
+                        <td><strong>&#127475;&#127473; Niederlande</strong></td>
+                        <td class="num highlight">5.000 &euro;</td>
+                        <td class="num">3.509 &euro;</td>
+                        <td class="num">35.020 &euro;</td>
+                        <td class="num" style="color: var(--green)">9,98</td>
+                        <td class="num">-</td>
+                        <td><span class="dot dot-green"></span>Cash Cow</td>
+                        <td>Bester ROAS! Minimal Budget</td>
+                    </tr>
+                    <tr>
+                        <td><strong>&#127480;&#127466; Schweden</strong></td>
+                        <td class="num highlight">57.300 &euro;</td>
+                        <td class="num">-</td>
+                        <td class="num">-</td>
+                        <td class="num">-</td>
+                        <td class="num">-</td>
+                        <td><span class="dot dot-yellow"></span>Neuer Markt</td>
+                        <td>4.775&euro;/Monat gleichmaessig</td>
+                    </tr>
+                    <tr>
+                        <td><strong>&#127482;&#127480; USA</strong></td>
+                        <td class="num highlight">TBD</td>
+                        <td class="num">-</td>
+                        <td class="num">-</td>
+                        <td class="num">-</td>
+                        <td class="num">-</td>
+                        <td><span class="dot dot-yellow"></span>Launch Q1</td>
+                        <td>Ticket to Retail</td>
+                    </tr>
+                    <tr style="font-weight: 700; border-top: 2px solid var(--accent);">
+                        <td>GESAMT</td>
+                        <td class="num" style="color: var(--accent)">619.300 &euro;</td>
+                        <td class="num">395.095 &euro;</td>
+                        <td class="num">489.082 &euro;</td>
+                        <td class="num">-</td>
+                        <td class="num">-</td>
+                        <td></td>
+                        <td></td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <!-- MONATLICHE DETAILS PRO LAND -->
+    <div class="section-title">Monatliche Budget-Planung 2026 (alle Laender)</div>
+
+    <div class="card">
+        <div class="card-header">
+            <h3>Budget pro Monat und Land</h3>
+            <span class="badge badge-blue">Plan 2026</span>
+        </div>
+        <div class="chart-container-lg">
+            <canvas id="allCountriesMonthlyChart"></canvas>
+        </div>
+    </div>
+
+    <div class="card" style="margin-top: 20px;">
+        <div class="table-wrapper">
+            <table>
+                <thead>
+                    <tr>
+                        <th>Monat</th>
+                        <th class="num">DE</th>
+                        <th class="num">UK</th>
+                        <th class="num">FR</th>
+                        <th class="num">ES</th>
+                        <th class="num">IT</th>
+                        <th class="num">NL</th>
+                        <th class="num">SE</th>
+                        <th class="num">GESAMT</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr><td>Januar</td><td class="num">18.000</td><td class="num">6.000</td><td class="num">2.000</td><td class="num">2.900</td><td class="num">2.080</td><td class="num">400</td><td class="num">4.775</td><td class="num highlight">36.155</td></tr>
+                    <tr><td>Februar</td><td class="num">21.000</td><td class="num">7.000</td><td class="num">2.600</td><td class="num">3.060</td><td class="num">4.000</td><td class="num">400</td><td class="num">4.775</td><td class="num highlight">42.835</td></tr>
+                    <tr><td>Maerz</td><td class="num">21.500</td><td class="num">7.000</td><td class="num">3.000</td><td class="num">3.400</td><td class="num">4.000</td><td class="num">400</td><td class="num">4.775</td><td class="num highlight">44.075</td></tr>
+                    <tr><td>April</td><td class="num">21.000</td><td class="num">8.000</td><td class="num">2.700</td><td class="num">3.700</td><td class="num">3.800</td><td class="num">400</td><td class="num">4.775</td><td class="num highlight">44.375</td></tr>
+                    <tr><td>Mai</td><td class="num">22.000</td><td class="num">9.000</td><td class="num">2.900</td><td class="num">3.800</td><td class="num">5.000</td><td class="num">400</td><td class="num">4.775</td><td class="num highlight">47.875</td></tr>
+                    <tr><td>Juni</td><td class="num">22.500</td><td class="num">8.000</td><td class="num">3.100</td><td class="num">4.200</td><td class="num">3.800</td><td class="num">400</td><td class="num">4.775</td><td class="num highlight">46.775</td></tr>
+                    <tr style="background: rgba(99,102,241,0.05)"><td><strong>Juli (Prime Day)</strong></td><td class="num"><strong>27.000</strong></td><td class="num"><strong>10.000</strong></td><td class="num">3.600</td><td class="num">3.360</td><td class="num">4.080</td><td class="num">400</td><td class="num">4.775</td><td class="num highlight"><strong>53.215</strong></td></tr>
+                    <tr><td>August</td><td class="num">18.000</td><td class="num">4.000</td><td class="num">2.600</td><td class="num">3.000</td><td class="num">2.000</td><td class="num">400</td><td class="num">4.775</td><td class="num highlight">34.775</td></tr>
+                    <tr><td>September</td><td class="num">19.500</td><td class="num">6.000</td><td class="num">2.400</td><td class="num">3.000</td><td class="num">4.000</td><td class="num">400</td><td class="num">4.775</td><td class="num highlight">40.075</td></tr>
+                    <tr style="background: rgba(99,102,241,0.05)"><td><strong>Oktober (Prime Day 2)</strong></td><td class="num"><strong>33.500</strong></td><td class="num"><strong>12.000</strong></td><td class="num">4.400</td><td class="num">4.100</td><td class="num">5.640</td><td class="num">500</td><td class="num">4.775</td><td class="num highlight"><strong>64.915</strong></td></tr>
+                    <tr style="background: rgba(239,68,68,0.05)"><td><strong>November (Black Friday)</strong></td><td class="num"><strong>55.000</strong></td><td class="num"><strong>14.000</strong></td><td class="num"><strong>5.500</strong></td><td class="num"><strong>7.280</strong></td><td class="num"><strong>6.500</strong></td><td class="num">500</td><td class="num">4.775</td><td class="num highlight"><strong>93.555</strong></td></tr>
+                    <tr><td>Dezember</td><td class="num">41.000</td><td class="num">9.000</td><td class="num">5.000</td><td class="num">5.000</td><td class="num">5.500</td><td class="num">400</td><td class="num">4.775</td><td class="num highlight">70.675</td></tr>
+                    <tr style="font-weight: 700; border-top: 2px solid var(--accent);">
+                        <td>GESAMT</td>
+                        <td class="num" style="color: var(--accent)">320.000</td>
+                        <td class="num" style="color: var(--blue)">100.000</td>
+                        <td class="num" style="color: var(--cyan)">39.800</td>
+                        <td class="num" style="color: var(--orange)">46.800</td>
+                        <td class="num" style="color: var(--green)">50.400</td>
+                        <td class="num" style="color: var(--purple)">5.000</td>
+                        <td class="num" style="color: var(--pink)">57.300</td>
+                        <td class="num highlight">619.300</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <!-- KEY INSIGHTS -->
+    <div class="section-title">Key Insights &amp; Handlungsfelder</div>
+
+    <div class="warning">
+        <div class="icon">&#9888;&#65039;</div>
+        <div class="text">
+            <strong>Amazon DE: Sales-Daten fehlen komplett fuer 2026!</strong><br>
+            ROAS kann nicht berechnet werden. Team muss Sales-Tracking im Budget-File aktivieren. Ohne Daten keine Accountability gegenueber Leonard.
+        </div>
+    </div>
+
+    <div class="grid grid-3">
+        <div class="card" style="border-left: 3px solid var(--green);">
+            <div class="card-header"><h3>Top Performer</h3></div>
+            <p style="font-size: 13px; margin-bottom: 12px;">
+                <strong style="color: var(--green)">Niederlande</strong> - ROAS 9,98 bei minimalem Budget.<br>
+                <strong style="color: var(--green)">Spanien</strong> - ROAS 4,41, konsistent stark.<br>
+                <strong style="color: var(--green)">Italien</strong> - ROAS 3,84, Ziel von 3,8 gehalten.
+            </p>
+            <p style="font-size: 12px; color: var(--muted);">
+                Frage: Koennen wir in NL das Budget erhoehen? Bei ROAS 10 ist jeder Euro 10&euro; wert.
+            </p>
+        </div>
+        <div class="card" style="border-left: 3px solid var(--yellow);">
+            <div class="card-header"><h3>Wachstumspotenzial</h3></div>
+            <p style="font-size: 13px; margin-bottom: 12px;">
+                <strong style="color: var(--yellow)">UK</strong> - Budget +163% vs 2025. ROAS muss von 1,26 auf min. 1,2 (ohne Amalyze).<br>
+                <strong style="color: var(--yellow)">Schweden</strong> - Neuer Markt, keine Referenzdaten.
+            </p>
+            <p style="font-size: 12px; color: var(--muted);">
+                UK ist groesster Wachstumshebel nach DE. Fulfilmentcrowd-Deal entscheidet ueber Logistikkosten.
+            </p>
+        </div>
+        <div class="card" style="border-left: 3px solid var(--red);">
+            <div class="card-header"><h3>Action Items</h3></div>
+            <p style="font-size: 13px;">
+                1. <strong>DE Sales nachtragen</strong> - Ohne Sales kein ROAS<br>
+                2. <strong>UK Fulfilmentcrowd</strong> - Deal schliessen Q1<br>
+                3. <strong>NL Budget pruefen</strong> - Bei ROAS 10 mehr investieren?<br>
+                4. <strong>USA Budget definieren</strong> - File noch leer<br>
+                5. <strong>SE Baseline setzen</strong> - Erste ROAS-Ziele definieren
+            </p>
+        </div>
+    </div>
+
+    <!-- FOOTER -->
+    <div class="footer">
+        Amazon J&L International Dashboard | Datenstand: 13.02.2026 | Naechstes Update: 17.02.2026<br>
+        Datenquellen: OneDrive Budget Allocation Files (READ-ONLY) | Erstellt mit Claude Code
+    </div>
+
+    <script>
+        // Color palette
+        const colors = {
+            de: '#6366f1', uk: '#3b82f6', fr: '#06b6d4', es: '#f97316',
+            it: '#22c55e', nl: '#a855f7', se: '#ec4899', usa: '#eab308'
+        };
+
+        const months = ['Jan', 'Feb', 'Mär', 'Apr', 'Mai', 'Jun', 'Jul', 'Aug', 'Sep', 'Okt', 'Nov', 'Dez'];
+
+        // Chart defaults
+        Chart.defaults.color = '#8b8b9e';
+        Chart.defaults.borderColor = '#2a2d3a';
+        Chart.defaults.font.family = '-apple-system, BlinkMacSystemFont, system-ui, sans-serif';
+
+        // 1. Budget Pie Chart
+        new Chart(document.getElementById('budgetPieChart'), {
+            type: 'doughnut',
+            data: {
+                labels: ['DE', 'UK', 'FR', 'ES', 'IT', 'NL', 'SE'],
+                datasets: [{
+                    data: [320000, 100000, 39800, 46800, 50400, 5000, 57300],
+                    backgroundColor: [colors.de, colors.uk, colors.fr, colors.es, colors.it, colors.nl, colors.se],
+                    borderWidth: 0,
+                    hoverOffset: 8
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                cutout: '60%',
+                plugins: {
+                    legend: { position: 'right', labels: { padding: 16, usePointStyle: true, pointStyleWidth: 12 }},
+                    tooltip: {
+                        callbacks: {
+                            label: (ctx) => `${ctx.label}: ${ctx.parsed.toLocaleString('de-DE')}€ (${(ctx.parsed/619300*100).toFixed(1)}%)`
+                        }
+                    }
+                }
+            }
+        });
+
+        // 2. Monthly Budget DE vs Rest
+        const deBudget = [18000,21000,21500,21000,22000,22500,27000,18000,19500,33500,55000,41000];
+        const restBudget = [18155,21835,22575,23375,25875,24275,26215,16775,20575,31415,38555,29675];
+
+        new Chart(document.getElementById('monthlyBudgetChart'), {
+            type: 'bar',
+            data: {
+                labels: months,
+                datasets: [
+                    { label: 'Deutschland', data: deBudget, backgroundColor: colors.de, borderRadius: 4 },
+                    { label: 'Rest EU + UK', data: restBudget, backgroundColor: '#4b5563', borderRadius: 4 }
+                ]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                scales: {
+                    x: { stacked: true, grid: { display: false }},
+                    y: { stacked: true, ticks: { callback: v => (v/1000) + 'k€' }}
+                },
+                plugins: {
+                    legend: { position: 'top', labels: { usePointStyle: true, pointStyleWidth: 12 }},
+                    tooltip: { callbacks: { label: ctx => `${ctx.dataset.label}: ${ctx.parsed.y.toLocaleString('de-DE')}€` }}
+                }
+            }
+        });
+
+        // 3. DE Budget Monthly Chart
+        const deSpend2025 = [0,0,8930,9678,11364,11412,20611,14875,22812,30146,51527,38461];
+        new Chart(document.getElementById('deBudgetChart'), {
+            type: 'bar',
+            data: {
+                labels: months,
+                datasets: [
+                    { label: 'Budget 2026', data: deBudget, backgroundColor: 'rgba(99,102,241,0.7)', borderRadius: 4 },
+                    { label: 'Spend 2025 (Referenz)', data: deSpend2025, backgroundColor: 'rgba(99,102,241,0.25)', borderRadius: 4, borderWidth: 1, borderColor: 'rgba(99,102,241,0.5)', borderDash: [4,4] }
+                ]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                scales: {
+                    y: { ticks: { callback: v => (v/1000) + 'k€' }},
+                    x: { grid: { display: false }}
+                },
+                plugins: {
+                    legend: { position: 'top', labels: { usePointStyle: true, pointStyleWidth: 12 }},
+                    tooltip: { callbacks: { label: ctx => `${ctx.dataset.label}: ${ctx.parsed.y.toLocaleString('de-DE')}€` }}
+                }
+            }
+        });
+
+        // 4. UK ROAS 2025
+        const ukRoas2025 = [null,null,null,null,null, 1.08, 1.46, 1.06, 1.01, 1.15, 1.19, 1.81];
+        const ukSpend2025 = [0,0,0,0,0, 935, 1972, 3412, 8313, 8508, 7709, 7158];
+
+        new Chart(document.getElementById('ukRoasChart'), {
+            type: 'bar',
+            data: {
+                labels: months,
+                datasets: [
+                    { label: 'Spend', data: ukSpend2025, backgroundColor: 'rgba(59,130,246,0.5)', borderRadius: 4, yAxisID: 'y' },
+                    { label: 'ROAS', data: ukRoas2025, type: 'line', borderColor: colors.uk, backgroundColor: 'transparent', tension: 0.3, pointRadius: 5, pointBackgroundColor: colors.uk, yAxisID: 'y1' }
+                ]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                scales: {
+                    y: { ticks: { callback: v => (v/1000) + 'k€' }, grid: { color: '#2a2d3a' }},
+                    y1: { position: 'right', min: 0, max: 3, ticks: { callback: v => v.toFixed(1) + 'x' }, grid: { display: false }},
+                    x: { grid: { display: false }}
+                },
+                plugins: {
+                    legend: { position: 'top', labels: { usePointStyle: true, pointStyleWidth: 12 }},
+                }
+            }
+        });
+
+        // 5. ROAS Comparison
+        const esRoas = [4.04,3.99,3.82,4.22,5.36,6.42,4.02,4.68,5.92,4.22,3.62,4.53];
+        const frRoas = [1.46,1.45,5.12,5.86,4.40,5.51,2.97,2.73,2.36,2.83,3.08,4.43];
+        const itRoas = [3.05,3.15,4.02,4.59,5.67,5.71,5.27,5.97,5.67,3.39,3.51,4.82];
+        const nlRoas = [13.69,8.26,10.78,10.95,10.27,10.96,8.86,7.07,7.28,8.81,14.14,11.54];
+
+        new Chart(document.getElementById('roasCompareChart'), {
+            type: 'line',
+            data: {
+                labels: months,
+                datasets: [
+                    { label: 'ES', data: esRoas, borderColor: colors.es, tension: 0.3, pointRadius: 3 },
+                    { label: 'FR', data: frRoas, borderColor: colors.fr, tension: 0.3, pointRadius: 3 },
+                    { label: 'IT', data: itRoas, borderColor: colors.it, tension: 0.3, pointRadius: 3 },
+                    { label: 'NL', data: nlRoas, borderColor: colors.nl, tension: 0.3, pointRadius: 3 }
+                ]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                scales: {
+                    y: { ticks: { callback: v => v + 'x' }},
+                    x: { grid: { display: false }}
+                },
+                plugins: {
+                    legend: { position: 'top', labels: { usePointStyle: true, pointStyleWidth: 12 }},
+                    tooltip: { callbacks: { label: ctx => `${ctx.dataset.label}: ROAS ${ctx.parsed.y.toFixed(2)}` }}
+                }
+            }
+        });
+
+        // 6. Sales Comparison
+        const esSales = [5723,8153,10524,9264,11286,12364,13444,12839,12638,14803,23504,22248];
+        const frSales = [6524,3273,4135,2897,3440,2753,4655,5690,5353,9696,13743,19889];
+        const itSales = [7468,8364,12554,10000,12080,12034,12878,11235,12434,17834,32670,37841];
+        const nlSales = [1377,1374,2633,1736,2279,2838,2697,2031,3889,3743,5958,4465];
+
+        new Chart(document.getElementById('salesCompareChart'), {
+            type: 'bar',
+            data: {
+                labels: months,
+                datasets: [
+                    { label: 'ES', data: esSales, backgroundColor: colors.es + '99', borderRadius: 2 },
+                    { label: 'FR', data: frSales, backgroundColor: colors.fr + '99', borderRadius: 2 },
+                    { label: 'IT', data: itSales, backgroundColor: colors.it + '99', borderRadius: 2 },
+                    { label: 'NL', data: nlSales, backgroundColor: colors.nl + '99', borderRadius: 2 }
+                ]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                scales: {
+                    x: { stacked: true, grid: { display: false }},
+                    y: { stacked: true, ticks: { callback: v => (v/1000) + 'k€' }}
+                },
+                plugins: {
+                    legend: { position: 'top', labels: { usePointStyle: true, pointStyleWidth: 12 }},
+                    tooltip: { callbacks: { label: ctx => `${ctx.dataset.label}: ${ctx.parsed.y.toLocaleString('de-DE')}€` }}
+                }
+            }
+        });
+
+        // 7. All Countries Monthly Stacked
+        const ukBudget26 = [6000,7000,7000,8000,9000,8000,10000,4000,6000,12000,14000,9000];
+        const frBudget26 = [2000,2600,3000,2700,2900,3100,3600,2600,2400,4400,5500,5000];
+        const esBudget26 = [2900,3060,3400,3700,3800,4200,3360,3000,3000,4100,7280,5000];
+        const itBudget26 = [2080,4000,4000,3800,5000,3800,4080,2000,4000,5640,6500,5500];
+        const nlBudget26 = [400,400,400,400,400,400,400,400,400,500,500,400];
+        const seBudget26 = [4775,4775,4775,4775,4775,4775,4775,4775,4775,4775,4775,4775];
+
+        new Chart(document.getElementById('allCountriesMonthlyChart'), {
+            type: 'bar',
+            data: {
+                labels: months,
+                datasets: [
+                    { label: 'DE', data: deBudget, backgroundColor: colors.de, borderRadius: 2 },
+                    { label: 'UK', data: ukBudget26, backgroundColor: colors.uk, borderRadius: 2 },
+                    { label: 'FR', data: frBudget26, backgroundColor: colors.fr, borderRadius: 2 },
+                    { label: 'ES', data: esBudget26, backgroundColor: colors.es, borderRadius: 2 },
+                    { label: 'IT', data: itBudget26, backgroundColor: colors.it, borderRadius: 2 },
+                    { label: 'NL', data: nlBudget26, backgroundColor: colors.nl, borderRadius: 2 },
+                    { label: 'SE', data: seBudget26, backgroundColor: colors.se, borderRadius: 2 },
+                ]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                scales: {
+                    x: { stacked: true, grid: { display: false }},
+                    y: { stacked: true, ticks: { callback: v => (v/1000) + 'k€' }}
+                },
+                plugins: {
+                    legend: { position: 'top', labels: { usePointStyle: true, pointStyleWidth: 12, padding: 16 }},
+                    tooltip: {
+                        callbacks: {
+                            label: ctx => `${ctx.dataset.label}: ${ctx.parsed.y.toLocaleString('de-DE')}€`,
+                            footer: items => `Gesamt: ${items.reduce((a,b) => a + b.parsed.y, 0).toLocaleString('de-DE')}€`
+                        }
+                    }
+                }
+            }
+        });
+    </script>
+
+</body>
+</html>
