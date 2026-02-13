@@ -1,0 +1,434 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>J&L CEO Dashboard – Q1 2026</title>
+    <style>
+        :root {
+            --bg: #0f1117; --card: #1a1d27; --border: #2a2d3a; --text: #e4e4e7;
+            --muted: #8b8b9e; --accent: #6366f1; --green: #22c55e; --yellow: #eab308;
+            --red: #ef4444; --blue: #3b82f6; --orange: #f97316; --cyan: #06b6d4;
+            --purple: #a855f7; --pink: #ec4899;
+        }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif; background: var(--bg); color: var(--text); line-height: 1.5; }
+        .container { max-width: 1200px; margin: 0 auto; padding: 24px 20px; }
+
+        /* Header */
+        .header { text-align: center; margin-bottom: 32px; }
+        .header h1 { font-size: 28px; font-weight: 700; background: linear-gradient(135deg, var(--accent), var(--cyan)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+        .header .sub { color: var(--muted); font-size: 14px; margin-top: 4px; }
+        .header .meta { color: var(--muted); font-size: 12px; margin-top: 8px; }
+        .back-link { display: inline-block; margin-bottom: 16px; color: var(--accent); text-decoration: none; font-size: 13px; }
+        .back-link:hover { text-decoration: underline; }
+
+        /* Section titles */
+        .section-title { font-size: 16px; font-weight: 700; text-transform: uppercase; letter-spacing: 1px; color: var(--muted); margin: 40px 0 16px; padding-left: 12px; border-left: 3px solid var(--accent); }
+
+        /* Cards */
+        .card { background: var(--card); border: 1px solid var(--border); border-radius: 12px; padding: 20px; }
+
+        /* Grids */
+        .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+        .grid-3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; }
+
+        /* Badges */
+        .badge { display: inline-block; padding: 2px 10px; border-radius: 20px; font-size: 11px; font-weight: 600; }
+        .badge-green { background: rgba(34,197,94,0.15); color: var(--green); }
+        .badge-yellow { background: rgba(234,179,8,0.15); color: var(--yellow); }
+        .badge-red { background: rgba(239,68,68,0.15); color: var(--red); }
+        .badge-blue { background: rgba(59,130,246,0.15); color: var(--blue); }
+        .badge-purple { background: rgba(168,85,247,0.15); color: var(--purple); }
+        .badge-muted { background: rgba(139,139,158,0.15); color: var(--muted); }
+
+        /* ===== SECTION 1: KPI Cards ===== */
+        .kpi-card { position: relative; overflow: hidden; }
+        .kpi-card .kpi-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; }
+        .kpi-card .kpi-name { font-size: 13px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px; color: var(--muted); }
+        .kpi-card .kpi-trend { font-size: 18px; }
+        .kpi-card .kpi-values { display: flex; align-items: baseline; gap: 8px; margin-bottom: 8px; }
+        .kpi-card .kpi-ist { font-size: 32px; font-weight: 800; }
+        .kpi-card .kpi-ziel { font-size: 14px; color: var(--muted); }
+        .kpi-card .kpi-bar { height: 8px; background: rgba(255,255,255,0.06); border-radius: 4px; overflow: hidden; margin-bottom: 10px; }
+        .kpi-card .kpi-fill { height: 100%; border-radius: 4px; transition: width 0.6s ease; }
+        .kpi-card .kpi-context { font-size: 12px; color: var(--muted); display: flex; align-items: center; gap: 6px; }
+        .kpi-card .kpi-context strong { color: var(--text); }
+        .kpi-pct { font-size: 14px; font-weight: 700; }
+
+        /* ===== SECTION 2: 9 Steine ===== */
+        .steine-summary { display: flex; gap: 16px; margin-bottom: 16px; flex-wrap: wrap; }
+        .steine-summary .sum-item { font-size: 13px; font-weight: 600; }
+        .stein-card { padding: 14px 16px; border-left: 3px solid var(--muted); }
+        .stein-card.green { border-left-color: var(--green); }
+        .stein-card.yellow { border-left-color: var(--yellow); }
+        .stein-card.red { border-left-color: var(--red); }
+        .stein-name { font-size: 14px; font-weight: 700; margin-bottom: 4px; }
+        .stein-detail { font-size: 12px; color: var(--muted); }
+        .stein-detail .owner { color: var(--accent); }
+        .stein-meilenstein { font-size: 12px; color: var(--text); margin-top: 6px; }
+
+        /* ===== SECTION 3: Fuck-ups ===== */
+        .fuckup-card { border-left: 3px solid var(--red); padding: 16px; margin-bottom: 12px; }
+        .fuckup-card.resolved { border-left-color: var(--green); opacity: 0.7; }
+        .fuckup-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; }
+        .fuckup-problem { font-size: 14px; font-weight: 700; }
+        .fuckup-row { display: grid; grid-template-columns: auto 1fr; gap: 4px 12px; font-size: 13px; }
+        .fuckup-label { color: var(--muted); font-weight: 600; text-transform: uppercase; font-size: 11px; }
+
+        /* ===== SECTION 4: Roadmap ===== */
+        .roadmap-row { display: flex; align-items: center; gap: 12px; padding: 12px 16px; border-bottom: 1px solid var(--border); }
+        .roadmap-row:last-child { border-bottom: none; }
+        .roadmap-label { width: 180px; font-size: 13px; font-weight: 600; flex-shrink: 0; }
+        .roadmap-track { flex: 1; height: 28px; position: relative; background: rgba(255,255,255,0.03); border-radius: 4px; }
+        .roadmap-bar { position: absolute; height: 100%; border-radius: 4px; display: flex; align-items: center; padding: 0 8px; font-size: 11px; font-weight: 600; color: #fff; white-space: nowrap; overflow: hidden; }
+        .roadmap-weeks { display: flex; justify-content: space-between; padding: 0 0 0 192px; margin-bottom: 4px; }
+        .roadmap-weeks span { font-size: 10px; color: var(--muted); width: 0; text-align: center; }
+        .roadmap-now { position: absolute; top: 0; bottom: 0; width: 2px; background: var(--red); z-index: 2; }
+        .roadmap-now::after { content: 'Heute'; position: absolute; top: -16px; left: -14px; font-size: 9px; color: var(--red); font-weight: 600; }
+
+        /* ===== SECTION 5: Innovation ===== */
+        .innovation-card { display: flex; gap: 16px; align-items: flex-start; }
+        .innovation-icon { font-size: 36px; flex-shrink: 0; width: 50px; text-align: center; }
+        .innovation-content { flex: 1; }
+        .innovation-name { font-size: 15px; font-weight: 700; margin-bottom: 4px; }
+        .innovation-desc { font-size: 13px; color: var(--muted); margin-bottom: 8px; }
+        .innovation-impact { font-size: 14px; font-weight: 700; color: var(--green); }
+        .innovation-impact.planned { color: var(--yellow); }
+
+        /* ===== SECTION 6: Artikelgruppen ===== */
+        .kategorie-row { display: flex; align-items: center; gap: 12px; padding: 10px 0; border-bottom: 1px solid var(--border); }
+        .kategorie-row:last-child { border-bottom: none; }
+        .kategorie-name { width: 140px; font-size: 13px; font-weight: 600; flex-shrink: 0; }
+        .kategorie-bar-wrap { flex: 1; height: 24px; background: rgba(255,255,255,0.04); border-radius: 4px; overflow: hidden; position: relative; }
+        .kategorie-fill { height: 100%; border-radius: 4px; display: flex; align-items: center; padding: 0 8px; font-size: 11px; font-weight: 600; color: #fff; }
+        .kategorie-values { width: 160px; text-align: right; font-size: 13px; flex-shrink: 0; }
+        .kategorie-trend { width: 30px; text-align: center; font-size: 16px; flex-shrink: 0; }
+        .kategorie-note { font-size: 12px; color: var(--muted); text-align: center; margin-top: 12px; padding: 12px; background: rgba(99,102,241,0.08); border-radius: 8px; }
+
+        /* ===== Quick Links ===== */
+        .quick-links { display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px; }
+        .quick-link { display: block; text-decoration: none; padding: 20px; text-align: center; border-radius: 12px; background: var(--card); border: 1px solid var(--border); transition: all 0.2s; }
+        .quick-link:hover { border-color: var(--accent); transform: translateY(-2px); }
+        .quick-link .ql-icon { font-size: 32px; margin-bottom: 8px; }
+        .quick-link .ql-title { font-size: 14px; font-weight: 700; color: var(--text); }
+        .quick-link .ql-desc { font-size: 12px; color: var(--muted); margin-top: 2px; }
+
+        /* Footer */
+        .footer { text-align: center; color: var(--muted); font-size: 11px; margin-top: 48px; padding: 20px 0; border-top: 1px solid var(--border); }
+
+        /* Responsive */
+        @media (max-width: 900px) { .grid-3 { grid-template-columns: 1fr 1fr; } }
+        @media (max-width: 600px) { .grid-3, .grid-2, .quick-links { grid-template-columns: 1fr; } .roadmap-label { width: 120px; } }
+    </style>
+</head>
+<body>
+<div class="container">
+
+<a href="landing.html" class="back-link">&#8592; Alle Dashboards</a>
+
+<div class="header">
+    <h1>E-Commerce CEO Dashboard</h1>
+    <div class="sub">Q1 2026 | Marc Böhle, CDO</div>
+    <div class="meta">Stand: 13.02.2026 | KW07 | Datenquellen: Jessis Reporting, Amazon Allocation, Power BI</div>
+</div>
+
+<!-- ===== SECTION 1: QUARTALSZIELE ===== -->
+<div class="section-title">Quartalsziele Q1 – Status</div>
+<div class="grid-3" id="kpiGrid"></div>
+
+<!-- ===== SECTION 2: 9 STEINE ===== -->
+<div class="section-title">Die 9 Steine – Accountability Tracker</div>
+<div class="steine-summary" id="steineSummary"></div>
+<div class="grid-3" id="steineGrid"></div>
+
+<!-- ===== SECTION 3: BLOCKADEN & FUCK-UPS ===== -->
+<div class="section-title">Aktuelle Blockaden & Fuck-ups</div>
+<div id="fuckupList"></div>
+
+<!-- ===== SECTION 4: MASSNAHMEN-ROADMAP ===== -->
+<div class="section-title">Maßnahmen-Roadmap Q1</div>
+<div class="card" style="padding: 16px 20px;">
+    <div id="roadmap"></div>
+</div>
+
+<!-- ===== SECTION 5: INNOVATION & AUTOMATISIERUNG ===== -->
+<div class="section-title">E-Commerce Innovation & Automatisierung</div>
+<div class="grid-2" id="innovationGrid"></div>
+
+<!-- ===== SECTION 6: ARTIKELGRUPPEN ===== -->
+<div class="section-title">Artikelgruppen – Umsatzentwicklung</div>
+<div class="card" style="padding: 20px;" id="kategorienCard"></div>
+
+<!-- ===== SECTION 7: QUICK LINKS ===== -->
+<div class="section-title">Detail-Dashboards</div>
+<div class="quick-links">
+    <a href="index.html" class="quick-link">
+        <div class="ql-icon">&#128722;</div>
+        <div class="ql-title">Webshop Dashboard</div>
+        <div class="ql-desc">Umsatz, AOV, CR, Marketing-Kanäle</div>
+    </a>
+    <a href="amazon.html" class="quick-link">
+        <div class="ql-icon">&#127758;</div>
+        <div class="ql-title">Amazon International</div>
+        <div class="ql-desc">8 Märkte, Budget Allocation, ROAS</div>
+    </a>
+</div>
+
+<div class="footer">
+    J&L CEO Dashboard | Stand: 13.02.2026 | Erstellt mit Claude Code<br>
+    Nächstes Update: 17.02.2026 (Montag)
+</div>
+
+</div>
+
+<script>
+// ============================================================
+//  DATEN – Hier einfach editieren für wöchentliche Updates
+// ============================================================
+
+// --- Kern-KPIs ---
+const kpis = [
+    {
+        name: "Webshop AOV",
+        ist: 45.03, ziel: 49.15, unit: "€",
+        trend: "up", // up, down, stable
+        massnahme: "AOV-Booster Plugin (Rollout KW07)",
+        color: "--orange"
+    },
+    {
+        name: "Webshop CR",
+        ist: 2.79, ziel: 2.81, unit: "%",
+        trend: "up",
+        massnahme: "CRO-Optimierung läuft, fast am Ziel",
+        color: "--yellow"
+    },
+    {
+        name: "Amazon J&L EU (Jahresprognose)",
+        ist: 11300000, ziel: 11300000, unit: "€",
+        trend: "stable",
+        massnahme: "Budget 320k€ DE, Peak-Season-Fokus",
+        color: "--accent",
+        // Sonderfall: zeige als "On Track" statt Prozentzahl
+        display: "On Track",
+        subtitle: "11,3 Mio € Jahresprognose"
+    }
+];
+
+// --- 9 Steine ---
+const steine = [
+    { nr: 1, name: "UK-Expansion", detail: "Fulfilmentcrowd-Deal", owner: "Marc", status: "yellow", meilenstein: "Vertragsabschluss", deadline: "Q1" },
+    { nr: 2, name: "AOV-Booster", detail: "Shopware Plugin", owner: "Marc", status: "green", meilenstein: "Rollout + A/B-Test", deadline: "Feb" },
+    { nr: 3, name: "Amazon USA", detail: "Launch als Ticket to Retail", owner: "Marc", status: "yellow", meilenstein: "Erste Listings live", deadline: "März" },
+    { nr: 4, name: "OOS-Quote", detail: "Webshop < 4%", owner: "Marc/Jessi", status: "yellow", meilenstein: "Tracking aufsetzen", deadline: "laufend" },
+    { nr: 5, name: "Amazon TOX", detail: "Hybrid-Strategie", owner: "Marc", status: "yellow", meilenstein: "Entscheidung Vendor/Seller", deadline: "Q1" },
+    { nr: 6, name: "Vendor Quality DE", detail: "JEBG3 Shipment Defects", owner: "Marc", status: "red", meilenstein: "Defects senken", deadline: "ASAP" },
+    { nr: 7, name: "Home-Anteil", detail: "Webshop 11% Umsatz", owner: "Marc/Jessi", status: "green", meilenstein: "11% halten", deadline: "Q1" },
+    { nr: 8, name: "Amazon Profitabilität", detail: "ROAS > 1,5 alle Märkte", owner: "Marc", status: "yellow", meilenstein: "ROAS-Monitoring", deadline: "Q1" },
+    { nr: 9, name: "USA Retail Prep", detail: "Amazon als Proof für Handel", owner: "Marc", status: "yellow", meilenstein: "Proof-of-Concept", deadline: "Q2" }
+];
+
+// --- Fuck-ups & Blockaden ---
+const fuckups = [
+    { problem: "Amazon Vendor DE (JEBG3) – Shipment Defects", impact: "Hohe Chargebacks, Vendor-Scoring gefährdet", massnahme: "Ursachenanalyse + Prozessfix mit Sherin", owner: "Marc/Sherin", deadline: "28.02.", status: "active" },
+    { problem: "Google Ads auf 0€ seit KW04", impact: "Wichtiger Traffic-Kanal komplett pausiert", massnahme: "Klärung mit Jessi – geplant oder Problem?", owner: "Marc/Jessi", deadline: "14.02.", status: "active" },
+    { problem: "Beiersdorf OHNE GEDØNS – 46 Produkte", impact: "Produkte müssen umbenannt/ausgelistet werden", massnahme: "Liste mit Lynn finalisieren", owner: "Marc/Lynn", deadline: "17.02.", status: "active" },
+    { problem: "USA Gründung – Steuer/Logistik Setup", impact: "Verzögert Amazon USA Launch", massnahme: "Priorisierung + ggf. Freelancer-Support", owner: "Marc", deadline: "Ende Feb", status: "active" }
+];
+
+// --- Maßnahmen-Roadmap ---
+// KW-Range: KW01 (30.12.) bis KW13 (24.03.)
+const roadmapItems = [
+    { name: "AOV-Booster Plugin", start: 7, end: 9, phase: "Rollout → A/B-Test → Ergebnisse", color: "var(--orange)" },
+    { name: "Amazon USA Launch", start: 5, end: 13, phase: "Setup → Listings → Go-Live", color: "var(--blue)" },
+    { name: "UK Fulfilmentcrowd", start: 3, end: 10, phase: "Verhandlung → Vertragsabschluss", color: "var(--purple)" },
+    { name: "JEBG3 Defect Fix", start: 7, end: 9, phase: "Analyse → Prozessfix", color: "var(--red)" },
+    { name: "Beiersdorf Produktliste", start: 6, end: 8, phase: "Abstimmung → Umsetzung", color: "var(--yellow)" },
+    { name: "INCI-Check Tool", start: 1, end: 7, phase: "Entwicklung → Live", color: "var(--green)" }
+];
+const currentKW = 7; // Aktuelle Kalenderwoche
+const kwStart = 1;
+const kwEnd = 13;
+
+// --- Innovation & Automatisierung ---
+const projekte = [
+    { name: "INCI-Check", icon: "&#128300;", beschreibung: "Automatisierte Inhaltsstoff-Prüfung für Produktmanagement. Ersetzt manuelle Recherche und Compliance-Checks.", einsparung: "~10 Stunden/Woche", impact_detail: "Für PM-Team (Judith)", status: "live", statusLabel: "Live" },
+    { name: "KI-Chatbot", icon: "&#129302;", beschreibung: "KI-gestützter Kundenservice-Bot für häufige Anfragen. Reduziert Ticket-Volumen und beschleunigt Antwortzeiten.", einsparung: "~20.000€/Jahr (Ziel)", impact_detail: "Kundenservice-Entlastung", status: "in_development", statusLabel: "In Entwicklung" },
+    { name: "Reporting-Automatisierung", icon: "&#128202;", beschreibung: "Automatisierte Dashboards für Webshop & Amazon. Ersetzt manuelle Excel-Auswertungen und ermöglicht Echtzeit-Tracking.", einsparung: "~5 Stunden/Woche", impact_detail: "Marketing & Management", status: "live", statusLabel: "Live" },
+    { name: "CRO Popup-Optimierung", icon: "&#127919;", beschreibung: "Datengetriebene A/B-Tests für Conversion-Optimierung im Webshop. KI-gestützte Analyse und Empfehlungen.", einsparung: "+0,2% CR (Ziel)", impact_detail: "Webshop Performance", status: "in_development", statusLabel: "In Arbeit" }
+];
+
+// --- Artikelgruppen (Platzhalter für Power BI Daten) ---
+const kategorien = [
+    { name: "Haare", umsatz: null, anteil: 35, trend: "stable", color: "var(--blue)" },
+    { name: "Körper", umsatz: null, anteil: 22, trend: "stable", color: "var(--green)" },
+    { name: "Home", umsatz: null, anteil: 9, trend: "up", color: "var(--orange)", ziel: "11%" },
+    { name: "Hände", umsatz: null, anteil: 12, trend: "stable", color: "var(--cyan)" },
+    { name: "Gesichtspflege", umsatz: null, anteil: 8, trend: "up", color: "var(--pink)" },
+    { name: "Parfum", umsatz: null, anteil: 6, trend: "down", color: "var(--purple)" },
+    { name: "Männer", umsatz: null, anteil: 5, trend: "stable", color: "var(--yellow)" },
+    { name: "Sonstige", umsatz: null, anteil: 3, trend: "stable", color: "var(--muted)" }
+];
+
+// ============================================================
+//  RENDERING
+// ============================================================
+
+function fmt(v) { return v == null ? '–' : v.toLocaleString('de-DE'); }
+function fmt2(v) { return v == null ? '–' : v.toLocaleString('de-DE', { minimumFractionDigits: 2, maximumFractionDigits: 2 }); }
+
+// --- Section 1: KPI Cards ---
+function renderKPIs() {
+    const grid = document.getElementById('kpiGrid');
+    grid.innerHTML = kpis.map(k => {
+        const pct = k.display ? 100 : (typeof k.ist === 'number' && typeof k.ziel === 'number' ? Math.round((k.ist / k.ziel) * 100) : 0);
+        const fillColor = pct >= 95 ? 'var(--green)' : pct >= 80 ? 'var(--yellow)' : 'var(--orange)';
+        const trendIcon = k.trend === 'up' ? '&#8599;' : k.trend === 'down' ? '&#8600;' : '&#8594;';
+        const istDisplay = k.display ? k.display : (k.ist >= 1000000 ? fmt2(k.ist / 1000000) + ' Mio ' + k.unit : fmt2(k.ist) + ' ' + k.unit);
+        const zielDisplay = k.subtitle ? k.subtitle : ('Ziel: ' + (k.ziel >= 1000000 ? fmt2(k.ziel / 1000000) + ' Mio ' + k.unit : fmt2(k.ziel) + ' ' + k.unit));
+
+        return `<div class="card kpi-card">
+            <div class="kpi-header">
+                <span class="kpi-name">${k.name}</span>
+                <span class="kpi-trend">${trendIcon}</span>
+            </div>
+            <div class="kpi-values">
+                <span class="kpi-ist" style="color: var(${k.color})">${istDisplay}</span>
+                <span class="kpi-pct" style="color: ${fillColor}">${k.display ? '' : pct + '%'}</span>
+            </div>
+            <div class="kpi-bar"><div class="kpi-fill" style="width: ${Math.min(pct, 100)}%; background: ${fillColor};"></div></div>
+            <div style="font-size: 12px; color: var(--muted); margin-bottom: 6px;">${zielDisplay}</div>
+            <div class="kpi-context">&#9881; <strong>${k.massnahme}</strong></div>
+        </div>`;
+    }).join('');
+}
+
+// --- Section 2: 9 Steine ---
+function renderSteine() {
+    const counts = { green: 0, yellow: 0, red: 0 };
+    steine.forEach(s => counts[s.status]++);
+
+    document.getElementById('steineSummary').innerHTML =
+        `<span class="sum-item" style="color:var(--green)">&#9679; ${counts.green} On Track</span>` +
+        `<span class="sum-item" style="color:var(--yellow)">&#9679; ${counts.yellow} At Risk</span>` +
+        `<span class="sum-item" style="color:var(--red)">&#9679; ${counts.red} Blocker</span>`;
+
+    document.getElementById('steineGrid').innerHTML = steine.map(s => {
+        const statusEmoji = s.status === 'green' ? '&#9989;' : s.status === 'yellow' ? '&#9888;&#65039;' : '&#128308;';
+        return `<div class="card stein-card ${s.status}">
+            <div class="stein-name">${statusEmoji} ${s.name}</div>
+            <div class="stein-detail">${s.detail} &middot; <span class="owner">${s.owner}</span></div>
+            <div class="stein-meilenstein">&#8594; ${s.meilenstein} <span style="color:var(--muted)">(${s.deadline})</span></div>
+        </div>`;
+    }).join('');
+}
+
+// --- Section 3: Fuck-ups ---
+function renderFuckups() {
+    document.getElementById('fuckupList').innerHTML = fuckups.map(f => {
+        const badgeClass = f.status === 'active' ? 'badge-red' : 'badge-green';
+        const badgeText = f.status === 'active' ? 'Offen' : 'Gelöst';
+        return `<div class="card fuckup-card ${f.status === 'resolved' ? 'resolved' : ''}">
+            <div class="fuckup-header">
+                <span class="fuckup-problem">${f.problem}</span>
+                <span class="badge ${badgeClass}">${badgeText}</span>
+            </div>
+            <div class="fuckup-row">
+                <span class="fuckup-label">Impact</span><span>${f.impact}</span>
+                <span class="fuckup-label">Maßnahme</span><span>${f.massnahme}</span>
+                <span class="fuckup-label">Owner</span><span>${f.owner}</span>
+                <span class="fuckup-label">Deadline</span><span style="color:var(--yellow);font-weight:600">${f.deadline}</span>
+            </div>
+        </div>`;
+    }).join('');
+}
+
+// --- Section 4: Roadmap ---
+function renderRoadmap() {
+    const container = document.getElementById('roadmap');
+    const totalKWs = kwEnd - kwStart + 1;
+
+    // KW Header
+    let kwHeader = '<div style="display:flex; padding-left:192px; margin-bottom:4px;">';
+    for (let kw = kwStart; kw <= kwEnd; kw++) {
+        const w = 100 / totalKWs;
+        kwHeader += `<span style="width:${w}%; text-align:center; font-size:10px; color:var(--muted); ${kw === currentKW ? 'color:var(--red);font-weight:700' : ''}">${kw}</span>`;
+    }
+    kwHeader += '</div>';
+
+    // Rows
+    let rows = roadmapItems.map(item => {
+        const leftPct = ((item.start - kwStart) / totalKWs) * 100;
+        const widthPct = ((item.end - item.start + 1) / totalKWs) * 100;
+        const nowPct = ((currentKW - kwStart + 0.5) / totalKWs) * 100;
+
+        return `<div class="roadmap-row">
+            <div class="roadmap-label">${item.name}</div>
+            <div class="roadmap-track">
+                <div class="roadmap-bar" style="left:${leftPct}%; width:${widthPct}%; background:${item.color};">${item.phase}</div>
+                <div class="roadmap-now" style="left:${nowPct}%"></div>
+            </div>
+        </div>`;
+    }).join('');
+
+    container.innerHTML = kwHeader + rows;
+}
+
+// --- Section 5: Innovation ---
+function renderInnovation() {
+    document.getElementById('innovationGrid').innerHTML = projekte.map(p => {
+        const statusClass = p.status === 'live' ? 'badge-green' : p.status === 'in_development' ? 'badge-yellow' : 'badge-muted';
+        const impactClass = p.status === 'live' ? '' : 'planned';
+        return `<div class="card innovation-card">
+            <div class="innovation-icon">${p.icon}</div>
+            <div class="innovation-content">
+                <div style="display:flex;align-items:center;gap:8px;margin-bottom:4px;">
+                    <span class="innovation-name">${p.name}</span>
+                    <span class="badge ${statusClass}">${p.statusLabel}</span>
+                </div>
+                <div class="innovation-desc">${p.beschreibung}</div>
+                <div class="innovation-impact ${impactClass}">${p.einsparung}</div>
+                <div style="font-size:11px;color:var(--muted);margin-top:2px;">${p.impact_detail}</div>
+            </div>
+        </div>`;
+    }).join('');
+}
+
+// --- Section 6: Kategorien ---
+function renderKategorien() {
+    const card = document.getElementById('kategorienCard');
+    const trendIcons = { up: '&#8599;', down: '&#8600;', stable: '&#8594;' };
+    const trendColors = { up: 'var(--green)', down: 'var(--red)', stable: 'var(--muted)' };
+
+    let rows = kategorien.map(k => {
+        const barWidth = k.anteil || 0;
+        const umsatzStr = k.umsatz ? fmt(Math.round(k.umsatz)) + '€' : '<span style="color:var(--muted)">ausstehend</span>';
+        const zielTag = k.ziel ? ` <span class="badge badge-blue">Ziel: ${k.ziel}</span>` : '';
+
+        return `<div class="kategorie-row">
+            <div class="kategorie-name">${k.name}${zielTag}</div>
+            <div class="kategorie-bar-wrap">
+                <div class="kategorie-fill" style="width:${barWidth}%; background:${k.color};">${barWidth}%</div>
+            </div>
+            <div class="kategorie-values">${umsatzStr}</div>
+            <div class="kategorie-trend" style="color:${trendColors[k.trend]}">${trendIcons[k.trend]}</div>
+        </div>`;
+    }).join('');
+
+    const note = kategorien.some(k => k.umsatz === null)
+        ? `<div class="kategorie-note">&#9432; Umsatzdaten aus Power BI ausstehend. Anteile sind Schätzwerte. Nächstes Update nach Power BI Export.</div>`
+        : '';
+
+    card.innerHTML = rows + note;
+}
+
+// --- Render All ---
+renderKPIs();
+renderSteine();
+renderFuckups();
+renderRoadmap();
+renderInnovation();
+renderKategorien();
+</script>
+</body>
+</html>
