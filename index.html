@@ -5,7 +5,6 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>J&L Webshop Dashboard 2026</title>
     <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1"></script>
-    <script src="https://cdn.jsdelivr.net/npm/chartjs-adapter-date-fns@3.0.0"></script>
     <style>
         :root {
             --bg: #0f1117; --card: #1a1d27; --border: #2a2d3a;
@@ -17,10 +16,21 @@
         * { margin: 0; padding: 0; box-sizing: border-box; }
         body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif; background: var(--bg); color: var(--text); line-height: 1.6; padding: 24px; }
 
-        .header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 32px; padding-bottom: 20px; border-bottom: 1px solid var(--border); }
+        .header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 24px; padding-bottom: 20px; border-bottom: 1px solid var(--border); }
         .header h1 { font-size: 28px; font-weight: 700; background: linear-gradient(135deg, var(--green), var(--cyan)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
         .header .meta { color: var(--muted); font-size: 14px; text-align: right; }
         .header .meta strong { color: var(--text); }
+
+        /* Toggle Buttons */
+        .toggle-bar { display: flex; justify-content: center; margin-bottom: 28px; }
+        .toggle-group { display: inline-flex; background: var(--card); border: 1px solid var(--border); border-radius: 12px; padding: 4px; gap: 4px; }
+        .toggle-btn {
+            padding: 10px 28px; border: none; border-radius: 10px; cursor: pointer;
+            font-size: 14px; font-weight: 600; color: var(--muted); background: transparent;
+            transition: all 0.2s; font-family: inherit;
+        }
+        .toggle-btn:hover { color: var(--text); background: rgba(99,102,241,0.1); }
+        .toggle-btn.active { background: var(--accent); color: white; box-shadow: 0 2px 8px rgba(99,102,241,0.3); }
 
         .grid { display: grid; gap: 20px; margin-bottom: 24px; }
         .grid-4 { grid-template-columns: repeat(4, 1fr); }
@@ -38,7 +48,6 @@
         .badge-blue { background: rgba(59,130,246,0.15); color: var(--blue); }
 
         .kpi { text-align: center; padding: 24px 16px; }
-        .kpi .icon { font-size: 28px; margin-bottom: 8px; }
         .kpi .label { font-size: 11px; color: var(--muted); text-transform: uppercase; letter-spacing: 1px; font-weight: 600; }
         .kpi .value { font-size: 32px; font-weight: 800; margin: 6px 0; }
         .kpi .target { font-size: 12px; color: var(--muted); }
@@ -47,14 +56,10 @@
         .delta-green { color: var(--green); }
         .delta-yellow { color: var(--yellow); }
 
-        .progress-bar { background: var(--border); border-radius: 6px; height: 8px; overflow: hidden; margin-top: 8px; }
-        .progress-fill { height: 100%; border-radius: 6px; transition: width 0.5s; }
-
         .section-title { font-size: 20px; font-weight: 700; margin: 32px 0 16px; padding-left: 12px; border-left: 3px solid var(--green); }
 
         .chart-container { position: relative; height: 300px; margin-top: 12px; }
         .chart-container-lg { position: relative; height: 380px; margin-top: 12px; }
-        .chart-container-sm { position: relative; height: 220px; margin-top: 8px; }
 
         table { width: 100%; border-collapse: collapse; font-size: 13px; }
         th { text-align: left; padding: 10px 12px; font-weight: 600; color: var(--muted); font-size: 11px; text-transform: uppercase; letter-spacing: 0.5px; border-bottom: 2px solid var(--border); }
@@ -83,6 +88,8 @@
 
         .footer { margin-top: 40px; padding-top: 20px; border-top: 1px solid var(--border); color: var(--muted); font-size: 12px; text-align: center; }
 
+        .period-label { font-size: 13px; color: var(--accent); font-weight: 600; text-align: center; margin-bottom: 16px; }
+
         @media (max-width: 1200px) { .grid-4, .grid-5 { grid-template-columns: repeat(2, 1fr); } }
         @media (max-width: 768px) { .grid-4, .grid-3, .grid-2, .grid-5 { grid-template-columns: 1fr; } body { padding: 12px; } }
     </style>
@@ -95,148 +102,82 @@
         <p style="color: var(--muted); margin-top: 4px;">Performance Tracking | Q1 2026 | Datenquelle: Jessis Daily Reporting</p>
     </div>
     <div class="meta">
-        <strong>Marc Boehle</strong> | CDO<br>
+        <strong>Marc Böhle</strong> | CDO<br>
         Datenstand: 12.02.2026 | KW07
     </div>
 </div>
 
+<!-- TOGGLE BUTTONS -->
+<div class="toggle-bar">
+    <div class="toggle-group">
+        <button class="toggle-btn active" onclick="switchPeriod('daily')">Täglich</button>
+        <button class="toggle-btn" onclick="switchPeriod('weekly')">Wöchentlich</button>
+        <button class="toggle-btn" onclick="switchPeriod('monthly')">Monatlich</button>
+    </div>
+</div>
+<div class="period-label" id="periodLabel">Ansicht: Tägliche Daten (01.01. – 12.02.2026)</div>
+
 <!-- WARNINGS -->
 <div class="warning alert-red">
     <div>&#9888;&#65039;</div>
-    <div><strong style="color: var(--red)">AOV 9% unter Ziel!</strong> Aktuell 44,70&#8364; vs. Ziel 49,15&#8364;. AOV-Booster Plugin ist der kritische Hebel fuer Q1.</div>
+    <div><strong style="color: var(--red)">AOV 9% unter Ziel!</strong> Aktuell 44,70€ vs. Ziel 49,15€. AOV-Booster Plugin ist der kritische Hebel für Q1.</div>
 </div>
 <div class="warning">
     <div>&#9888;&#65039;</div>
-    <div><strong>Google Ads auf 0&#8364;</strong> seit 26.01. - kompletter Februar ohne Google Spend. Klaerung mit Jessi noetig: geplant oder Problem?</div>
+    <div><strong>Google Ads auf 0€</strong> seit 26.01. – kompletter Februar ohne Google Spend. Klärung mit Jessi nötig: geplant oder Problem?</div>
 </div>
 
 <!-- Q1 ZIELE -->
-<div class="section-title">Q1 Ziele - Fortschritt</div>
+<div class="section-title">Q1 Ziele – Fortschritt</div>
 <div class="card">
     <div class="goal-row">
         <div class="goal-label">AOV (Warenkorb)</div>
-        <div class="goal-bar-wrap">
-            <div class="goal-bar">
-                <div class="goal-fill" style="width: 91%; background: linear-gradient(90deg, var(--red), var(--orange));">91%</div>
-            </div>
-        </div>
-        <div class="goal-values"><strong>44,70 &#8364;</strong> / 49,15 &#8364;</div>
+        <div class="goal-bar-wrap"><div class="goal-bar"><div class="goal-fill" style="width: 91%; background: linear-gradient(90deg, var(--red), var(--orange));">91%</div></div></div>
+        <div class="goal-values"><strong>44,70 €</strong> / 49,15 €</div>
     </div>
     <div class="goal-row">
         <div class="goal-label">Conversion Rate</div>
-        <div class="goal-bar-wrap">
-            <div class="goal-bar">
-                <div class="goal-fill" style="width: 96%; background: linear-gradient(90deg, var(--yellow), var(--green));">96%</div>
-            </div>
-        </div>
+        <div class="goal-bar-wrap"><div class="goal-bar"><div class="goal-fill" style="width: 96%; background: linear-gradient(90deg, var(--yellow), var(--green));">96%</div></div></div>
         <div class="goal-values"><strong>2,70 %</strong> / 2,81 %</div>
     </div>
     <div class="goal-row">
         <div class="goal-label">Home-Umsatzanteil</div>
-        <div class="goal-bar-wrap">
-            <div class="goal-bar">
-                <div class="goal-fill" style="width: 50%; background: var(--muted);">Tracking fehlt</div>
-            </div>
-        </div>
+        <div class="goal-bar-wrap"><div class="goal-bar"><div class="goal-fill" style="width: 50%; background: var(--muted);">Tracking fehlt</div></div></div>
         <div class="goal-values"><strong>?</strong> / 11 %</div>
     </div>
     <div class="goal-row">
         <div class="goal-label">OOS-Quote</div>
-        <div class="goal-bar-wrap">
-            <div class="goal-bar">
-                <div class="goal-fill" style="width: 50%; background: var(--muted);">Tracking fehlt</div>
-            </div>
-        </div>
-        <div class="goal-values"><strong>?</strong> / &lt; 4 %</div>
-    </div>
-    <div class="goal-row">
-        <div class="goal-label">Retourenquote</div>
-        <div class="goal-bar-wrap">
-            <div class="goal-bar">
-                <div class="goal-fill" style="width: 50%; background: var(--muted);">Tracking fehlt</div>
-            </div>
-        </div>
+        <div class="goal-bar-wrap"><div class="goal-bar"><div class="goal-fill" style="width: 50%; background: var(--muted);">Tracking fehlt</div></div></div>
         <div class="goal-values"><strong>?</strong> / &lt; 4 %</div>
     </div>
 </div>
 
 <!-- TOP KPIs -->
-<div class="section-title">Aktuelle KPIs (Februar 2026)</div>
-<div class="grid grid-5">
-    <div class="card kpi">
-        <div class="label">Tagesumsatz (&#216;)</div>
-        <div class="value" style="color: var(--green)">10.634&#8364;</div>
-        <div class="target">Feb gesamt: 127.606&#8364;</div>
-        <div class="delta delta-green">&#8593; stabil</div>
-    </div>
-    <div class="card kpi">
-        <div class="label">Bestellungen/Tag</div>
-        <div class="value" style="color: var(--blue)">237</div>
-        <div class="target">Feb gesamt: 2.849</div>
-        <div class="delta delta-green">&#8593; stabil</div>
-    </div>
-    <div class="card kpi">
-        <div class="label">&#216; Warenkorb (AOV)</div>
-        <div class="value" style="color: var(--red)">44,70&#8364;</div>
-        <div class="target">Ziel: 49,15&#8364;</div>
-        <div class="delta delta-red">&#8595; -9% vom Ziel</div>
-    </div>
-    <div class="card kpi">
-        <div class="label">Conversion Rate</div>
-        <div class="value" style="color: var(--yellow)">2,70%</div>
-        <div class="target">Ziel: 2,81%</div>
-        <div class="delta delta-yellow">&#8595; -4% vom Ziel</div>
-    </div>
-    <div class="card kpi">
-        <div class="label">Meta ROAS (Feb)</div>
-        <div class="value" style="color: var(--cyan)">2,54</div>
-        <div class="target">Spend: 3.280&#8364;</div>
-        <div class="delta delta-yellow">schwankend</div>
-    </div>
-</div>
+<div class="section-title">Aktuelle KPIs</div>
+<div class="grid grid-5" id="kpiCards"><!-- Dynamisch befüllt --></div>
 
 <!-- UMSATZ & AOV TRENDS -->
 <div class="section-title">Trends: Umsatz & AOV</div>
 <div class="grid grid-2">
     <div class="card">
-        <div class="card-header">
-            <h3>Tagesumsatz (Brutto)</h3>
-            <span class="badge badge-green">Jan - Feb 2026</span>
-        </div>
-        <div class="chart-container-lg">
-            <canvas id="revenueChart"></canvas>
-        </div>
+        <div class="card-header"><h3>Umsatz (Brutto)</h3><span class="badge badge-green" id="revBadge">Jan – Feb 2026</span></div>
+        <div class="chart-container-lg"><canvas id="revenueChart"></canvas></div>
     </div>
     <div class="card">
-        <div class="card-header">
-            <h3>&#216; Warenkorb (AOV)</h3>
-            <span class="badge badge-red">9% unter Ziel</span>
-        </div>
-        <div class="chart-container-lg">
-            <canvas id="aovChart"></canvas>
-        </div>
+        <div class="card-header"><h3>Ø Warenkorb (AOV)</h3><span class="badge badge-red">Ziel: 49,15€</span></div>
+        <div class="chart-container-lg"><canvas id="aovChart"></canvas></div>
     </div>
 </div>
 
 <!-- BESTELLUNGEN & CR -->
 <div class="grid grid-2">
     <div class="card">
-        <div class="card-header">
-            <h3>Bestellungen pro Tag</h3>
-            <span class="badge badge-blue">Trend</span>
-        </div>
-        <div class="chart-container">
-            <canvas id="ordersChart"></canvas>
-        </div>
+        <div class="card-header"><h3>Bestellungen</h3><span class="badge badge-blue" id="ordersBadge">Trend</span></div>
+        <div class="chart-container"><canvas id="ordersChart"></canvas></div>
     </div>
     <div class="card">
-        <div class="card-header">
-            <h3>Conversion Rate</h3>
-            <span class="badge badge-yellow">Ziel: 2,81%</span>
-        </div>
-        <div class="chart-container">
-            <canvas id="crChart"></canvas>
-        </div>
+        <div class="card-header"><h3>Conversion Rate</h3><span class="badge badge-yellow">Ziel: 2,81%</span></div>
+        <div class="chart-container"><canvas id="crChart"></canvas></div>
     </div>
 </div>
 
@@ -244,441 +185,297 @@
 <div class="section-title">Umsatz-Zusammensetzung</div>
 <div class="grid grid-2">
     <div class="card">
-        <div class="card-header">
-            <h3>Shopkunden vs. Haendler vs. Werksverkauf</h3>
-            <span class="badge badge-blue">Taeglich</span>
-        </div>
-        <div class="chart-container-lg">
-            <canvas id="revenueBreakdownChart"></canvas>
-        </div>
+        <div class="card-header"><h3>Shopkunden vs. Händler vs. Werksverkauf</h3><span class="badge badge-blue" id="breakdownBadge">Täglich</span></div>
+        <div class="chart-container-lg"><canvas id="revenueBreakdownChart"></canvas></div>
     </div>
     <div class="card">
-        <div class="card-header">
-            <h3>Umsatz nach Kanal (zugeordnet)</h3>
-            <span class="badge badge-green">Attribution</span>
-        </div>
-        <div class="chart-container-lg">
-            <canvas id="channelRevenueChart"></canvas>
-        </div>
+        <div class="card-header"><h3>Umsatz nach Kanal (zugeordnet)</h3><span class="badge badge-green">Attribution</span></div>
+        <div class="chart-container-lg"><canvas id="channelRevenueChart"></canvas></div>
     </div>
 </div>
 
 <!-- MARKETING -->
 <div class="section-title">Marketing Performance</div>
-
-<div class="grid grid-4">
-    <div class="card channel-card" style="border-top: 3px solid var(--blue);">
-        <div class="ch-name">Meta Ads</div>
-        <div class="ch-value" style="color: var(--blue)">3.280&#8364;</div>
-        <div class="ch-sub">Spend Feb | ROAS 2,54</div>
-        <div style="margin-top: 8px;">
-            <span style="font-size: 20px; font-weight: 700; color: var(--green)">8.334&#8364;</span>
-            <span style="font-size: 11px; color: var(--muted)"> Umsatz</span>
-        </div>
-    </div>
-    <div class="card channel-card" style="border-top: 3px solid var(--red);">
-        <div class="ch-name">Google Ads</div>
-        <div class="ch-value" style="color: var(--red)">0&#8364;</div>
-        <div class="ch-sub">&#9888; Seit 26.01. kein Spend!</div>
-        <div style="margin-top: 8px;">
-            <span style="font-size: 20px; font-weight: 700; color: var(--muted)">0&#8364;</span>
-            <span style="font-size: 11px; color: var(--muted)"> Umsatz</span>
-        </div>
-    </div>
-    <div class="card channel-card" style="border-top: 3px solid var(--purple);">
-        <div class="ch-name">Email Marketing</div>
-        <div class="ch-value" style="color: var(--purple)">12.907&#8364;</div>
-        <div class="ch-sub">Umsatz Feb (attributed)</div>
-        <div style="margin-top: 8px;">
-            <span style="font-size: 20px; font-weight: 700; color: var(--green)">+353</span>
-            <span style="font-size: 11px; color: var(--muted)"> Netto-Subscriber</span>
-        </div>
-    </div>
-    <div class="card channel-card" style="border-top: 3px solid var(--muted);">
-        <div class="ch-name">Bing Ads</div>
-        <div class="ch-value" style="color: var(--muted)">0&#8364;</div>
-        <div class="ch-sub">Seit 26.01. kein Spend</div>
-        <div style="margin-top: 8px;">
-            <span style="font-size: 11px; color: var(--muted)">Kanal pausiert</span>
-        </div>
-    </div>
-</div>
+<div class="grid grid-4" id="channelCards"><!-- Dynamisch befüllt --></div>
 
 <!-- META DEEP DIVE -->
-<div class="section-title">Meta Ads - Deep Dive</div>
+<div class="section-title">Meta Ads – Deep Dive</div>
 <div class="grid grid-2">
     <div class="card">
-        <div class="card-header">
-            <h3>Meta: Spend & ROAS</h3>
-            <span class="badge badge-blue">Taeglich</span>
-        </div>
-        <div class="chart-container-lg">
-            <canvas id="metaRoasChart"></canvas>
-        </div>
+        <div class="card-header"><h3>Meta: Spend & ROAS</h3><span class="badge badge-blue" id="metaBadge">Täglich</span></div>
+        <div class="chart-container-lg"><canvas id="metaRoasChart"></canvas></div>
     </div>
     <div class="card">
-        <div class="card-header">
-            <h3>Meta: CPC & CPM Entwicklung</h3>
-            <span class="badge badge-yellow">Kosten</span>
-        </div>
-        <div class="chart-container-lg">
-            <canvas id="metaCostChart"></canvas>
-        </div>
-    </div>
-</div>
-
-<div class="grid grid-2">
-    <div class="card">
-        <div class="card-header">
-            <h3>Meta: Impressions & Klicks</h3>
-            <span class="badge badge-green">Reichweite</span>
-        </div>
-        <div class="chart-container">
-            <canvas id="metaReachChart"></canvas>
-        </div>
-    </div>
-    <div class="card">
-        <div class="card-header">
-            <h3>Meta: Purchases & Conversion Value</h3>
-            <span class="badge badge-green">Conversions</span>
-        </div>
-        <div class="chart-container">
-            <canvas id="metaConvChart"></canvas>
-        </div>
+        <div class="card-header"><h3>Meta: CPC & CPM Entwicklung</h3><span class="badge badge-yellow">Kosten</span></div>
+        <div class="chart-container-lg"><canvas id="metaCostChart"></canvas></div>
     </div>
 </div>
 
 <!-- MARKETING SPEND TIMELINE -->
-<div class="section-title">Marketing Spend Verlauf (alle Kanaele)</div>
+<div class="section-title">Marketing Spend Verlauf (alle Kanäle)</div>
 <div class="card">
-    <div class="card-header">
-        <h3>Spend pro Kanal (taeglich)</h3>
-        <span class="badge badge-red">Google seit 26.01. auf 0!</span>
-    </div>
-    <div class="chart-container-lg">
-        <canvas id="spendChart"></canvas>
-    </div>
+    <div class="card-header"><h3>Spend pro Kanal</h3><span class="badge badge-red">Google seit 26.01. auf 0!</span></div>
+    <div class="chart-container-lg"><canvas id="spendChart"></canvas></div>
 </div>
 
-<!-- WOCHEN-VERGLEICH -->
-<div class="section-title">Wochen-Vergleich</div>
+<!-- DETAIL TABELLE -->
+<div class="section-title" id="tableTitle">Detail-Tabelle</div>
 <div class="card">
-    <div class="table-wrapper">
-        <table>
-            <thead>
-                <tr>
-                    <th>KW</th>
-                    <th class="num">Umsatz</th>
-                    <th class="num">&#216;/Tag</th>
-                    <th class="num">Bestellungen</th>
-                    <th class="num">&#216; AOV</th>
-                    <th class="num">&#216; CR</th>
-                    <th class="num">Total Spend</th>
-                    <th class="num">Meta ROAS</th>
-                    <th>Bemerkung</th>
-                </tr>
-            </thead>
-            <tbody id="weeklyTable"></tbody>
-        </table>
-    </div>
-</div>
-
-<!-- TAGES-DETAIL -->
-<div class="section-title">Tages-Detail (letzte 14 Tage)</div>
-<div class="card">
-    <div class="table-wrapper">
-        <table>
-            <thead>
-                <tr>
-                    <th>Datum</th>
-                    <th>KW</th>
-                    <th class="num">Umsatz</th>
-                    <th class="num">Bestell.</th>
-                    <th class="num">AOV</th>
-                    <th class="num">CR</th>
-                    <th class="num">Besucher</th>
-                    <th class="num">Meta &#8364;</th>
-                    <th class="num">Google &#8364;</th>
-                    <th class="num">Email &#8364;</th>
-                </tr>
-            </thead>
-            <tbody id="dailyTable"></tbody>
-        </table>
+    <div class="table-wrapper" style="overflow-x:auto;">
+        <table><thead id="tableHead"></thead><tbody id="tableBody"></tbody></table>
     </div>
 </div>
 
 <div class="footer">
     J&L Webshop Dashboard | Datenstand: 12.02.2026 | Quelle: Jessis Daily Reporting (READ-ONLY)<br>
-    Naechstes Update: 17.02.2026 | Erstellt mit Claude Code
+    Nächstes Update: 17.02.2026 | Erstellt mit Claude Code
 </div>
 
 <script>
-// ========== DATA ==========
+// ========== RAW DATA ==========
 const raw = [{"datum":"2026-01-01","kw":"KW01","umsatz":7112.5,"shopkunden":7091.74,"haendler":0,"werksverkauf":20.76,"besucher":6436,"bestellungen":166,"aov":42.85,"cr":2.58,"spend":962.43,"google_spend":782.78,"google_umsatz":738.65,"meta_spend":151.84,"meta_umsatz":487.7,"email_umsatz":671.06,"email_subscribers":123,"bing_spend":27.81},{"datum":"2026-01-02","kw":"KW01","umsatz":10194.08,"shopkunden":10060.23,"haendler":133.85,"werksverkauf":0,"besucher":7941,"bestellungen":249,"aov":40.94,"cr":3.14,"spend":914.79,"google_spend":730.24,"google_umsatz":1551.6,"meta_spend":138.71,"meta_umsatz":325.98,"email_umsatz":941.66,"email_subscribers":83,"bing_spend":45.84},{"datum":"2026-01-03","kw":"KW01","umsatz":9778.1,"shopkunden":9165.41,"haendler":533.86,"werksverkauf":78.83,"besucher":7644,"bestellungen":234,"aov":41.79,"cr":3.06,"spend":775.14,"google_spend":639.17,"google_umsatz":7820.38,"meta_spend":104.65,"meta_umsatz":346.87,"email_umsatz":653.7,"email_subscribers":161,"bing_spend":31.32},{"datum":"2026-01-04","kw":"KW01","umsatz":8633.57,"shopkunden":8451.17,"haendler":136.51,"werksverkauf":45.89,"besucher":7817,"bestellungen":202,"aov":42.74,"cr":2.58,"spend":801.41,"google_spend":619.97,"google_umsatz":7508.88,"meta_spend":153.69,"meta_umsatz":445.12,"email_umsatz":771.42,"email_subscribers":194,"bing_spend":27.75},{"datum":"2026-01-05","kw":"KW02","umsatz":8605.11,"shopkunden":8218.69,"haendler":338.23,"werksverkauf":48.19,"besucher":7493,"bestellungen":213,"aov":40.4,"cr":2.84,"spend":641.72,"google_spend":474.9,"google_umsatz":7210.58,"meta_spend":117.96,"meta_umsatz":31.54,"email_umsatz":582.76,"email_subscribers":138,"bing_spend":48.86},{"datum":"2026-01-06","kw":"KW02","umsatz":13251.97,"shopkunden":10884.78,"haendler":2338.72,"werksverkauf":28.47,"besucher":7889,"bestellungen":269,"aov":49.26,"cr":3.41,"spend":1037.04,"google_spend":877.42,"google_umsatz":9190.63,"meta_spend":133.9,"meta_umsatz":820.01,"email_umsatz":1224.98,"email_subscribers":161,"bing_spend":25.72},{"datum":"2026-01-07","kw":"KW02","umsatz":10078.6,"shopkunden":10032.56,"haendler":0,"werksverkauf":46.04,"besucher":7287,"bestellungen":251,"aov":40.15,"cr":3.44,"spend":1043.06,"google_spend":862.98,"google_umsatz":9916.82,"meta_spend":154.99,"meta_umsatz":378.31,"email_umsatz":792.46,"email_subscribers":140,"bing_spend":25.09},{"datum":"2026-01-08","kw":"KW02","umsatz":10676.16,"shopkunden":10033.66,"haendler":619.99,"werksverkauf":22.51,"besucher":7400,"bestellungen":214,"aov":49.89,"cr":2.89,"spend":1226.46,"google_spend":1051.31,"google_umsatz":9662.11,"meta_spend":145.83,"meta_umsatz":838.04,"email_umsatz":1225.41,"email_subscribers":110,"bing_spend":29.32},{"datum":"2026-01-09","kw":"KW02","umsatz":8746.28,"shopkunden":8746.28,"haendler":0,"werksverkauf":0,"besucher":8240,"bestellungen":225,"aov":38.87,"cr":2.73,"spend":1384.93,"google_spend":1222.11,"google_umsatz":9140.41,"meta_spend":137.36,"meta_umsatz":368.63,"email_umsatz":1250.5,"email_subscribers":155,"bing_spend":25.46},{"datum":"2026-01-10","kw":"KW02","umsatz":9590.95,"shopkunden":9490.19,"haendler":100.76,"werksverkauf":0,"besucher":8790,"bestellungen":232,"aov":41.34,"cr":2.64,"spend":1731.82,"google_spend":1555.41,"google_umsatz":11733.16,"meta_spend":145.31,"meta_umsatz":423.53,"email_umsatz":967.54,"email_subscribers":178,"bing_spend":31.1},{"datum":"2026-01-11","kw":"KW02","umsatz":10549.79,"shopkunden":10201.17,"haendler":348.62,"werksverkauf":0,"besucher":10202,"bestellungen":223,"aov":47.31,"cr":2.19,"spend":1733.51,"google_spend":1534.58,"google_umsatz":9324.3,"meta_spend":170.55,"meta_umsatz":597.1,"email_umsatz":3224.28,"email_subscribers":-695,"bing_spend":28.38},{"datum":"2026-01-12","kw":"KW03","umsatz":10479.85,"shopkunden":9694.22,"haendler":727.11,"werksverkauf":58.52,"besucher":8687,"bestellungen":234,"aov":44.79,"cr":2.69,"spend":1730.82,"google_spend":1525.14,"google_umsatz":10810.02,"meta_spend":170.69,"meta_umsatz":671.84,"email_umsatz":702.64,"email_subscribers":26,"bing_spend":34.99},{"datum":"2026-01-13","kw":"KW03","umsatz":8931.54,"shopkunden":8557.71,"haendler":282.49,"werksverkauf":91.34,"besucher":8651,"bestellungen":210,"aov":42.53,"cr":2.43,"spend":1717.75,"google_spend":1491.43,"google_umsatz":8352.11,"meta_spend":176.64,"meta_umsatz":400,"email_umsatz":454.78,"email_subscribers":119,"bing_spend":49.68},{"datum":"2026-01-14","kw":"KW03","umsatz":8131.88,"shopkunden":7986.81,"haendler":105.23,"werksverkauf":39.84,"besucher":8374,"bestellungen":198,"aov":41.07,"cr":2.36,"spend":1646.33,"google_spend":1420.11,"google_umsatz":8761.95,"meta_spend":172.35,"meta_umsatz":420.38,"email_umsatz":581.29,"email_subscribers":116,"bing_spend":53.87},{"datum":"2026-01-15","kw":"KW03","umsatz":7848.3,"shopkunden":7724.41,"haendler":123.89,"werksverkauf":0,"besucher":8534,"bestellungen":195,"aov":40.25,"cr":2.28,"spend":1738.67,"google_spend":1500.08,"google_umsatz":7977.37,"meta_spend":205.88,"meta_umsatz":490.64,"email_umsatz":712.67,"email_subscribers":108,"bing_spend":32.71},{"datum":"2026-01-16","kw":"KW03","umsatz":8063.24,"shopkunden":8007.28,"haendler":0,"werksverkauf":55.96,"besucher":8230,"bestellungen":184,"aov":43.82,"cr":2.24,"spend":1725.24,"google_spend":1536.79,"google_umsatz":7512.11,"meta_spend":165.81,"meta_umsatz":604.01,"email_umsatz":1079.42,"email_subscribers":113,"bing_spend":22.64},{"datum":"2026-01-17","kw":"KW03","umsatz":11077.72,"shopkunden":10148.48,"haendler":779.28,"werksverkauf":149.96,"besucher":8964,"bestellungen":224,"aov":49.45,"cr":2.5,"spend":1958.19,"google_spend":1762.14,"google_umsatz":11116.2,"meta_spend":164.87,"meta_umsatz":368.14,"email_umsatz":1305.7,"email_subscribers":143,"bing_spend":31.18},{"datum":"2026-01-18","kw":"KW03","umsatz":11526.12,"shopkunden":11408.86,"haendler":0,"werksverkauf":117.26,"besucher":9281,"bestellungen":263,"aov":43.83,"cr":2.83,"spend":1905.62,"google_spend":1660.83,"google_umsatz":12629.45,"meta_spend":215.7,"meta_umsatz":710.82,"email_umsatz":1422.83,"email_subscribers":131,"bing_spend":29.09},{"datum":"2026-01-19","kw":"KW04","umsatz":19040.17,"shopkunden":18919.76,"haendler":0,"werksverkauf":120.41,"besucher":9071,"bestellungen":421,"aov":45.23,"cr":4.64,"spend":1794.31,"google_spend":1525.73,"google_umsatz":12711.55,"meta_spend":219.59,"meta_umsatz":1103.29,"email_umsatz":12290.71,"email_subscribers":-1381,"bing_spend":48.99},{"datum":"2026-01-20","kw":"KW04","umsatz":11341.35,"shopkunden":10366.84,"haendler":849.43,"werksverkauf":125.08,"besucher":9018,"bestellungen":243,"aov":46.67,"cr":2.69,"spend":1583.81,"google_spend":1310.49,"google_umsatz":8375.63,"meta_spend":218.56,"meta_umsatz":747.39,"email_umsatz":848.06,"email_subscribers":-36,"bing_spend":54.76},{"datum":"2026-01-21","kw":"KW04","umsatz":11159.58,"shopkunden":10590.96,"haendler":513.63,"werksverkauf":54.99,"besucher":8799,"bestellungen":239,"aov":46.69,"cr":2.72,"spend":1811.97,"google_spend":1549.34,"google_umsatz":2521.29,"meta_spend":219.72,"meta_umsatz":740.7,"email_umsatz":514.16,"email_subscribers":29,"bing_spend":42.91},{"datum":"2026-01-22","kw":"KW04","umsatz":10522.74,"shopkunden":10129.75,"haendler":313.14,"werksverkauf":79.85,"besucher":8475,"bestellungen":231,"aov":45.55,"cr":2.73,"spend":1690.5,"google_spend":1431.31,"google_umsatz":1096.48,"meta_spend":220.47,"meta_umsatz":659.38,"email_umsatz":1110.28,"email_subscribers":52,"bing_spend":38.72},{"datum":"2026-01-23","kw":"KW04","umsatz":11204.68,"shopkunden":10759.98,"haendler":158.34,"werksverkauf":286.36,"besucher":8534,"bestellungen":235,"aov":47.68,"cr":2.75,"spend":1733.6,"google_spend":1477.04,"google_umsatz":979.01,"meta_spend":224.73,"meta_umsatz":974.93,"email_umsatz":2151.07,"email_subscribers":43,"bing_spend":31.83},{"datum":"2026-01-24","kw":"KW04","umsatz":12355.25,"shopkunden":12211.4,"haendler":143.85,"werksverkauf":0,"besucher":11578,"bestellungen":266,"aov":46.45,"cr":2.3,"spend":1968.89,"google_spend":1701.18,"google_umsatz":362.02,"meta_spend":248.37,"meta_umsatz":909.99,"email_umsatz":695.15,"email_subscribers":71,"bing_spend":19.34},{"datum":"2026-01-25","kw":"KW04","umsatz":19328.26,"shopkunden":18984.51,"haendler":329.28,"werksverkauf":14.47,"besucher":14488,"bestellungen":405,"aov":47.72,"cr":2.8,"spend":2028.76,"google_spend":1715.31,"google_umsatz":1300.94,"meta_spend":288.62,"meta_umsatz":1446.39,"email_umsatz":9786.03,"email_subscribers":-494,"bing_spend":24.83},{"datum":"2026-01-26","kw":"KW05","umsatz":11337.12,"shopkunden":9612.21,"haendler":1645.02,"werksverkauf":79.89,"besucher":8630,"bestellungen":222,"aov":51.07,"cr":2.57,"spend":193.07,"google_spend":0,"google_umsatz":0,"meta_spend":193.07,"meta_umsatz":531.06,"email_umsatz":1039.76,"email_subscribers":8,"bing_spend":0},{"datum":"2026-01-27","kw":"KW05","umsatz":8612.76,"shopkunden":7923.51,"haendler":567.99,"werksverkauf":121.26,"besucher":6994,"bestellungen":183,"aov":47.06,"cr":2.62,"spend":178.47,"google_spend":0,"google_umsatz":0,"meta_spend":178.47,"meta_umsatz":527.38,"email_umsatz":407.72,"email_subscribers":50,"bing_spend":0},{"datum":"2026-01-28","kw":"KW05","umsatz":11325.44,"shopkunden":11037.7,"haendler":209.28,"werksverkauf":78.46,"besucher":7431,"bestellungen":237,"aov":47.79,"cr":3.19,"spend":226.44,"google_spend":0,"google_umsatz":0,"meta_spend":226.44,"meta_umsatz":936.9,"email_umsatz":3209.78,"email_subscribers":1,"bing_spend":0},{"datum":"2026-01-29","kw":"KW05","umsatz":11014.44,"shopkunden":10668.72,"haendler":217.03,"werksverkauf":128.69,"besucher":7289,"bestellungen":214,"aov":51.47,"cr":2.94,"spend":263.2,"google_spend":0,"google_umsatz":0,"meta_spend":263.2,"meta_umsatz":1102.27,"email_umsatz":826.99,"email_subscribers":61,"bing_spend":0},{"datum":"2026-01-30","kw":"KW05","umsatz":9574.52,"shopkunden":9302.49,"haendler":228.04,"werksverkauf":43.99,"besucher":7914,"bestellungen":220,"aov":43.52,"cr":2.78,"spend":274.5,"google_spend":0,"google_umsatz":0,"meta_spend":274.5,"meta_umsatz":656.1,"email_umsatz":449.4,"email_subscribers":79,"bing_spend":0},{"datum":"2026-01-31","kw":"KW05","umsatz":12638.87,"shopkunden":12355.96,"haendler":241.79,"werksverkauf":41.12,"besucher":8809,"bestellungen":261,"aov":48.42,"cr":2.96,"spend":290.47,"google_spend":0,"google_umsatz":0,"meta_spend":290.47,"meta_umsatz":779.56,"email_umsatz":1314.78,"email_subscribers":120,"bing_spend":0},{"datum":"2026-02-01","kw":"KW05","umsatz":15706.78,"shopkunden":15495.25,"haendler":202.54,"werksverkauf":8.99,"besucher":10823,"bestellungen":342,"aov":45.93,"cr":3.16,"spend":335.4,"google_spend":0,"google_umsatz":0,"meta_spend":335.4,"meta_umsatz":1159.8,"email_umsatz":3533.09,"email_subscribers":-448,"bing_spend":0},{"datum":"2026-02-02","kw":"KW06","umsatz":10081.96,"shopkunden":9750.35,"haendler":263.45,"werksverkauf":68.16,"besucher":8734,"bestellungen":227,"aov":44.41,"cr":2.6,"spend":302.94,"google_spend":0,"google_umsatz":0,"meta_spend":302.94,"meta_umsatz":514.71,"email_umsatz":1120.94,"email_subscribers":14,"bing_spend":0},{"datum":"2026-02-03","kw":"KW06","umsatz":9609.14,"shopkunden":9286.32,"haendler":316.83,"werksverkauf":5.99,"besucher":8869,"bestellungen":217,"aov":44.28,"cr":2.45,"spend":294.18,"google_spend":0,"google_umsatz":0,"meta_spend":294.18,"meta_umsatz":500.43,"email_umsatz":666.05,"email_subscribers":76,"bing_spend":0},{"datum":"2026-02-04","kw":"KW06","umsatz":9508.28,"shopkunden":9476.84,"haendler":0,"werksverkauf":31.44,"besucher":9197,"bestellungen":226,"aov":42.07,"cr":2.46,"spend":316.11,"google_spend":0,"google_umsatz":0,"meta_spend":316.11,"meta_umsatz":921.28,"email_umsatz":671.58,"email_subscribers":249,"bing_spend":0},{"datum":"2026-02-05","kw":"KW06","umsatz":8650.53,"shopkunden":8098.44,"haendler":507.41,"werksverkauf":44.68,"besucher":8767,"bestellungen":205,"aov":42.2,"cr":2.34,"spend":286.82,"google_spend":0,"google_umsatz":0,"meta_spend":286.82,"meta_umsatz":1283.69,"email_umsatz":1309.78,"email_subscribers":183,"bing_spend":0},{"datum":"2026-02-06","kw":"KW06","umsatz":8919.8,"shopkunden":8848.26,"haendler":0,"werksverkauf":71.54,"besucher":9158,"bestellungen":200,"aov":44.6,"cr":2.18,"spend":301.3,"google_spend":0,"google_umsatz":0,"meta_spend":301.3,"meta_umsatz":328.07,"email_umsatz":797.17,"email_subscribers":171,"bing_spend":0},{"datum":"2026-02-07","kw":"KW06","umsatz":10633.3,"shopkunden":10311.16,"haendler":322.14,"werksverkauf":0,"besucher":9395,"bestellungen":235,"aov":45.25,"cr":2.5,"spend":340.63,"google_spend":0,"google_umsatz":0,"meta_spend":340.63,"meta_umsatz":909.07,"email_umsatz":493.6,"email_subscribers":168,"bing_spend":0},{"datum":"2026-02-08","kw":"KW06","umsatz":13714.35,"shopkunden":13586.4,"haendler":127.95,"werksverkauf":0,"besucher":10401,"bestellungen":290,"aov":47.29,"cr":2.79,"spend":406.43,"google_spend":0,"google_umsatz":0,"meta_spend":406.43,"meta_umsatz":1111.88,"email_umsatz":2147.21,"email_subscribers":138,"bing_spend":0},{"datum":"2026-02-09","kw":"KW07","umsatz":11025.03,"shopkunden":10955.29,"haendler":0,"werksverkauf":69.74,"besucher":9254,"bestellungen":256,"aov":43.07,"cr":2.77,"spend":347.67,"google_spend":0,"google_umsatz":0,"meta_spend":347.67,"meta_umsatz":874.52,"email_umsatz":0,"email_subscribers":0,"bing_spend":0},{"datum":"2026-02-10","kw":"KW07","umsatz":9171.82,"shopkunden":8898.63,"haendler":232.51,"werksverkauf":40.68,"besucher":0,"bestellungen":198,"aov":46.32,"cr":null,"spend":348.01,"google_spend":0,"google_umsatz":0,"meta_spend":348.01,"meta_umsatz":730.8,"email_umsatz":0,"email_subscribers":0,"bing_spend":0},{"datum":"2026-02-11","kw":"KW07","umsatz":10948.66,"shopkunden":10784.49,"haendler":124.78,"werksverkauf":39.39,"besucher":0,"bestellungen":244,"aov":44.87,"cr":null,"spend":0,"google_spend":0,"google_umsatz":0,"meta_spend":0,"meta_umsatz":0,"email_umsatz":0,"email_subscribers":0,"bing_spend":0},{"datum":"2026-02-12","kw":"KW07","umsatz":9636.44,"shopkunden":8976.99,"haendler":560.63,"werksverkauf":98.82,"besucher":0,"bestellungen":209,"aov":46.11,"cr":null,"spend":0,"google_spend":0,"google_umsatz":0,"meta_spend":0,"meta_umsatz":0,"email_umsatz":0,"email_subscribers":0,"bing_spend":0}];
 
-const metaRaw = [{"datum":"2026-01-01","spend":151.84,"impressions":39839,"clicks":1009,"purchases":9,"conv_value":487.7,"roas":3.21,"cpc":0.15,"cpm":3.81,"frequency":1.12},{"datum":"2026-01-02","spend":138.71,"impressions":33779,"clicks":946,"purchases":11,"conv_value":325.98,"roas":2.35,"cpc":0.15,"cpm":4.11,"frequency":1.09},{"datum":"2026-01-03","spend":104.65,"impressions":28391,"clicks":816,"purchases":10,"conv_value":346.87,"roas":3.31,"cpc":0.13,"cpm":3.69,"frequency":1.1},{"datum":"2026-01-04","spend":153.69,"impressions":38885,"clicks":1025,"purchases":9,"conv_value":445.12,"roas":2.9,"cpc":0.15,"cpm":3.95,"frequency":1.09},{"datum":"2026-01-05","spend":117.96,"impressions":28886,"clicks":788,"purchases":1,"conv_value":31.54,"roas":0.27,"cpc":0.15,"cpm":4.08,"frequency":1.1},{"datum":"2026-01-06","spend":133.9,"impressions":35156,"clicks":786,"purchases":20,"conv_value":820.01,"roas":6.12,"cpc":0.17,"cpm":3.81,"frequency":1.11},{"datum":"2026-01-07","spend":154.99,"impressions":43766,"clicks":776,"purchases":8,"conv_value":378.31,"roas":2.44,"cpc":0.2,"cpm":3.54,"frequency":1.08},{"datum":"2026-01-08","spend":145.83,"impressions":39789,"clicks":708,"purchases":15,"conv_value":838.04,"roas":5.75,"cpc":0.21,"cpm":3.67,"frequency":1.09},{"datum":"2026-01-09","spend":137.36,"impressions":39392,"clicks":786,"purchases":10,"conv_value":368.63,"roas":2.68,"cpc":0.17,"cpm":3.49,"frequency":1.12},{"datum":"2026-01-10","spend":145.31,"impressions":38699,"clicks":817,"purchases":9,"conv_value":423.53,"roas":2.91,"cpc":0.18,"cpm":3.75,"frequency":1.11},{"datum":"2026-01-11","spend":170.55,"impressions":44495,"clicks":979,"purchases":12,"conv_value":597.1,"roas":3.5,"cpc":0.17,"cpm":3.83,"frequency":1.1},{"datum":"2026-01-12","spend":170.69,"impressions":42447,"clicks":802,"purchases":13,"conv_value":671.84,"roas":3.94,"cpc":0.21,"cpm":4.02,"frequency":1.11},{"datum":"2026-01-13","spend":176.64,"impressions":39890,"clicks":789,"purchases":10,"conv_value":400,"roas":2.26,"cpc":0.22,"cpm":4.43,"frequency":1.09},{"datum":"2026-01-14","spend":172.35,"impressions":38463,"clicks":763,"purchases":9,"conv_value":420.38,"roas":2.44,"cpc":0.23,"cpm":4.48,"frequency":1.1},{"datum":"2026-01-15","spend":205.88,"impressions":44011,"clicks":997,"purchases":12,"conv_value":490.64,"roas":2.38,"cpc":0.21,"cpm":4.68,"frequency":1.1},{"datum":"2026-01-16","spend":165.81,"impressions":35061,"clicks":679,"purchases":11,"conv_value":604.01,"roas":3.64,"cpc":0.24,"cpm":4.73,"frequency":1.1},{"datum":"2026-01-17","spend":164.87,"impressions":33162,"clicks":751,"purchases":7,"conv_value":368.14,"roas":2.23,"cpc":0.22,"cpm":4.97,"frequency":1.11},{"datum":"2026-01-18","spend":215.7,"impressions":45258,"clicks":1044,"purchases":16,"conv_value":710.82,"roas":3.3,"cpc":0.21,"cpm":4.77,"frequency":1.11},{"datum":"2026-01-19","spend":219.59,"impressions":43893,"clicks":959,"purchases":21,"conv_value":1103.29,"roas":5.02,"cpc":0.23,"cpm":5.0,"frequency":1.11},{"datum":"2026-01-20","spend":218.56,"impressions":42009,"clicks":925,"purchases":14,"conv_value":747.39,"roas":3.42,"cpc":0.24,"cpm":5.2,"frequency":1.08},{"datum":"2026-01-21","spend":219.72,"impressions":43063,"clicks":934,"purchases":16,"conv_value":740.7,"roas":3.37,"cpc":0.24,"cpm":5.1,"frequency":1.1},{"datum":"2026-01-22","spend":220.47,"impressions":41601,"clicks":817,"purchases":12,"conv_value":659.38,"roas":2.99,"cpc":0.27,"cpm":5.3,"frequency":1.13},{"datum":"2026-01-23","spend":224.73,"impressions":33661,"clicks":800,"purchases":19,"conv_value":974.93,"roas":4.34,"cpc":0.28,"cpm":6.68,"frequency":1.11},{"datum":"2026-01-24","spend":248.37,"impressions":34134,"clicks":910,"purchases":21,"conv_value":909.99,"roas":3.66,"cpc":0.27,"cpm":7.28,"frequency":1.11},{"datum":"2026-01-25","spend":288.62,"impressions":40837,"clicks":1074,"purchases":30,"conv_value":1446.39,"roas":5.01,"cpc":0.27,"cpm":7.07,"frequency":1.12},{"datum":"2026-01-26","spend":193.07,"impressions":27698,"clicks":699,"purchases":13,"conv_value":531.06,"roas":2.75,"cpc":0.28,"cpm":6.97,"frequency":1.11},{"datum":"2026-01-27","spend":178.47,"impressions":25015,"clicks":751,"purchases":10,"conv_value":527.38,"roas":2.96,"cpc":0.24,"cpm":7.13,"frequency":1.11},{"datum":"2026-01-28","spend":226.44,"impressions":32316,"clicks":798,"purchases":22,"conv_value":936.9,"roas":4.14,"cpc":0.28,"cpm":7.01,"frequency":1.09},{"datum":"2026-01-29","spend":263.2,"impressions":39917,"clicks":936,"purchases":23,"conv_value":1102.27,"roas":4.19,"cpc":0.28,"cpm":6.59,"frequency":1.08},{"datum":"2026-01-30","spend":274.5,"impressions":45989,"clicks":1226,"purchases":16,"conv_value":656.1,"roas":2.39,"cpc":0.22,"cpm":5.97,"frequency":1.08},{"datum":"2026-01-31","spend":290.47,"impressions":57843,"clicks":1159,"purchases":14,"conv_value":779.56,"roas":2.68,"cpc":0.25,"cpm":5.02,"frequency":1.09},{"datum":"2026-02-01","spend":335.4,"impressions":64659,"clicks":1397,"purchases":23,"conv_value":1159.8,"roas":3.46,"cpc":0.24,"cpm":5.19,"frequency":1.09},{"datum":"2026-02-02","spend":302.94,"impressions":58210,"clicks":1241,"purchases":11,"conv_value":514.71,"roas":1.7,"cpc":0.24,"cpm":5.2,"frequency":1.12},{"datum":"2026-02-03","spend":294.18,"impressions":53254,"clicks":1234,"purchases":12,"conv_value":500.43,"roas":1.7,"cpc":0.24,"cpm":5.52,"frequency":1.09},{"datum":"2026-02-04","spend":316.11,"impressions":56808,"clicks":1164,"purchases":20,"conv_value":921.28,"roas":2.91,"cpc":0.27,"cpm":5.56,"frequency":1.09},{"datum":"2026-02-05","spend":286.82,"impressions":52688,"clicks":1195,"purchases":30,"conv_value":1283.69,"roas":4.48,"cpc":0.24,"cpm":5.44,"frequency":1.1},{"datum":"2026-02-06","spend":301.3,"impressions":57913,"clicks":1278,"purchases":7,"conv_value":328.07,"roas":1.09,"cpc":0.24,"cpm":5.2,"frequency":1.11},{"datum":"2026-02-07","spend":340.63,"impressions":64659,"clicks":1302,"purchases":18,"conv_value":909.07,"roas":2.67,"cpc":0.26,"cpm":5.27,"frequency":1.09},{"datum":"2026-02-08","spend":406.43,"impressions":77344,"clicks":1593,"purchases":25,"conv_value":1111.88,"roas":2.74,"cpc":0.26,"cpm":5.25,"frequency":1.1},{"datum":"2026-02-09","spend":347.67,"impressions":71330,"clicks":1332,"purchases":20,"conv_value":874.52,"roas":2.52,"cpc":0.26,"cpm":4.87,"frequency":1.1},{"datum":"2026-02-10","spend":348.01,"impressions":68885,"clicks":1342,"purchases":14,"conv_value":730.8,"roas":2.1,"cpc":0.26,"cpm":5.05,"frequency":1.11}];
+const metaRaw = [{"datum":"2026-01-01","spend":151.84,"impressions":39839,"clicks":1009,"purchases":9,"conv_value":487.7,"roas":3.21,"cpc":0.15,"cpm":3.81},{"datum":"2026-01-02","spend":138.71,"impressions":33779,"clicks":946,"purchases":11,"conv_value":325.98,"roas":2.35,"cpc":0.15,"cpm":4.11},{"datum":"2026-01-03","spend":104.65,"impressions":28391,"clicks":816,"purchases":10,"conv_value":346.87,"roas":3.31,"cpc":0.13,"cpm":3.69},{"datum":"2026-01-04","spend":153.69,"impressions":38885,"clicks":1025,"purchases":9,"conv_value":445.12,"roas":2.9,"cpc":0.15,"cpm":3.95},{"datum":"2026-01-05","spend":117.96,"impressions":28886,"clicks":788,"purchases":1,"conv_value":31.54,"roas":0.27,"cpc":0.15,"cpm":4.08},{"datum":"2026-01-06","spend":133.9,"impressions":35156,"clicks":786,"purchases":20,"conv_value":820.01,"roas":6.12,"cpc":0.17,"cpm":3.81},{"datum":"2026-01-07","spend":154.99,"impressions":43766,"clicks":776,"purchases":8,"conv_value":378.31,"roas":2.44,"cpc":0.2,"cpm":3.54},{"datum":"2026-01-08","spend":145.83,"impressions":39789,"clicks":708,"purchases":15,"conv_value":838.04,"roas":5.75,"cpc":0.21,"cpm":3.67},{"datum":"2026-01-09","spend":137.36,"impressions":39392,"clicks":786,"purchases":10,"conv_value":368.63,"roas":2.68,"cpc":0.17,"cpm":3.49},{"datum":"2026-01-10","spend":145.31,"impressions":38699,"clicks":817,"purchases":9,"conv_value":423.53,"roas":2.91,"cpc":0.18,"cpm":3.75},{"datum":"2026-01-11","spend":170.55,"impressions":44495,"clicks":979,"purchases":12,"conv_value":597.1,"roas":3.5,"cpc":0.17,"cpm":3.83},{"datum":"2026-01-12","spend":170.69,"impressions":42447,"clicks":802,"purchases":13,"conv_value":671.84,"roas":3.94,"cpc":0.21,"cpm":4.02},{"datum":"2026-01-13","spend":176.64,"impressions":39890,"clicks":789,"purchases":10,"conv_value":400,"roas":2.26,"cpc":0.22,"cpm":4.43},{"datum":"2026-01-14","spend":172.35,"impressions":38463,"clicks":763,"purchases":9,"conv_value":420.38,"roas":2.44,"cpc":0.23,"cpm":4.48},{"datum":"2026-01-15","spend":205.88,"impressions":44011,"clicks":997,"purchases":12,"conv_value":490.64,"roas":2.38,"cpc":0.21,"cpm":4.68},{"datum":"2026-01-16","spend":165.81,"impressions":35061,"clicks":679,"purchases":11,"conv_value":604.01,"roas":3.64,"cpc":0.24,"cpm":4.73},{"datum":"2026-01-17","spend":164.87,"impressions":33162,"clicks":751,"purchases":7,"conv_value":368.14,"roas":2.23,"cpc":0.22,"cpm":4.97},{"datum":"2026-01-18","spend":215.7,"impressions":45258,"clicks":1044,"purchases":16,"conv_value":710.82,"roas":3.3,"cpc":0.21,"cpm":4.77},{"datum":"2026-01-19","spend":219.59,"impressions":43893,"clicks":959,"purchases":21,"conv_value":1103.29,"roas":5.02,"cpc":0.23,"cpm":5.0},{"datum":"2026-01-20","spend":218.56,"impressions":42009,"clicks":925,"purchases":14,"conv_value":747.39,"roas":3.42,"cpc":0.24,"cpm":5.2},{"datum":"2026-01-21","spend":219.72,"impressions":43063,"clicks":934,"purchases":16,"conv_value":740.7,"roas":3.37,"cpc":0.24,"cpm":5.1},{"datum":"2026-01-22","spend":220.47,"impressions":41601,"clicks":817,"purchases":12,"conv_value":659.38,"roas":2.99,"cpc":0.27,"cpm":5.3},{"datum":"2026-01-23","spend":224.73,"impressions":33661,"clicks":800,"purchases":19,"conv_value":974.93,"roas":4.34,"cpc":0.28,"cpm":6.68},{"datum":"2026-01-24","spend":248.37,"impressions":34134,"clicks":910,"purchases":21,"conv_value":909.99,"roas":3.66,"cpc":0.27,"cpm":7.28},{"datum":"2026-01-25","spend":288.62,"impressions":40837,"clicks":1074,"purchases":30,"conv_value":1446.39,"roas":5.01,"cpc":0.27,"cpm":7.07},{"datum":"2026-01-26","spend":193.07,"impressions":27698,"clicks":699,"purchases":13,"conv_value":531.06,"roas":2.75,"cpc":0.28,"cpm":6.97},{"datum":"2026-01-27","spend":178.47,"impressions":25015,"clicks":751,"purchases":10,"conv_value":527.38,"roas":2.96,"cpc":0.24,"cpm":7.13},{"datum":"2026-01-28","spend":226.44,"impressions":32316,"clicks":798,"purchases":22,"conv_value":936.9,"roas":4.14,"cpc":0.28,"cpm":7.01},{"datum":"2026-01-29","spend":263.2,"impressions":39917,"clicks":936,"purchases":23,"conv_value":1102.27,"roas":4.19,"cpc":0.28,"cpm":6.59},{"datum":"2026-01-30","spend":274.5,"impressions":45989,"clicks":1226,"purchases":16,"conv_value":656.1,"roas":2.39,"cpc":0.22,"cpm":5.97},{"datum":"2026-01-31","spend":290.47,"impressions":57843,"clicks":1159,"purchases":14,"conv_value":779.56,"roas":2.68,"cpc":0.25,"cpm":5.02},{"datum":"2026-02-01","spend":335.4,"impressions":64659,"clicks":1397,"purchases":23,"conv_value":1159.8,"roas":3.46,"cpc":0.24,"cpm":5.19},{"datum":"2026-02-02","spend":302.94,"impressions":58210,"clicks":1241,"purchases":11,"conv_value":514.71,"roas":1.7,"cpc":0.24,"cpm":5.2},{"datum":"2026-02-03","spend":294.18,"impressions":53254,"clicks":1234,"purchases":12,"conv_value":500.43,"roas":1.7,"cpc":0.24,"cpm":5.52},{"datum":"2026-02-04","spend":316.11,"impressions":56808,"clicks":1164,"purchases":20,"conv_value":921.28,"roas":2.91,"cpc":0.27,"cpm":5.56},{"datum":"2026-02-05","spend":286.82,"impressions":52688,"clicks":1195,"purchases":30,"conv_value":1283.69,"roas":4.48,"cpc":0.24,"cpm":5.44},{"datum":"2026-02-06","spend":301.3,"impressions":57913,"clicks":1278,"purchases":7,"conv_value":328.07,"roas":1.09,"cpc":0.24,"cpm":5.2},{"datum":"2026-02-07","spend":340.63,"impressions":64659,"clicks":1302,"purchases":18,"conv_value":909.07,"roas":2.67,"cpc":0.26,"cpm":5.27},{"datum":"2026-02-08","spend":406.43,"impressions":77344,"clicks":1593,"purchases":25,"conv_value":1111.88,"roas":2.74,"cpc":0.26,"cpm":5.25},{"datum":"2026-02-09","spend":347.67,"impressions":71330,"clicks":1332,"purchases":20,"conv_value":874.52,"roas":2.52,"cpc":0.26,"cpm":4.87},{"datum":"2026-02-10","spend":348.01,"impressions":68885,"clicks":1342,"purchases":14,"conv_value":730.8,"roas":2.1,"cpc":0.26,"cpm":5.05}];
 
-// ========== HELPERS ==========
-const labels = raw.map(d => d.datum.slice(5)); // MM-DD
-const fmt = v => v.toLocaleString('de-DE', {minimumFractionDigits: 0, maximumFractionDigits: 0});
-const fmt2 = v => v.toLocaleString('de-DE', {minimumFractionDigits: 2, maximumFractionDigits: 2});
+// ========== AGGREGATION ENGINE ==========
+function groupBy(data, keyFn) {
+    const groups = {};
+    data.forEach(d => {
+        const key = keyFn(d);
+        if (!groups[key]) groups[key] = [];
+        groups[key].push(d);
+    });
+    return groups;
+}
 
+function aggregate(data, mode) {
+    let keyFn, labelFn;
+    if (mode === 'daily') return { labels: data.map(d => d.datum.slice(5)), data: data.map(d => [d]) };
+    if (mode === 'weekly') { keyFn = d => d.kw; labelFn = k => k; }
+    if (mode === 'monthly') { keyFn = d => d.datum.slice(0,7); labelFn = k => ({
+        '2026-01': 'Januar', '2026-02': 'Februar', '2026-03': 'März', '2026-04': 'April',
+        '2026-05': 'Mai', '2026-06': 'Juni', '2026-07': 'Juli', '2026-08': 'August',
+        '2026-09': 'September', '2026-10': 'Oktober', '2026-11': 'November', '2026-12': 'Dezember'
+    }[k] || k); }
+    const groups = groupBy(data, keyFn);
+    const keys = Object.keys(groups);
+    return { labels: keys.map(labelFn), data: keys.map(k => groups[k]) };
+}
+
+function aggMeta(mode) {
+    let keyFn, labelFn;
+    if (mode === 'daily') return { labels: metaRaw.map(d => d.datum.slice(5)), data: metaRaw.map(d => [d]) };
+    if (mode === 'weekly') {
+        // Map meta dates to KW via raw data
+        const dateToKw = {};
+        raw.forEach(d => dateToKw[d.datum] = d.kw);
+        keyFn = d => dateToKw[d.datum] || 'Unbekannt';
+        labelFn = k => k;
+    }
+    if (mode === 'monthly') { keyFn = d => d.datum.slice(0,7); labelFn = k => ({'2026-01':'Januar','2026-02':'Februar'}[k]||k); }
+    const groups = groupBy(metaRaw, keyFn);
+    const keys = Object.keys(groups);
+    return { labels: keys.map(labelFn), data: keys.map(k => groups[k]) };
+}
+
+// Sum helpers
+const sum = (arr, key) => arr.reduce((s,d) => s + (d[key]||0), 0);
+const avg = (arr, key) => { const valid = arr.filter(d => d[key] != null); return valid.length ? valid.reduce((s,d) => s+d[key],0)/valid.length : null; };
+const fmt = v => v.toLocaleString('de-DE', {minimumFractionDigits:0, maximumFractionDigits:0});
+const fmt2 = v => v.toLocaleString('de-DE', {minimumFractionDigits:2, maximumFractionDigits:2});
+
+// ========== CHART DEFAULTS ==========
 Chart.defaults.color = '#8b8b9e';
 Chart.defaults.borderColor = '#2a2d3a';
 Chart.defaults.font.family = '-apple-system, BlinkMacSystemFont, system-ui, sans-serif';
 
-// ========== REVENUE CHART ==========
-new Chart(document.getElementById('revenueChart'), {
-    type: 'bar',
-    data: {
-        labels: labels,
-        datasets: [{
-            label: 'Tagesumsatz',
-            data: raw.map(d => d.umsatz),
-            backgroundColor: raw.map(d => d.datum >= '2026-02-01' ? 'rgba(34,197,94,0.6)' : 'rgba(34,197,94,0.3)'),
-            borderRadius: 3
-        }]
-    },
-    options: {
-        responsive: true, maintainAspectRatio: false,
-        scales: { y: { ticks: { callback: v => (v/1000).toFixed(0)+'k' }}, x: { grid: { display: false }, ticks: { maxRotation: 45, font: { size: 10 }}}},
-        plugins: { legend: { display: false }, tooltip: { callbacks: { label: ctx => fmt2(ctx.parsed.y) + ' \u20ac' }}}
-    }
-});
+// ========== STATE ==========
+let currentMode = 'daily';
+const charts = {};
 
-// ========== AOV CHART ==========
-new Chart(document.getElementById('aovChart'), {
-    type: 'line',
-    data: {
-        labels: labels,
-        datasets: [{
-            label: 'AOV',
-            data: raw.map(d => d.aov),
-            borderColor: '#f97316', backgroundColor: 'rgba(249,115,22,0.1)',
-            fill: true, tension: 0.3, pointRadius: 3, pointBackgroundColor: raw.map(d => d.aov >= 49.15 ? '#22c55e' : d.aov >= 45 ? '#eab308' : '#ef4444')
-        }, {
-            label: 'Ziel (49,15\u20ac)',
-            data: raw.map(() => 49.15),
-            borderColor: 'rgba(239,68,68,0.5)', borderDash: [6,4], pointRadius: 0, fill: false
-        }]
-    },
-    options: {
-        responsive: true, maintainAspectRatio: false,
-        scales: { y: { min: 35, max: 55, ticks: { callback: v => v+'\u20ac' }}, x: { grid: { display: false }, ticks: { maxRotation: 45, font: { size: 10 }}}},
-        plugins: { legend: { position: 'top', labels: { usePointStyle: true, pointStyleWidth: 12 }}, tooltip: { callbacks: { label: ctx => ctx.dataset.label + ': ' + fmt2(ctx.parsed.y) + '\u20ac' }}}
-    }
-});
+function switchPeriod(mode) {
+    currentMode = mode;
+    document.querySelectorAll('.toggle-btn').forEach(b => b.classList.remove('active'));
+    event.target.classList.add('active');
 
-// ========== ORDERS CHART ==========
-new Chart(document.getElementById('ordersChart'), {
-    type: 'bar',
-    data: {
-        labels: labels,
-        datasets: [{ label: 'Bestellungen', data: raw.map(d => d.bestellungen), backgroundColor: 'rgba(59,130,246,0.5)', borderRadius: 3 }]
-    },
-    options: {
-        responsive: true, maintainAspectRatio: false,
-        scales: { y: {}, x: { grid: { display: false }, ticks: { maxRotation: 45, font: { size: 10 }}}},
-        plugins: { legend: { display: false }, tooltip: { callbacks: { label: ctx => ctx.parsed.y + ' Bestellungen' }}}
-    }
-});
+    const modeLabels = { daily: 'Tägliche Daten', weekly: 'Wöchentliche Zusammenfassung', monthly: 'Monatliche Zusammenfassung' };
+    const badgeLabels = { daily: 'Täglich', weekly: 'Wöchentlich', monthly: 'Monatlich' };
+    document.getElementById('periodLabel').textContent = `Ansicht: ${modeLabels[mode]} (01.01. – 12.02.2026)`;
+    document.getElementById('revBadge').textContent = badgeLabels[mode];
+    document.getElementById('ordersBadge').textContent = badgeLabels[mode];
+    document.getElementById('breakdownBadge').textContent = badgeLabels[mode];
+    document.getElementById('metaBadge').textContent = badgeLabels[mode];
 
-// ========== CR CHART ==========
-const crData = raw.filter(d => d.cr !== null);
-new Chart(document.getElementById('crChart'), {
-    type: 'line',
-    data: {
-        labels: crData.map(d => d.datum.slice(5)),
-        datasets: [{
-            label: 'CR', data: crData.map(d => d.cr),
-            borderColor: '#eab308', backgroundColor: 'rgba(234,179,8,0.1)', fill: true, tension: 0.3, pointRadius: 3
-        }, {
-            label: 'Ziel (2,81%)', data: crData.map(() => 2.81),
-            borderColor: 'rgba(239,68,68,0.5)', borderDash: [6,4], pointRadius: 0
-        }]
-    },
-    options: {
-        responsive: true, maintainAspectRatio: false,
-        scales: { y: { ticks: { callback: v => v+'%' }}, x: { grid: { display: false }, ticks: { maxRotation: 45, font: { size: 10 }}}},
-        plugins: { legend: { position: 'top', labels: { usePointStyle: true, pointStyleWidth: 12 }}}
-    }
-});
+    renderAll();
+}
 
-// ========== REVENUE BREAKDOWN ==========
-new Chart(document.getElementById('revenueBreakdownChart'), {
-    type: 'bar',
-    data: {
-        labels: labels,
-        datasets: [
-            { label: 'Shopkunden', data: raw.map(d => d.shopkunden), backgroundColor: 'rgba(34,197,94,0.6)', borderRadius: 2 },
-            { label: 'Haendler', data: raw.map(d => d.haendler), backgroundColor: 'rgba(59,130,246,0.6)', borderRadius: 2 },
-            { label: 'Werksverkauf', data: raw.map(d => d.werksverkauf), backgroundColor: 'rgba(168,85,247,0.6)', borderRadius: 2 }
-        ]
-    },
-    options: {
-        responsive: true, maintainAspectRatio: false,
-        scales: { x: { stacked: true, grid: { display: false }, ticks: { maxRotation: 45, font: { size: 10 }}}, y: { stacked: true, ticks: { callback: v => (v/1000).toFixed(0)+'k' }}},
-        plugins: { legend: { position: 'top', labels: { usePointStyle: true, pointStyleWidth: 12 }}}
-    }
-});
+function destroyChart(id) { if (charts[id]) { charts[id].destroy(); delete charts[id]; } }
 
-// ========== CHANNEL REVENUE ==========
-new Chart(document.getElementById('channelRevenueChart'), {
-    type: 'bar',
-    data: {
-        labels: labels,
-        datasets: [
-            { label: 'Meta', data: raw.map(d => d.meta_umsatz), backgroundColor: 'rgba(59,130,246,0.6)', borderRadius: 2 },
-            { label: 'Google', data: raw.map(d => d.google_umsatz), backgroundColor: 'rgba(239,68,68,0.6)', borderRadius: 2 },
-            { label: 'Email', data: raw.map(d => d.email_umsatz), backgroundColor: 'rgba(168,85,247,0.6)', borderRadius: 2 }
-        ]
-    },
-    options: {
-        responsive: true, maintainAspectRatio: false,
-        scales: { x: { stacked: true, grid: { display: false }, ticks: { maxRotation: 45, font: { size: 10 }}}, y: { stacked: true, ticks: { callback: v => (v/1000).toFixed(0)+'k' }}},
-        plugins: { legend: { position: 'top', labels: { usePointStyle: true, pointStyleWidth: 12 }}}
-    }
-});
+function renderAll() {
+    const agg = aggregate(raw, currentMode);
+    const magg = aggMeta(currentMode);
+    const isDaily = currentMode === 'daily';
+    const yLabelRev = isDaily ? (v => (v/1000).toFixed(0)+'k') : currentMode === 'weekly' ? (v => (v/1000).toFixed(0)+'k') : (v => (v/1000).toFixed(0)+'k');
 
-// ========== META ROAS ==========
-const metaLabels = metaRaw.map(d => d.datum.slice(5));
-new Chart(document.getElementById('metaRoasChart'), {
-    type: 'bar',
-    data: {
-        labels: metaLabels,
-        datasets: [
-            { label: 'Spend', data: metaRaw.map(d => d.spend), backgroundColor: 'rgba(59,130,246,0.4)', borderRadius: 3, yAxisID: 'y' },
-            { label: 'ROAS', data: metaRaw.map(d => d.roas), type: 'line', borderColor: '#22c55e', pointRadius: 3, pointBackgroundColor: metaRaw.map(d => d.roas >= 3 ? '#22c55e' : d.roas >= 2 ? '#eab308' : '#ef4444'), yAxisID: 'y1', tension: 0.3 }
-        ]
-    },
-    options: {
-        responsive: true, maintainAspectRatio: false,
-        scales: {
-            y: { ticks: { callback: v => v+'\u20ac' }},
-            y1: { position: 'right', min: 0, max: 7, ticks: { callback: v => v.toFixed(1)+'x' }, grid: { display: false }},
-            x: { grid: { display: false }, ticks: { maxRotation: 45, font: { size: 9 }}}
-        },
-        plugins: { legend: { position: 'top', labels: { usePointStyle: true, pointStyleWidth: 12 }}}
-    }
-});
+    // ===== KPI Cards =====
+    const totalUmsatz = sum(raw, 'umsatz');
+    const totalBest = sum(raw, 'bestellungen');
+    const avgAov = avg(raw, 'aov');
+    const crVals = raw.filter(d => d.cr != null);
+    const avgCr = crVals.reduce((s,d) => s+d.cr,0) / crVals.length;
+    const totalMetaSpend = sum(metaRaw, 'spend');
+    const totalMetaConv = sum(metaRaw, 'conv_value');
+    const metaRoas = totalMetaSpend > 0 ? totalMetaConv/totalMetaSpend : 0;
+    const days = raw.length;
 
-// ========== META COST ==========
-new Chart(document.getElementById('metaCostChart'), {
-    type: 'line',
-    data: {
-        labels: metaLabels,
-        datasets: [
-            { label: 'CPC', data: metaRaw.map(d => d.cpc), borderColor: '#f97316', tension: 0.3, pointRadius: 2, yAxisID: 'y' },
-            { label: 'CPM', data: metaRaw.map(d => d.cpm), borderColor: '#a855f7', tension: 0.3, pointRadius: 2, yAxisID: 'y1' }
-        ]
-    },
-    options: {
-        responsive: true, maintainAspectRatio: false,
-        scales: {
-            y: { ticks: { callback: v => v.toFixed(2)+'\u20ac' }, title: { display: true, text: 'CPC', color: '#f97316' }},
-            y1: { position: 'right', ticks: { callback: v => v.toFixed(1)+'\u20ac' }, grid: { display: false }, title: { display: true, text: 'CPM', color: '#a855f7' }},
-            x: { grid: { display: false }, ticks: { maxRotation: 45, font: { size: 9 }}}
-        },
-        plugins: { legend: { position: 'top', labels: { usePointStyle: true, pointStyleWidth: 12 }}}
-    }
-});
+    const kpiEl = document.getElementById('kpiCards');
+    kpiEl.innerHTML = `
+        <div class="card kpi"><div class="label">${isDaily ? 'Ø Tagesumsatz' : 'Gesamtumsatz'}</div><div class="value" style="color:var(--green)">${isDaily ? fmt(Math.round(totalUmsatz/days))+'€' : fmt(Math.round(totalUmsatz))+'€'}</div><div class="target">${isDaily ? 'Gesamt: '+fmt(Math.round(totalUmsatz))+'€' : days+' Tage'}</div><div class="delta delta-green">↑ stabil</div></div>
+        <div class="card kpi"><div class="label">${isDaily ? 'Ø Bestellungen/Tag' : 'Gesamtbestellungen'}</div><div class="value" style="color:var(--blue)">${isDaily ? fmt(Math.round(totalBest/days)) : fmt(totalBest)}</div><div class="target">${isDaily ? 'Gesamt: '+fmt(totalBest) : 'Ø '+fmt(Math.round(totalBest/days))+'/Tag'}</div><div class="delta delta-green">↑ stabil</div></div>
+        <div class="card kpi"><div class="label">Ø Warenkorb (AOV)</div><div class="value" style="color:var(--red)">${fmt2(avgAov)}€</div><div class="target">Ziel: 49,15€</div><div class="delta delta-red">↓ -9% vom Ziel</div></div>
+        <div class="card kpi"><div class="label">Ø Conversion Rate</div><div class="value" style="color:var(--yellow)">${fmt2(avgCr)}%</div><div class="target">Ziel: 2,81%</div><div class="delta delta-yellow">↓ -4% vom Ziel</div></div>
+        <div class="card kpi"><div class="label">Meta ROAS (gesamt)</div><div class="value" style="color:var(--cyan)">${metaRoas.toFixed(2)}</div><div class="target">Spend: ${fmt(Math.round(totalMetaSpend))}€</div><div class="delta delta-yellow">schwankend</div></div>`;
 
-// ========== META REACH ==========
-new Chart(document.getElementById('metaReachChart'), {
-    type: 'bar',
-    data: {
-        labels: metaLabels,
-        datasets: [
-            { label: 'Impressions', data: metaRaw.map(d => d.impressions), backgroundColor: 'rgba(6,182,212,0.4)', borderRadius: 2, yAxisID: 'y' },
-            { label: 'Link Clicks', data: metaRaw.map(d => d.clicks), type: 'line', borderColor: '#ec4899', pointRadius: 2, tension: 0.3, yAxisID: 'y1' }
-        ]
-    },
-    options: {
-        responsive: true, maintainAspectRatio: false,
-        scales: {
-            y: { ticks: { callback: v => (v/1000).toFixed(0)+'k' }},
-            y1: { position: 'right', grid: { display: false }},
-            x: { grid: { display: false }, ticks: { maxRotation: 45, font: { size: 9 }}}
-        },
-        plugins: { legend: { position: 'top', labels: { usePointStyle: true, pointStyleWidth: 12 }}}
-    }
-});
+    // ===== Revenue Chart =====
+    destroyChart('rev');
+    const revData = agg.data.map(g => isDaily ? g[0].umsatz : sum(g, 'umsatz'));
+    charts.rev = new Chart(document.getElementById('revenueChart'), {
+        type: 'bar', data: { labels: agg.labels, datasets: [{ label: isDaily?'Tagesumsatz':'Umsatz', data: revData, backgroundColor: 'rgba(34,197,94,0.5)', borderRadius: 4 }]},
+        options: { responsive:true, maintainAspectRatio:false, scales:{y:{ticks:{callback:yLabelRev}},x:{grid:{display:false}}}, plugins:{legend:{display:false},tooltip:{callbacks:{label:c=>fmt2(c.parsed.y)+'€'}}} }
+    });
 
-// ========== META CONVERSIONS ==========
-new Chart(document.getElementById('metaConvChart'), {
-    type: 'bar',
-    data: {
-        labels: metaLabels,
-        datasets: [
-            { label: 'Purchases', data: metaRaw.map(d => d.purchases), backgroundColor: 'rgba(34,197,94,0.5)', borderRadius: 3, yAxisID: 'y' },
-            { label: 'Conv. Value', data: metaRaw.map(d => d.conv_value), type: 'line', borderColor: '#eab308', pointRadius: 2, tension: 0.3, yAxisID: 'y1' }
-        ]
-    },
-    options: {
-        responsive: true, maintainAspectRatio: false,
-        scales: {
-            y: {},
-            y1: { position: 'right', ticks: { callback: v => v+'\u20ac' }, grid: { display: false }},
-            x: { grid: { display: false }, ticks: { maxRotation: 45, font: { size: 9 }}}
-        },
-        plugins: { legend: { position: 'top', labels: { usePointStyle: true, pointStyleWidth: 12 }}}
-    }
-});
+    // ===== AOV Chart =====
+    destroyChart('aov');
+    const aovData = agg.data.map(g => isDaily ? g[0].aov : avg(g, 'aov'));
+    charts.aov = new Chart(document.getElementById('aovChart'), {
+        type: 'line', data: { labels: agg.labels, datasets: [
+            { label: 'AOV', data: aovData, borderColor: '#f97316', backgroundColor:'rgba(249,115,22,0.1)', fill:true, tension:0.3, pointRadius: isDaily?3:5, pointBackgroundColor: aovData.map(v => v>=49.15?'#22c55e':v>=45?'#eab308':'#ef4444') },
+            { label: 'Ziel (49,15€)', data: aovData.map(()=>49.15), borderColor:'rgba(239,68,68,0.5)', borderDash:[6,4], pointRadius:0, fill:false }
+        ]},
+        options: { responsive:true, maintainAspectRatio:false, scales:{y:{min:35,max:55,ticks:{callback:v=>v+'€'}},x:{grid:{display:false}}}, plugins:{legend:{position:'top',labels:{usePointStyle:true,pointStyleWidth:12}}} }
+    });
 
-// ========== SPEND CHART ==========
-new Chart(document.getElementById('spendChart'), {
-    type: 'bar',
-    data: {
-        labels: labels,
-        datasets: [
-            { label: 'Meta', data: raw.map(d => d.meta_spend), backgroundColor: 'rgba(59,130,246,0.7)', borderRadius: 2 },
-            { label: 'Google', data: raw.map(d => d.google_spend), backgroundColor: 'rgba(239,68,68,0.7)', borderRadius: 2 },
-            { label: 'Bing', data: raw.map(d => d.bing_spend), backgroundColor: 'rgba(139,139,158,0.7)', borderRadius: 2 }
-        ]
-    },
-    options: {
-        responsive: true, maintainAspectRatio: false,
-        scales: { x: { stacked: true, grid: { display: false }, ticks: { maxRotation: 45, font: { size: 10 }}}, y: { stacked: true, ticks: { callback: v => v+'\u20ac' }}},
-        plugins: { legend: { position: 'top', labels: { usePointStyle: true, pointStyleWidth: 12 }}}
-    }
-});
+    // ===== Orders Chart =====
+    destroyChart('orders');
+    const ordData = agg.data.map(g => isDaily ? g[0].bestellungen : sum(g, 'bestellungen'));
+    charts.orders = new Chart(document.getElementById('ordersChart'), {
+        type: 'bar', data: { labels: agg.labels, datasets: [{ label:'Bestellungen', data:ordData, backgroundColor:'rgba(59,130,246,0.5)', borderRadius:3 }]},
+        options: { responsive:true, maintainAspectRatio:false, scales:{x:{grid:{display:false}}}, plugins:{legend:{display:false}} }
+    });
 
-// ========== WEEKLY TABLE ==========
-const weeks = {};
-raw.forEach(d => {
-    if (!weeks[d.kw]) weeks[d.kw] = [];
-    weeks[d.kw].push(d);
-});
+    // ===== CR Chart =====
+    destroyChart('cr');
+    const crData = agg.data.map(g => { const v = avg(g,'cr'); return v; });
+    const crLabels = agg.labels;
+    const crFiltered = []; const crLabelsF = [];
+    crData.forEach((v,i) => { if(v!==null) { crFiltered.push(v); crLabelsF.push(crLabels[i]); }});
+    charts.cr = new Chart(document.getElementById('crChart'), {
+        type: 'line', data: { labels: crLabelsF, datasets: [
+            { label:'CR', data:crFiltered, borderColor:'#eab308', backgroundColor:'rgba(234,179,8,0.1)', fill:true, tension:0.3, pointRadius:3 },
+            { label:'Ziel (2,81%)', data:crFiltered.map(()=>2.81), borderColor:'rgba(239,68,68,0.5)', borderDash:[6,4], pointRadius:0 }
+        ]},
+        options: { responsive:true, maintainAspectRatio:false, scales:{y:{ticks:{callback:v=>v+'%'}},x:{grid:{display:false}}}, plugins:{legend:{position:'top',labels:{usePointStyle:true,pointStyleWidth:12}}} }
+    });
 
-const weeklyTbody = document.getElementById('weeklyTable');
-Object.entries(weeks).forEach(([kw, days]) => {
-    const umsatz = days.reduce((s,d) => s+d.umsatz, 0);
-    const best = days.reduce((s,d) => s+d.bestellungen, 0);
-    const aov = days.reduce((s,d) => s+d.aov, 0) / days.length;
-    const crDays = days.filter(d => d.cr !== null);
-    const cr = crDays.length > 0 ? crDays.reduce((s,d) => s+d.cr, 0) / crDays.length : null;
-    const spend = days.reduce((s,d) => s+d.spend, 0);
-    const metaSpend = days.reduce((s,d) => s+d.meta_spend, 0);
-    const metaUmsatz = days.reduce((s,d) => s+d.meta_umsatz, 0);
-    const metaRoas = metaSpend > 0 ? (metaUmsatz/metaSpend).toFixed(2) : '-';
-    const aovColor = aov >= 49.15 ? 'var(--green)' : aov >= 45 ? 'var(--yellow)' : 'var(--red)';
-    let note = '';
-    if (kw === 'KW04') note = 'Starke Email-Tage (19.+25.01.)';
-    if (kw === 'KW05') note = 'Google Ads gestoppt ab 26.01.';
+    // ===== Revenue Breakdown =====
+    destroyChart('breakdown');
+    charts.breakdown = new Chart(document.getElementById('revenueBreakdownChart'), {
+        type: 'bar', data: { labels: agg.labels, datasets: [
+            { label:'Shopkunden', data: agg.data.map(g => sum(g,'shopkunden')), backgroundColor:'rgba(34,197,94,0.6)', borderRadius:2 },
+            { label:'Händler', data: agg.data.map(g => sum(g,'haendler')), backgroundColor:'rgba(59,130,246,0.6)', borderRadius:2 },
+            { label:'Werksverkauf', data: agg.data.map(g => sum(g,'werksverkauf')), backgroundColor:'rgba(168,85,247,0.6)', borderRadius:2 }
+        ]},
+        options: { responsive:true, maintainAspectRatio:false, scales:{x:{stacked:true,grid:{display:false}},y:{stacked:true,ticks:{callback:v=>(v/1000).toFixed(0)+'k'}}}, plugins:{legend:{position:'top',labels:{usePointStyle:true,pointStyleWidth:12}}} }
+    });
 
-    const tr = document.createElement('tr');
-    tr.innerHTML = `<td><strong>${kw}</strong></td><td class="num">${fmt(umsatz)}\u20ac</td><td class="num">${fmt(Math.round(umsatz/days.length))}\u20ac</td><td class="num">${fmt(best)}</td><td class="num" style="color:${aovColor};font-weight:600">${fmt2(aov)}\u20ac</td><td class="num">${cr !== null ? fmt2(cr)+'%' : 'n/a'}</td><td class="num">${fmt(Math.round(spend))}\u20ac</td><td class="num">${metaRoas}</td><td style="font-size:11px;color:var(--muted)">${note}</td>`;
-    weeklyTbody.appendChild(tr);
-});
+    // ===== Channel Revenue =====
+    destroyChart('chanrev');
+    charts.chanrev = new Chart(document.getElementById('channelRevenueChart'), {
+        type: 'bar', data: { labels: agg.labels, datasets: [
+            { label:'Meta', data: agg.data.map(g => sum(g,'meta_umsatz')), backgroundColor:'rgba(59,130,246,0.6)', borderRadius:2 },
+            { label:'Google', data: agg.data.map(g => sum(g,'google_umsatz')), backgroundColor:'rgba(239,68,68,0.6)', borderRadius:2 },
+            { label:'Email', data: agg.data.map(g => sum(g,'email_umsatz')), backgroundColor:'rgba(168,85,247,0.6)', borderRadius:2 }
+        ]},
+        options: { responsive:true, maintainAspectRatio:false, scales:{x:{stacked:true,grid:{display:false}},y:{stacked:true,ticks:{callback:v=>(v/1000).toFixed(0)+'k'}}}, plugins:{legend:{position:'top',labels:{usePointStyle:true,pointStyleWidth:12}}} }
+    });
 
-// ========== DAILY TABLE ==========
-const dailyTbody = document.getElementById('dailyTable');
-raw.slice(-14).forEach(d => {
-    const aovColor = d.aov >= 49.15 ? 'var(--green)' : d.aov >= 45 ? 'var(--yellow)' : 'var(--red)';
-    const tr = document.createElement('tr');
-    tr.innerHTML = `<td>${d.datum.slice(5)}</td><td>${d.kw}</td><td class="num">${fmt(Math.round(d.umsatz))}\u20ac</td><td class="num">${d.bestellungen}</td><td class="num" style="color:${aovColor};font-weight:600">${fmt2(d.aov)}\u20ac</td><td class="num">${d.cr !== null ? fmt2(d.cr)+'%' : '<span style="color:var(--muted)">n/a</span>'}</td><td class="num">${d.besucher > 0 ? fmt(d.besucher) : '<span style="color:var(--muted)">n/a</span>'}</td><td class="num">${d.meta_spend > 0 ? fmt(Math.round(d.meta_spend))+'\u20ac' : '<span style="color:var(--red)">0</span>'}</td><td class="num">${d.google_spend > 0 ? fmt(Math.round(d.google_spend))+'\u20ac' : '<span style="color:var(--red)">0</span>'}</td><td class="num">${d.email_umsatz > 0 ? fmt(Math.round(d.email_umsatz))+'\u20ac' : '-'}</td>`;
-    dailyTbody.appendChild(tr);
-});
+    // ===== Channel Cards =====
+    const febData = raw.filter(d => d.datum >= '2026-02-01');
+    const metaSpendFeb = sum(febData,'meta_spend');
+    const metaUmsatzFeb = sum(febData,'meta_umsatz');
+    const emailUmsatzFeb = sum(febData,'email_umsatz');
+    const emailSubsFeb = sum(febData,'email_subscribers');
+    document.getElementById('channelCards').innerHTML = `
+        <div class="card channel-card" style="border-top:3px solid var(--blue)"><div class="ch-name">Meta Ads</div><div class="ch-value" style="color:var(--blue)">${fmt(Math.round(metaSpendFeb))}€</div><div class="ch-sub">Spend Feb | ROAS ${metaSpendFeb>0?(metaUmsatzFeb/metaSpendFeb).toFixed(2):'–'}</div><div style="margin-top:8px"><span style="font-size:20px;font-weight:700;color:var(--green)">${fmt(Math.round(metaUmsatzFeb))}€</span> <span style="font-size:11px;color:var(--muted)">Umsatz</span></div></div>
+        <div class="card channel-card" style="border-top:3px solid var(--red)"><div class="ch-name">Google Ads</div><div class="ch-value" style="color:var(--red)">0€</div><div class="ch-sub">⚠ Seit 26.01. kein Spend!</div><div style="margin-top:8px"><span style="font-size:20px;font-weight:700;color:var(--muted)">0€</span> <span style="font-size:11px;color:var(--muted)">Umsatz</span></div></div>
+        <div class="card channel-card" style="border-top:3px solid var(--purple)"><div class="ch-name">Email Marketing</div><div class="ch-value" style="color:var(--purple)">${fmt(Math.round(emailUmsatzFeb))}€</div><div class="ch-sub">Umsatz Feb (attributed)</div><div style="margin-top:8px"><span style="font-size:20px;font-weight:700;color:var(--green)">${emailSubsFeb>0?'+':''}${fmt(emailSubsFeb)}</span> <span style="font-size:11px;color:var(--muted)">Netto-Subscriber</span></div></div>
+        <div class="card channel-card" style="border-top:3px solid var(--muted)"><div class="ch-name">Bing Ads</div><div class="ch-value" style="color:var(--muted)">0€</div><div class="ch-sub">Seit 26.01. kein Spend</div><div style="margin-top:8px"><span style="font-size:11px;color:var(--muted)">Kanal pausiert</span></div></div>`;
+
+    // ===== Meta ROAS =====
+    destroyChart('metaroas');
+    const mSpend = magg.data.map(g => sum(g,'spend'));
+    const mConv = magg.data.map(g => sum(g,'conv_value'));
+    const mRoas = magg.data.map(g => { const s=sum(g,'spend'); return s>0 ? sum(g,'conv_value')/s : 0; });
+    charts.metaroas = new Chart(document.getElementById('metaRoasChart'), {
+        type: 'bar', data: { labels: magg.labels, datasets: [
+            { label:'Spend', data:mSpend, backgroundColor:'rgba(59,130,246,0.4)', borderRadius:3, yAxisID:'y' },
+            { label:'ROAS', data:mRoas, type:'line', borderColor:'#22c55e', pointRadius: isDaily?3:5, pointBackgroundColor:mRoas.map(v=>v>=3?'#22c55e':v>=2?'#eab308':'#ef4444'), yAxisID:'y1', tension:0.3 }
+        ]},
+        options: { responsive:true, maintainAspectRatio:false, scales:{y:{ticks:{callback:v=>v+'€'}},y1:{position:'right',min:0,max:7,ticks:{callback:v=>v.toFixed(1)+'x'},grid:{display:false}},x:{grid:{display:false}}}, plugins:{legend:{position:'top',labels:{usePointStyle:true,pointStyleWidth:12}}} }
+    });
+
+    // ===== Meta Cost =====
+    destroyChart('metacost');
+    const mCpc = magg.data.map(g => { const s=sum(g,'spend'); const c=sum(g,'clicks'); return c>0?s/c:0; });
+    const mCpm = magg.data.map(g => { const s=sum(g,'spend'); const i=sum(g,'impressions'); return i>0?(s/i)*1000:0; });
+    charts.metacost = new Chart(document.getElementById('metaCostChart'), {
+        type: 'line', data: { labels: magg.labels, datasets: [
+            { label:'CPC', data:mCpc, borderColor:'#f97316', tension:0.3, pointRadius: isDaily?2:5, yAxisID:'y' },
+            { label:'CPM', data:mCpm, borderColor:'#a855f7', tension:0.3, pointRadius: isDaily?2:5, yAxisID:'y1' }
+        ]},
+        options: { responsive:true, maintainAspectRatio:false, scales:{y:{ticks:{callback:v=>v.toFixed(2)+'€'},title:{display:true,text:'CPC',color:'#f97316'}},y1:{position:'right',ticks:{callback:v=>v.toFixed(1)+'€'},grid:{display:false},title:{display:true,text:'CPM',color:'#a855f7'}},x:{grid:{display:false}}}, plugins:{legend:{position:'top',labels:{usePointStyle:true,pointStyleWidth:12}}} }
+    });
+
+    // ===== Spend Chart =====
+    destroyChart('spend');
+    charts.spend = new Chart(document.getElementById('spendChart'), {
+        type: 'bar', data: { labels: agg.labels, datasets: [
+            { label:'Meta', data: agg.data.map(g => sum(g,'meta_spend')), backgroundColor:'rgba(59,130,246,0.7)', borderRadius:2 },
+            { label:'Google', data: agg.data.map(g => sum(g,'google_spend')), backgroundColor:'rgba(239,68,68,0.7)', borderRadius:2 },
+            { label:'Bing', data: agg.data.map(g => sum(g,'bing_spend')), backgroundColor:'rgba(139,139,158,0.7)', borderRadius:2 }
+        ]},
+        options: { responsive:true, maintainAspectRatio:false, scales:{x:{stacked:true,grid:{display:false}},y:{stacked:true,ticks:{callback:v=>v+'€'}}}, plugins:{legend:{position:'top',labels:{usePointStyle:true,pointStyleWidth:12}}} }
+    });
+
+    // ===== Detail Table =====
+    const modeNames = { daily:'Tages-Detail', weekly:'Wochen-Übersicht', monthly:'Monats-Übersicht' };
+    document.getElementById('tableTitle').textContent = modeNames[currentMode];
+    const thead = document.getElementById('tableHead');
+    const tbody = document.getElementById('tableBody');
+    thead.innerHTML = `<tr><th>${isDaily?'Datum':currentMode==='weekly'?'KW':'Monat'}</th><th class="num">Umsatz</th><th class="num">Bestell.</th><th class="num">Ø AOV</th><th class="num">Ø CR</th><th class="num">Meta €</th><th class="num">Google €</th><th class="num">Email €</th><th class="num">Meta ROAS</th></tr>`;
+    tbody.innerHTML = '';
+    agg.data.forEach((g, i) => {
+        const u = sum(g,'umsatz'), b = sum(g,'bestellungen'), a = avg(g,'aov'), c = avg(g,'cr');
+        const ms = sum(g,'meta_spend'), mu = sum(g,'meta_umsatz'), gs = sum(g,'google_spend'), eu = sum(g,'email_umsatz');
+        const mr = ms > 0 ? (mu/ms).toFixed(2) : '–';
+        const ac = a >= 49.15 ? 'var(--green)' : a >= 45 ? 'var(--yellow)' : 'var(--red)';
+        const tr = document.createElement('tr');
+        tr.innerHTML = `<td><strong>${agg.labels[i]}</strong></td><td class="num">${fmt(Math.round(u))}€</td><td class="num">${fmt(b)}</td><td class="num" style="color:${ac};font-weight:600">${fmt2(a)}€</td><td class="num">${c!==null?fmt2(c)+'%':'<span style="color:var(--muted)">n/a</span>'}</td><td class="num">${ms>0?fmt(Math.round(ms))+'€':'<span style="color:var(--red)">0</span>'}</td><td class="num">${gs>0?fmt(Math.round(gs))+'€':'<span style="color:var(--red)">0</span>'}</td><td class="num">${eu>0?fmt(Math.round(eu))+'€':'–'}</td><td class="num">${mr}</td>`;
+        tbody.appendChild(tr);
+    });
+
+    // Total row
+    const totU = sum(raw,'umsatz'), totB = sum(raw,'bestellungen'), totA = avg(raw,'aov');
+    const totMs = sum(raw,'meta_spend'), totMu = sum(raw,'meta_umsatz'), totGs = sum(raw,'google_spend'), totEu = sum(raw,'email_umsatz');
+    const totMr = totMs>0?(totMu/totMs).toFixed(2):'–';
+    const totTr = document.createElement('tr');
+    totTr.style = 'font-weight:700;border-top:2px solid var(--accent)';
+    totTr.innerHTML = `<td>GESAMT</td><td class="num" style="color:var(--accent)">${fmt(Math.round(totU))}€</td><td class="num">${fmt(totB)}</td><td class="num">${fmt2(totA)}€</td><td class="num">–</td><td class="num">${fmt(Math.round(totMs))}€</td><td class="num">${fmt(Math.round(totGs))}€</td><td class="num">${fmt(Math.round(totEu))}€</td><td class="num">${totMr}</td>`;
+    tbody.appendChild(totTr);
+}
+
+// Initial render
+renderAll();
 </script>
 </body>
 </html>
