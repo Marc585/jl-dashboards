@@ -106,6 +106,28 @@
         .kategorie-trend { width: 30px; text-align: center; font-size: 16px; flex-shrink: 0; }
         .kategorie-note { font-size: 12px; color: var(--muted); text-align: center; margin-top: 12px; padding: 12px; background: rgba(99,102,241,0.08); border-radius: 8px; }
 
+        /* ===== Umsatzübersicht ===== */
+        .rev-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-bottom: 16px; }
+        .rev-card { position: relative; overflow: hidden; }
+        .rev-card .rev-label { font-size: 12px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px; color: var(--muted); margin-bottom: 8px; }
+        .rev-card .rev-total { font-size: 28px; font-weight: 800; margin-bottom: 4px; }
+        .rev-card .rev-plan { font-size: 13px; color: var(--muted); margin-bottom: 10px; }
+        .rev-card .rev-bar { height: 6px; background: rgba(255,255,255,0.06); border-radius: 3px; overflow: hidden; margin-bottom: 8px; }
+        .rev-card .rev-fill { height: 100%; border-radius: 3px; }
+        .rev-card .rev-detail { font-size: 12px; color: var(--muted); }
+
+        /* Amazon Länder Tabelle */
+        .country-table { width: 100%; border-collapse: collapse; font-size: 13px; }
+        .country-table th { text-align: left; font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px; color: var(--muted); padding: 8px 12px; border-bottom: 1px solid var(--border); }
+        .country-table th.num { text-align: right; }
+        .country-table td { padding: 10px 12px; border-bottom: 1px solid var(--border); }
+        .country-table td.num { text-align: right; font-variant-numeric: tabular-nums; }
+        .country-table tr:last-child td { border-bottom: none; }
+        .country-table .total-row { font-weight: 700; border-top: 2px solid var(--accent); }
+        .country-table .total-row td { border-bottom: none; padding-top: 12px; }
+        .country-flag { font-size: 16px; margin-right: 6px; }
+        .pct-badge { display: inline-block; padding: 1px 6px; border-radius: 4px; font-size: 11px; font-weight: 600; }
+
         /* ===== Quick Links ===== */
         .quick-links { display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px; }
         .quick-link { display: block; text-decoration: none; padding: 20px; text-align: center; border-radius: 12px; background: var(--card); border: 1px solid var(--border); transition: all 0.2s; }
@@ -136,6 +158,14 @@
 <!-- ===== SECTION 1: QUARTALSZIELE ===== -->
 <div class="section-title">Quartalsziele Q1 – Status</div>
 <div class="grid-3" id="kpiGrid"></div>
+
+<!-- ===== SECTION: UMSATZÜBERSICHT ===== -->
+<div class="section-title">Umsatzübersicht – Plan vs. Ist</div>
+<div class="rev-grid" id="revGrid"></div>
+
+<!-- ===== SECTION: AMAZON LÄNDER ===== -->
+<div class="section-title">Amazon J&L – Umsatz nach Land</div>
+<div class="card" style="padding: 16px 20px; overflow-x: auto;" id="countryCard"></div>
 
 <!-- ===== SECTION 2: 9 STEINE ===== -->
 <div class="section-title">Die 9 Steine – Accountability Tracker</div>
@@ -258,6 +288,40 @@ const projekte = [
     { name: "CRO Popup-Optimierung", icon: "&#127919;", beschreibung: "Datengetriebene A/B-Tests für Conversion-Optimierung im Webshop. KI-gestützte Analyse und Empfehlungen.", einsparung: "+0,2% CR (Ziel)", impact_detail: "Webshop Performance", status: "in_development", statusLabel: "In Arbeit" }
 ];
 
+// --- Umsatzübersicht ---
+// Webshop YTD: Summe aller Tagesumsätze aus Jessis Reporting (01.01.-12.02.2026)
+const umsatz = {
+    webshop: {
+        label: "Webshop J&L",
+        ist: 460337, // YTD Summe aus 43 Tagen Jessis Reporting
+        plan: null,  // Kein explizites Umsatzziel für Webshop Q1 definiert
+        zeitraum: "YTD (01.01.–12.02.)",
+        detail: "43 Tage | Ø 10.745€/Tag | 10.043 Bestellungen",
+        color: "var(--green)"
+    },
+    amazon: {
+        label: "Amazon J&L (alle Märkte)",
+        ist: null,   // Aktuelle Verkaufsdaten fehlen in Budget Files
+        plan: 2147000, // Q1 Prognose
+        zeitraum: "Q1 Plan: 2,15 Mio €",
+        detail: "8 Märkte | Ist-Daten ausstehend (Budget Files unvollständig)",
+        color: "var(--accent)"
+    }
+};
+
+// --- Amazon Länder ---
+// Budget Q1 2026 (Plan) + 2025 Referenz-ROAS
+const amazonLaender = [
+    { flag: "&#127465;&#127466;", name: "Deutschland", budgetQ1: 60500, istQ1: null, roas2025: null, budgetJahr: 320000, status: "active" },
+    { flag: "&#127468;&#127463;", name: "UK", budgetQ1: 20000, istQ1: null, roas2025: 1.26, budgetJahr: 100000, status: "growth" },
+    { flag: "&#127466;&#127480;", name: "Spanien", budgetQ1: 9360, istQ1: null, roas2025: 4.41, budgetJahr: 46800, status: "active" },
+    { flag: "&#127467;&#127479;", name: "Frankreich", budgetQ1: 7600, istQ1: null, roas2025: 2.97, budgetJahr: 39800, status: "active" },
+    { flag: "&#127470;&#127481;", name: "Italien", budgetQ1: 10080, istQ1: null, roas2025: 3.84, budgetJahr: 50400, status: "active" },
+    { flag: "&#127475;&#127473;", name: "Niederlande", budgetQ1: 1200, istQ1: null, roas2025: 9.98, budgetJahr: 5000, status: "active" },
+    { flag: "&#127480;&#127466;", name: "Schweden", budgetQ1: 14325, istQ1: null, roas2025: null, budgetJahr: 57300, status: "new" },
+    { flag: "&#127482;&#127480;", name: "USA", budgetQ1: null, istQ1: null, roas2025: null, budgetJahr: null, status: "launch" }
+];
+
 // --- Artikelgruppen (Platzhalter für Power BI Daten) ---
 const kategorien = [
     { name: "Haare", umsatz: null, anteil: 35, trend: "stable", color: "var(--blue)" },
@@ -301,6 +365,77 @@ function renderKPIs() {
             <div class="kpi-context">&#9881; <strong>${k.massnahme}</strong></div>
         </div>`;
     }).join('');
+}
+
+// --- Umsatzübersicht ---
+function renderUmsatz() {
+    const grid = document.getElementById('revGrid');
+    const items = [umsatz.webshop, umsatz.amazon];
+    grid.innerHTML = items.map(u => {
+        const istStr = u.ist ? (u.ist >= 1000000 ? fmt2(u.ist/1000000) + ' Mio €' : fmt(Math.round(u.ist)) + '€') : '<span style="color:var(--muted)">ausstehend</span>';
+        const planStr = u.plan ? (u.plan >= 1000000 ? fmt2(u.plan/1000000) + ' Mio €' : fmt(Math.round(u.plan)) + '€') : 'kein Ziel definiert';
+        const pct = u.ist && u.plan ? Math.round((u.ist / u.plan) * 100) : null;
+        const fillWidth = pct ? Math.min(pct, 100) : (u.ist ? 50 : 10);
+        const fillColor = pct ? (pct >= 90 ? 'var(--green)' : pct >= 70 ? 'var(--yellow)' : 'var(--orange)') : u.color;
+        return `<div class="card rev-card">
+            <div class="rev-label">${u.label}</div>
+            <div class="rev-total" style="color:${u.color}">${istStr}</div>
+            <div class="rev-plan">Plan: ${planStr}${pct ? ' <span class="pct-badge" style="background:rgba(255,255,255,0.06);color:'+fillColor+'">'+pct+'%</span>' : ''}</div>
+            <div class="rev-bar"><div class="rev-fill" style="width:${fillWidth}%; background:${fillColor};"></div></div>
+            <div class="rev-detail">${u.zeitraum} | ${u.detail}</div>
+        </div>`;
+    }).join('');
+}
+
+// --- Amazon Länder ---
+function renderCountries() {
+    const card = document.getElementById('countryCard');
+    const statusLabels = { active: '', growth: 'Wachstum', new: 'Neu', launch: 'Launch Q1' };
+    const statusClasses = { active: '', growth: 'badge-blue', new: 'badge-purple', launch: 'badge-yellow' };
+
+    let rows = amazonLaender.map(l => {
+        const budgetStr = l.budgetQ1 ? fmt(Math.round(l.budgetQ1)) + '€' : '<span style="color:var(--muted)">TBD</span>';
+        const istStr = l.istQ1 ? fmt(Math.round(l.istQ1)) + '€' : '<span style="color:var(--muted)">–</span>';
+        const roasStr = l.roas2025 ? fmt2(l.roas2025) : '<span style="color:var(--muted)">–</span>';
+        const roasColor = l.roas2025 ? (l.roas2025 >= 3 ? 'var(--green)' : l.roas2025 >= 1.5 ? 'var(--yellow)' : 'var(--red)') : 'var(--muted)';
+        const budgetJahrStr = l.budgetJahr ? fmt(Math.round(l.budgetJahr)) + '€' : '<span style="color:var(--muted)">TBD</span>';
+        const statusTag = statusLabels[l.status] ? ` <span class="badge ${statusClasses[l.status]}">${statusLabels[l.status]}</span>` : '';
+
+        return `<tr>
+            <td><span class="country-flag">${l.flag}</span>${l.name}${statusTag}</td>
+            <td class="num">${budgetStr}</td>
+            <td class="num">${istStr}</td>
+            <td class="num" style="color:${roasColor};font-weight:600">${roasStr}</td>
+            <td class="num">${budgetJahrStr}</td>
+        </tr>`;
+    }).join('');
+
+    // Totals
+    const totalBudgetQ1 = amazonLaender.reduce((s,l) => s + (l.budgetQ1 || 0), 0);
+    const totalBudgetJahr = amazonLaender.reduce((s,l) => s + (l.budgetJahr || 0), 0);
+
+    card.innerHTML = `<table class="country-table">
+        <thead><tr>
+            <th>Land</th>
+            <th class="num">Budget Q1</th>
+            <th class="num">Umsatz Q1 (Ist)</th>
+            <th class="num">ROAS 2025</th>
+            <th class="num">Budget 2026</th>
+        </tr></thead>
+        <tbody>
+            ${rows}
+            <tr class="total-row">
+                <td>GESAMT</td>
+                <td class="num" style="color:var(--accent)">${fmt(Math.round(totalBudgetQ1))}€</td>
+                <td class="num" style="color:var(--muted)">ausstehend</td>
+                <td class="num">–</td>
+                <td class="num" style="color:var(--accent)">${fmt(Math.round(totalBudgetJahr))}€</td>
+            </tr>
+        </tbody>
+    </table>
+    <div style="font-size:11px;color:var(--muted);margin-top:12px;padding:8px 12px;background:rgba(99,102,241,0.06);border-radius:6px;">
+        &#9432; Ist-Umsätze pro Land werden aktuell noch nicht in den Budget-Files erfasst. Nächster Schritt: Sales-Tracking in allen Länderdateien aktivieren.
+    </div>`;
 }
 
 // --- Section 2: 9 Steine ---
@@ -424,6 +559,8 @@ function renderKategorien() {
 
 // --- Render All ---
 renderKPIs();
+renderUmsatz();
+renderCountries();
 renderSteine();
 renderFuckups();
 renderRoadmap();
