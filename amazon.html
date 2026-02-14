@@ -5,28 +5,29 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Amazon J&L - Dashboard Q1 2026</title>
     <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
     <style>
         :root {
-            --bg: #0f1117;
-            --card: #1a1d27;
-            --border: #2a2d3a;
-            --text: #e4e4e7;
-            --muted: #8b8b9e;
-            --accent: #6366f1;
-            --green: #22c55e;
-            --yellow: #eab308;
-            --red: #ef4444;
-            --blue: #3b82f6;
-            --purple: #a855f7;
-            --orange: #f97316;
-            --cyan: #06b6d4;
-            --pink: #ec4899;
+            --bg: #f2ece7;
+            --card: #ffffff;
+            --border: #e6dcce;
+            --text: #221e1b;
+            --muted: #8b8577;
+            --accent: #3f5a3f;
+            --green: #4a7c59;
+            --yellow: #ba6a49;
+            --red: #e52427;
+            --blue: #3f5a3f;
+            --purple: #ed98df;
+            --orange: #ba6a49;
+            --cyan: #647c64;
+            --pink: #ed98df;
         }
 
         * { margin: 0; padding: 0; box-sizing: border-box; }
 
         body {
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif;
+            font-family: 'Poppins', -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif;
             background: var(--bg);
             color: var(--text);
             line-height: 1.6;
@@ -45,7 +46,7 @@
         .header h1 {
             font-size: 28px;
             font-weight: 700;
-            background: linear-gradient(135deg, var(--accent), var(--purple));
+            background: linear-gradient(135deg, #3f5a3f, #647c64);
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
         }
@@ -71,6 +72,7 @@
             border: 1px solid var(--border);
             border-radius: 12px;
             padding: 20px;
+            box-shadow: 0 2px 12px rgba(34,28,22,0.04);
         }
 
         .card-header {
@@ -95,10 +97,10 @@
             font-weight: 600;
         }
 
-        .badge-green { background: rgba(34,197,94,0.15); color: var(--green); }
-        .badge-yellow { background: rgba(234,179,8,0.15); color: var(--yellow); }
-        .badge-red { background: rgba(239,68,68,0.15); color: var(--red); }
-        .badge-blue { background: rgba(59,130,246,0.15); color: var(--blue); }
+        .badge-green { background: rgba(74,124,89,0.15); color: var(--green); }
+        .badge-yellow { background: rgba(186,106,73,0.15); color: var(--yellow); }
+        .badge-red { background: rgba(229,36,39,0.15); color: var(--red); }
+        .badge-blue { background: rgba(63,90,63,0.15); color: var(--blue); }
 
         /* KPI Cards */
         .kpi { text-align: center; }
@@ -110,8 +112,8 @@
 
         /* Total Banner */
         .total-banner {
-            background: linear-gradient(135deg, rgba(99,102,241,0.15), rgba(168,85,247,0.15));
-            border: 1px solid rgba(99,102,241,0.3);
+            background: linear-gradient(135deg, rgba(63,90,63,0.15), rgba(100,124,100,0.15));
+            border: 1px solid rgba(63,90,63,0.3);
             border-radius: 16px;
             padding: 28px;
             text-align: center;
@@ -157,7 +159,7 @@
             border-bottom: 1px solid var(--border);
         }
 
-        tr:hover td { background: rgba(99,102,241,0.05); }
+        tr:hover td { background: rgba(63,90,63,0.04); }
 
         .num { text-align: right; font-variant-numeric: tabular-nums; }
 
@@ -243,8 +245,8 @@
 
         /* Warning Box */
         .warning {
-            background: rgba(234,179,8,0.1);
-            border: 1px solid rgba(234,179,8,0.3);
+            background: rgba(186,106,73,0.1);
+            border: 1px solid rgba(186,106,73,0.3);
             border-radius: 10px;
             padding: 16px 20px;
             margin-bottom: 20px;
@@ -666,10 +668,10 @@
                     <tr><td>April</td><td class="num">21.000</td><td class="num">8.000</td><td class="num">2.700</td><td class="num">3.700</td><td class="num">3.800</td><td class="num">400</td><td class="num">4.775</td><td class="num highlight">44.375</td></tr>
                     <tr><td>Mai</td><td class="num">22.000</td><td class="num">9.000</td><td class="num">2.900</td><td class="num">3.800</td><td class="num">5.000</td><td class="num">400</td><td class="num">4.775</td><td class="num highlight">47.875</td></tr>
                     <tr><td>Juni</td><td class="num">22.500</td><td class="num">8.000</td><td class="num">3.100</td><td class="num">4.200</td><td class="num">3.800</td><td class="num">400</td><td class="num">4.775</td><td class="num highlight">46.775</td></tr>
-                    <tr style="background: rgba(99,102,241,0.05)"><td><strong>Juli (Prime Day)</strong></td><td class="num"><strong>27.000</strong></td><td class="num"><strong>10.000</strong></td><td class="num">3.600</td><td class="num">3.360</td><td class="num">4.080</td><td class="num">400</td><td class="num">4.775</td><td class="num highlight"><strong>53.215</strong></td></tr>
+                    <tr style="background: rgba(63,90,63,0.04)"><td><strong>Juli (Prime Day)</strong></td><td class="num"><strong>27.000</strong></td><td class="num"><strong>10.000</strong></td><td class="num">3.600</td><td class="num">3.360</td><td class="num">4.080</td><td class="num">400</td><td class="num">4.775</td><td class="num highlight"><strong>53.215</strong></td></tr>
                     <tr><td>August</td><td class="num">18.000</td><td class="num">4.000</td><td class="num">2.600</td><td class="num">3.000</td><td class="num">2.000</td><td class="num">400</td><td class="num">4.775</td><td class="num highlight">34.775</td></tr>
                     <tr><td>September</td><td class="num">19.500</td><td class="num">6.000</td><td class="num">2.400</td><td class="num">3.000</td><td class="num">4.000</td><td class="num">400</td><td class="num">4.775</td><td class="num highlight">40.075</td></tr>
-                    <tr style="background: rgba(99,102,241,0.05)"><td><strong>Oktober (Prime Day 2)</strong></td><td class="num"><strong>33.500</strong></td><td class="num"><strong>12.000</strong></td><td class="num">4.400</td><td class="num">4.100</td><td class="num">5.640</td><td class="num">500</td><td class="num">4.775</td><td class="num highlight"><strong>64.915</strong></td></tr>
+                    <tr style="background: rgba(63,90,63,0.04)"><td><strong>Oktober (Prime Day 2)</strong></td><td class="num"><strong>33.500</strong></td><td class="num"><strong>12.000</strong></td><td class="num">4.400</td><td class="num">4.100</td><td class="num">5.640</td><td class="num">500</td><td class="num">4.775</td><td class="num highlight"><strong>64.915</strong></td></tr>
                     <tr style="background: rgba(239,68,68,0.05)"><td><strong>November (Black Friday)</strong></td><td class="num"><strong>55.000</strong></td><td class="num"><strong>14.000</strong></td><td class="num"><strong>5.500</strong></td><td class="num"><strong>7.280</strong></td><td class="num"><strong>6.500</strong></td><td class="num">500</td><td class="num">4.775</td><td class="num highlight"><strong>93.555</strong></td></tr>
                     <tr><td>Dezember</td><td class="num">41.000</td><td class="num">9.000</td><td class="num">5.000</td><td class="num">5.000</td><td class="num">5.500</td><td class="num">400</td><td class="num">4.775</td><td class="num highlight">70.675</td></tr>
                     <tr style="font-weight: 700; border-top: 2px solid var(--accent);">
@@ -761,16 +763,22 @@
     <script>
         // Color palette
         const colors = {
-            de: '#6366f1', uk: '#3b82f6', fr: '#06b6d4', es: '#f97316',
-            it: '#22c55e', nl: '#a855f7', se: '#ec4899', usa: '#eab308'
+            de: '#3f5a3f',   // Salbeigrün (Hauptmarkt)
+            uk: '#647c64',   // Helles Salbei
+            fr: '#ba6a49',   // Terrakotta
+            es: '#d4956b',   // Helles Terrakotta
+            it: '#ed98df',   // Lavendel-Pink
+            nl: '#8b8577',   // Warmgrau
+            se: '#c8a992',   // Sand
+            usa: '#221e1b'   // Dunkelbraun
         };
 
         const months = ['Jan', 'Feb', 'Mär', 'Apr', 'Mai', 'Jun', 'Jul', 'Aug', 'Sep', 'Okt', 'Nov', 'Dez'];
 
         // Chart defaults
-        Chart.defaults.color = '#8b8b9e';
-        Chart.defaults.borderColor = '#2a2d3a';
-        Chart.defaults.font.family = '-apple-system, BlinkMacSystemFont, system-ui, sans-serif';
+        Chart.defaults.color = '#8b8577';
+        Chart.defaults.borderColor = '#e6dcce';
+        Chart.defaults.font.family = "'Poppins', sans-serif";
 
         // 1. Budget Pie Chart
         new Chart(document.getElementById('budgetPieChart'), {
@@ -809,7 +817,7 @@
                 labels: months,
                 datasets: [
                     { label: 'Deutschland', data: deBudget, backgroundColor: colors.de, borderRadius: 4 },
-                    { label: 'Rest EU + UK', data: restBudget, backgroundColor: '#4b5563', borderRadius: 4 }
+                    { label: 'Rest EU + UK', data: restBudget, backgroundColor: '#8b8577', borderRadius: 4 }
                 ]
             },
             options: {
@@ -833,8 +841,8 @@
             data: {
                 labels: months,
                 datasets: [
-                    { label: 'Budget 2026', data: deBudget, backgroundColor: 'rgba(99,102,241,0.7)', borderRadius: 4 },
-                    { label: 'Spend 2025 (Referenz)', data: deSpend2025, backgroundColor: 'rgba(99,102,241,0.25)', borderRadius: 4, borderWidth: 1, borderColor: 'rgba(99,102,241,0.5)', borderDash: [4,4] }
+                    { label: 'Budget 2026', data: deBudget, backgroundColor: 'rgba(63,90,63,0.7)', borderRadius: 4 },
+                    { label: 'Spend 2025 (Referenz)', data: deSpend2025, backgroundColor: 'rgba(63,90,63,0.25)', borderRadius: 4, borderWidth: 1, borderColor: 'rgba(63,90,63,0.5)', borderDash: [4,4] }
                 ]
             },
             options: {
@@ -860,7 +868,7 @@
             data: {
                 labels: months,
                 datasets: [
-                    { label: 'Spend', data: ukSpend2025, backgroundColor: 'rgba(59,130,246,0.5)', borderRadius: 4, yAxisID: 'y' },
+                    { label: 'Spend', data: ukSpend2025, backgroundColor: 'rgba(100,124,100,0.5)', borderRadius: 4, yAxisID: 'y' },
                     { label: 'ROAS', data: ukRoas2025, type: 'line', borderColor: colors.uk, backgroundColor: 'transparent', tension: 0.3, pointRadius: 5, pointBackgroundColor: colors.uk, yAxisID: 'y1' }
                 ]
             },
@@ -868,7 +876,7 @@
                 responsive: true,
                 maintainAspectRatio: false,
                 scales: {
-                    y: { ticks: { callback: v => (v/1000) + 'k€' }, grid: { color: '#2a2d3a' }},
+                    y: { ticks: { callback: v => (v/1000) + 'k€' }, grid: { color: '#e6dcce' }},
                     y1: { position: 'right', min: 0, max: 3, ticks: { callback: v => v.toFixed(1) + 'x' }, grid: { display: false }},
                     x: { grid: { display: false }}
                 },

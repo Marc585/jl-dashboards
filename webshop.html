@@ -5,19 +5,20 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>J&L Webshop Dashboard 2026</title>
     <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
     <style>
         :root {
-            --bg: #0f1117; --card: #1a1d27; --border: #2a2d3a;
-            --text: #e4e4e7; --muted: #8b8b9e;
-            --accent: #6366f1; --green: #22c55e; --yellow: #eab308;
-            --red: #ef4444; --blue: #3b82f6; --purple: #a855f7;
-            --orange: #f97316; --cyan: #06b6d4; --pink: #ec4899;
+            --bg: #f2ece7; --card: #ffffff; --border: #e6dcce;
+            --text: #221e1b; --muted: #8b8577;
+            --accent: #3f5a3f; --green: #4a7c59; --yellow: #ba6a49;
+            --red: #e52427; --blue: #3f5a3f; --purple: #ed98df;
+            --orange: #ba6a49; --cyan: #647c64; --pink: #ed98df;
         }
         * { margin: 0; padding: 0; box-sizing: border-box; }
-        body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif; background: var(--bg); color: var(--text); line-height: 1.6; padding: 24px; }
+        body { font-family: 'Poppins', -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif; background: var(--bg); color: var(--text); line-height: 1.6; padding: 24px; }
 
         .header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 24px; padding-bottom: 20px; border-bottom: 1px solid var(--border); }
-        .header h1 { font-size: 28px; font-weight: 700; background: linear-gradient(135deg, var(--green), var(--cyan)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+        .header h1 { font-size: 28px; font-weight: 700; background: linear-gradient(135deg, #3f5a3f, #647c64); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
         .header .meta { color: var(--muted); font-size: 14px; text-align: right; }
         .header .meta strong { color: var(--text); }
 
@@ -29,8 +30,8 @@
             font-size: 13px; font-weight: 600; color: var(--muted); background: transparent;
             transition: all 0.2s; font-family: inherit; white-space: nowrap;
         }
-        .toggle-btn:hover { color: var(--text); background: rgba(99,102,241,0.1); }
-        .toggle-btn.active { background: var(--accent); color: white; box-shadow: 0 2px 8px rgba(99,102,241,0.3); }
+        .toggle-btn:hover { color: var(--text); background: rgba(63,90,63,0.1); }
+        .toggle-btn.active { background: var(--accent); color: white; box-shadow: 0 2px 8px rgba(63,90,63,0.25); }
 
         .grid { display: grid; gap: 20px; margin-bottom: 24px; }
         .grid-4 { grid-template-columns: repeat(4, 1fr); }
@@ -38,14 +39,14 @@
         .grid-2 { grid-template-columns: repeat(2, 1fr); }
         .grid-5 { grid-template-columns: repeat(5, 1fr); }
 
-        .card { background: var(--card); border: 1px solid var(--border); border-radius: 12px; padding: 20px; }
+        .card { background: var(--card); border: 1px solid var(--border); border-radius: 12px; padding: 20px; box-shadow: 0 2px 12px rgba(34,28,22,0.04); }
         .card-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px; }
         .card-header h3 { font-size: 14px; font-weight: 600; color: var(--muted); text-transform: uppercase; letter-spacing: 0.5px; }
         .badge { font-size: 11px; padding: 3px 10px; border-radius: 20px; font-weight: 600; }
-        .badge-green { background: rgba(34,197,94,0.15); color: var(--green); }
-        .badge-yellow { background: rgba(234,179,8,0.15); color: var(--yellow); }
-        .badge-red { background: rgba(239,68,68,0.15); color: var(--red); }
-        .badge-blue { background: rgba(59,130,246,0.15); color: var(--blue); }
+        .badge-green { background: rgba(74,124,89,0.15); color: var(--green); }
+        .badge-yellow { background: rgba(186,106,73,0.15); color: var(--yellow); }
+        .badge-red { background: rgba(228,36,39,0.15); color: var(--red); }
+        .badge-blue { background: rgba(63,90,63,0.15); color: var(--blue); }
 
         .kpi { text-align: center; padding: 24px 16px; }
         .kpi .label { font-size: 11px; color: var(--muted); text-transform: uppercase; letter-spacing: 1px; font-weight: 600; }
@@ -64,11 +65,11 @@
         table { width: 100%; border-collapse: collapse; font-size: 13px; }
         th { text-align: left; padding: 10px 12px; font-weight: 600; color: var(--muted); font-size: 11px; text-transform: uppercase; letter-spacing: 0.5px; border-bottom: 2px solid var(--border); }
         td { padding: 10px 12px; border-bottom: 1px solid var(--border); }
-        tr:hover td { background: rgba(34,197,94,0.03); }
+        tr:hover td { background: rgba(63,90,63,0.04); }
         .num { text-align: right; font-variant-numeric: tabular-nums; }
 
-        .warning { background: rgba(234,179,8,0.1); border: 1px solid rgba(234,179,8,0.3); border-radius: 10px; padding: 16px 20px; margin-bottom: 20px; display: flex; align-items: flex-start; gap: 12px; font-size: 13px; }
-        .alert-red { background: rgba(239,68,68,0.1); border: 1px solid rgba(239,68,68,0.3); }
+        .warning { background: rgba(186,106,73,0.1); border: 1px solid rgba(186,106,73,0.3); border-radius: 10px; padding: 16px 20px; margin-bottom: 20px; display: flex; align-items: flex-start; gap: 12px; font-size: 13px; }
+        .alert-red { background: rgba(228,36,39,0.1); border: 1px solid rgba(228,36,39,0.3); }
         .warning strong { color: var(--yellow); }
         .alert-red strong { color: var(--red); }
 
@@ -353,9 +354,9 @@ const fmt = v => v.toLocaleString('de-DE', {minimumFractionDigits:0, maximumFrac
 const fmt2 = v => v != null ? v.toLocaleString('de-DE', {minimumFractionDigits:2, maximumFractionDigits:2}) : '–';
 
 // ========== CHART DEFAULTS ==========
-Chart.defaults.color = '#8b8b9e';
-Chart.defaults.borderColor = '#2a2d3a';
-Chart.defaults.font.family = '-apple-system, BlinkMacSystemFont, system-ui, sans-serif';
+Chart.defaults.color = '#8b8577';
+Chart.defaults.borderColor = '#e6dcce';
+Chart.defaults.font.family = "'Poppins', -apple-system, BlinkMacSystemFont, system-ui, sans-serif";
 
 // ========== STATE ==========
 let currentMode = 'daily';
@@ -470,7 +471,7 @@ function renderAll() {
     destroyChart('rev');
     const revData = agg.data.map(g => sum(g, 'umsatz'));
     charts.rev = new Chart(document.getElementById('revenueChart'), {
-        type: 'bar', data: { labels: agg.labels, datasets: [{ label: 'Umsatz', data: revData, backgroundColor: 'rgba(34,197,94,0.5)', borderRadius: 4 }]},
+        type: 'bar', data: { labels: agg.labels, datasets: [{ label: 'Umsatz', data: revData, backgroundColor: 'rgba(63,90,63,0.6)', borderRadius: 4 }]},
         options: { responsive:true, maintainAspectRatio:false, scales:{y:{beginAtZero:true,ticks:{callback:v=>(v>=1000?(v/1000).toFixed(0)+'k':v)+'€'}},x:{grid:{display:false}}}, plugins:{legend:{display:false},tooltip:{callbacks:{label:c=>fmt2(c.parsed.y)+'€'}}} }
     });
 
@@ -480,8 +481,8 @@ function renderAll() {
     charts.aov = new Chart(document.getElementById('aovChart'), {
         type: isSingle ? 'bar' : 'line',
         data: { labels: agg.labels, datasets: [
-            { label: 'AOV', data: aovData, borderColor: '#f97316', backgroundColor: isSingle ? 'rgba(249,115,22,0.5)' : 'rgba(249,115,22,0.1)', fill:!isSingle, tension:0.3, pointRadius: pRadius, pointBackgroundColor: aovData.map(v => v>=49.15?'#22c55e':v>=45?'#eab308':'#ef4444'), borderRadius: isSingle ? 6 : 0 },
-            { label: 'Ziel (49,15€)', data: aovData.map(()=>49.15), borderColor:'rgba(239,68,68,0.5)', borderDash:[6,4], pointRadius:0, fill:false, type:'line' }
+            { label: 'AOV', data: aovData, borderColor: '#ba6a49', backgroundColor: isSingle ? 'rgba(186,106,73,0.5)' : 'rgba(186,106,73,0.1)', fill:!isSingle, tension:0.3, pointRadius: pRadius, pointBackgroundColor: aovData.map(v => v>=49.15?'#4a7c59':v>=45?'#ba6a49':'#e52427'), borderRadius: isSingle ? 6 : 0 },
+            { label: 'Ziel (49,15€)', data: aovData.map(()=>49.15), borderColor:'rgba(228,36,39,0.4)', borderDash:[6,4], pointRadius:0, fill:false, type:'line' }
         ]},
         options: { responsive:true, maintainAspectRatio:false, scales:{y:{min:35,max:55,ticks:{callback:v=>v+'€'}},x:{grid:{display:false}}}, plugins:{legend:{position:'top',labels:{usePointStyle:true,pointStyleWidth:12}}} }
     });
@@ -490,7 +491,7 @@ function renderAll() {
     destroyChart('orders');
     const ordData = agg.data.map(g => sum(g, 'bestellungen'));
     charts.orders = new Chart(document.getElementById('ordersChart'), {
-        type: 'bar', data: { labels: agg.labels, datasets: [{ label:'Bestellungen', data:ordData, backgroundColor:'rgba(59,130,246,0.5)', borderRadius:3 }]},
+        type: 'bar', data: { labels: agg.labels, datasets: [{ label:'Bestellungen', data:ordData, backgroundColor:'rgba(100,124,100,0.5)', borderRadius:3 }]},
         options: { responsive:true, maintainAspectRatio:false, scales:{y:{beginAtZero:true},x:{grid:{display:false}}}, plugins:{legend:{display:false}} }
     });
 
@@ -503,8 +504,8 @@ function renderAll() {
     charts.cr = new Chart(document.getElementById('crChart'), {
         type: isSingle ? 'bar' : 'line',
         data: { labels: crLabelsF, datasets: [
-            { label:'CR', data:crFiltered, borderColor:'#eab308', backgroundColor: isSingle ? 'rgba(234,179,8,0.5)' : 'rgba(234,179,8,0.1)', fill:!isSingle, tension:0.3, pointRadius: pRadius, borderRadius: isSingle ? 6 : 0 },
-            { label:'Ziel (2,81%)', data:crFiltered.map(()=>2.81), borderColor:'rgba(239,68,68,0.5)', borderDash:[6,4], pointRadius:0, type:'line' }
+            { label:'CR', data:crFiltered, borderColor:'#ba6a49', backgroundColor: isSingle ? 'rgba(186,106,73,0.5)' : 'rgba(186,106,73,0.1)', fill:!isSingle, tension:0.3, pointRadius: pRadius, borderRadius: isSingle ? 6 : 0 },
+            { label:'Ziel (2,81%)', data:crFiltered.map(()=>2.81), borderColor:'rgba(228,36,39,0.4)', borderDash:[6,4], pointRadius:0, type:'line' }
         ]},
         options: { responsive:true, maintainAspectRatio:false, scales:{y:{ticks:{callback:v=>v+'%'}},x:{grid:{display:false}}}, plugins:{legend:{position:'top',labels:{usePointStyle:true,pointStyleWidth:12}}} }
     });
@@ -515,13 +516,13 @@ function renderAll() {
         type: isSingle ? 'doughnut' : 'bar',
         data: { labels: isSingle ? ['Shopkunden','Händler','Werksverkauf'] : agg.labels, datasets: isSingle ? [{
             data: [sum(raw,'shopkunden'), sum(raw,'haendler'), sum(raw,'werksverkauf')],
-            backgroundColor: ['rgba(34,197,94,0.6)','rgba(59,130,246,0.6)','rgba(168,85,247,0.6)']
+            backgroundColor: ['rgba(74,124,89,0.6)','rgba(63,90,63,0.6)','rgba(237,152,223,0.6)']
         }] : [
-            { label:'Shopkunden', data: agg.data.map(g => sum(g,'shopkunden')), backgroundColor:'rgba(34,197,94,0.6)', borderRadius:2 },
-            { label:'Händler', data: agg.data.map(g => sum(g,'haendler')), backgroundColor:'rgba(59,130,246,0.6)', borderRadius:2 },
-            { label:'Werksverkauf', data: agg.data.map(g => sum(g,'werksverkauf')), backgroundColor:'rgba(168,85,247,0.6)', borderRadius:2 }
+            { label:'Shopkunden', data: agg.data.map(g => sum(g,'shopkunden')), backgroundColor:'rgba(74,124,89,0.6)', borderRadius:2 },
+            { label:'Händler', data: agg.data.map(g => sum(g,'haendler')), backgroundColor:'rgba(63,90,63,0.6)', borderRadius:2 },
+            { label:'Werksverkauf', data: agg.data.map(g => sum(g,'werksverkauf')), backgroundColor:'rgba(237,152,223,0.6)', borderRadius:2 }
         ]},
-        options: isSingle ? { responsive:true, maintainAspectRatio:false, plugins:{legend:{position:'right',labels:{usePointStyle:true,pointStyleWidth:12,color:'#e4e4e7'}},tooltip:{callbacks:{label:c=>c.label+': '+fmt(Math.round(c.parsed))+'€'}}} }
+        options: isSingle ? { responsive:true, maintainAspectRatio:false, plugins:{legend:{position:'right',labels:{usePointStyle:true,pointStyleWidth:12,color:'#221e1b'}},tooltip:{callbacks:{label:c=>c.label+': '+fmt(Math.round(c.parsed))+'€'}}} }
         : { responsive:true, maintainAspectRatio:false, scales:{x:{stacked:true,grid:{display:false}},y:{stacked:true,ticks:{callback:v=>(v/1000).toFixed(0)+'k'}}}, plugins:{legend:{position:'top',labels:{usePointStyle:true,pointStyleWidth:12}}} }
     });
 
@@ -531,13 +532,13 @@ function renderAll() {
         type: isSingle ? 'doughnut' : 'bar',
         data: { labels: isSingle ? ['Meta','Google','Email'] : agg.labels, datasets: isSingle ? [{
             data: [sum(raw,'meta_umsatz'), sum(raw,'google_umsatz'), sum(raw,'email_umsatz')],
-            backgroundColor: ['rgba(59,130,246,0.6)','rgba(239,68,68,0.6)','rgba(168,85,247,0.6)']
+            backgroundColor: ['rgba(63,90,63,0.6)','rgba(186,106,73,0.6)','rgba(237,152,223,0.6)']
         }] : [
-            { label:'Meta', data: agg.data.map(g => sum(g,'meta_umsatz')), backgroundColor:'rgba(59,130,246,0.6)', borderRadius:2 },
-            { label:'Google', data: agg.data.map(g => sum(g,'google_umsatz')), backgroundColor:'rgba(239,68,68,0.6)', borderRadius:2 },
-            { label:'Email', data: agg.data.map(g => sum(g,'email_umsatz')), backgroundColor:'rgba(168,85,247,0.6)', borderRadius:2 }
+            { label:'Meta', data: agg.data.map(g => sum(g,'meta_umsatz')), backgroundColor:'rgba(63,90,63,0.6)', borderRadius:2 },
+            { label:'Google', data: agg.data.map(g => sum(g,'google_umsatz')), backgroundColor:'rgba(186,106,73,0.6)', borderRadius:2 },
+            { label:'Email', data: agg.data.map(g => sum(g,'email_umsatz')), backgroundColor:'rgba(237,152,223,0.6)', borderRadius:2 }
         ]},
-        options: isSingle ? { responsive:true, maintainAspectRatio:false, plugins:{legend:{position:'right',labels:{usePointStyle:true,pointStyleWidth:12,color:'#e4e4e7'}},tooltip:{callbacks:{label:c=>c.label+': '+fmt(Math.round(c.parsed))+'€'}}} }
+        options: isSingle ? { responsive:true, maintainAspectRatio:false, plugins:{legend:{position:'right',labels:{usePointStyle:true,pointStyleWidth:12,color:'#221e1b'}},tooltip:{callbacks:{label:c=>c.label+': '+fmt(Math.round(c.parsed))+'€'}}} }
         : { responsive:true, maintainAspectRatio:false, scales:{x:{stacked:true,grid:{display:false}},y:{stacked:true,ticks:{callback:v=>(v/1000).toFixed(0)+'k'}}}, plugins:{legend:{position:'top',labels:{usePointStyle:true,pointStyleWidth:12}}} }
     });
 
@@ -561,8 +562,8 @@ function renderAll() {
     const mRoas = magg.data.map(g => { const s=sum(g,'spend'); return s>0 ? sum(g,'conv_value')/s : 0; });
     charts.metaroas = new Chart(document.getElementById('metaRoasChart'), {
         type: 'bar', data: { labels: magg.labels, datasets: [
-            { label:'Spend', data:mSpend, backgroundColor:'rgba(59,130,246,0.4)', borderRadius:3, yAxisID:'y' },
-            { label:'ROAS', data:mRoas, type:'line', borderColor:'#22c55e', pointRadius: pRadius, pointBackgroundColor:mRoas.map(v=>v>=3?'#22c55e':v>=2?'#eab308':'#ef4444'), yAxisID:'y1', tension:0.3 }
+            { label:'Spend', data:mSpend, backgroundColor:'rgba(63,90,63,0.4)', borderRadius:3, yAxisID:'y' },
+            { label:'ROAS', data:mRoas, type:'line', borderColor:'#4a7c59', pointRadius: pRadius, pointBackgroundColor:mRoas.map(v=>v>=3?'#4a7c59':v>=2?'#ba6a49':'#e52427'), yAxisID:'y1', tension:0.3 }
         ]},
         options: { responsive:true, maintainAspectRatio:false, scales:{y:{beginAtZero:true,ticks:{callback:v=>v+'€'}},y1:{position:'right',min:0,max:isSingle?5:7,ticks:{callback:v=>v.toFixed(1)+'x'},grid:{display:false}},x:{grid:{display:false}}}, plugins:{legend:{position:'top',labels:{usePointStyle:true,pointStyleWidth:12}}} }
     });
@@ -574,10 +575,10 @@ function renderAll() {
     charts.metacost = new Chart(document.getElementById('metaCostChart'), {
         type: isSingle ? 'bar' : 'line',
         data: { labels: magg.labels, datasets: [
-            { label:'CPC', data:mCpc, borderColor:'#f97316', backgroundColor: isSingle?'rgba(249,115,22,0.5)':undefined, tension:0.3, pointRadius: pRadius, yAxisID:'y', borderRadius: isSingle?6:0 },
-            { label:'CPM', data:mCpm, borderColor:'#a855f7', backgroundColor: isSingle?'rgba(168,85,247,0.5)':undefined, tension:0.3, pointRadius: pRadius, yAxisID:'y1', borderRadius: isSingle?6:0 }
+            { label:'CPC', data:mCpc, borderColor:'#ba6a49', backgroundColor: isSingle?'rgba(186,106,73,0.5)':undefined, tension:0.3, pointRadius: pRadius, yAxisID:'y', borderRadius: isSingle?6:0 },
+            { label:'CPM', data:mCpm, borderColor:'#ed98df', backgroundColor: isSingle?'rgba(237,152,223,0.5)':undefined, tension:0.3, pointRadius: pRadius, yAxisID:'y1', borderRadius: isSingle?6:0 }
         ]},
-        options: { responsive:true, maintainAspectRatio:false, scales:{y:{ticks:{callback:v=>v.toFixed(2)+'€'},title:{display:true,text:'CPC',color:'#f97316'}},y1:{position:'right',ticks:{callback:v=>v.toFixed(1)+'€'},grid:{display:false},title:{display:true,text:'CPM',color:'#a855f7'}},x:{grid:{display:false}}}, plugins:{legend:{position:'top',labels:{usePointStyle:true,pointStyleWidth:12}}} }
+        options: { responsive:true, maintainAspectRatio:false, scales:{y:{ticks:{callback:v=>v.toFixed(2)+'€'},title:{display:true,text:'CPC',color:'#ba6a49'}},y1:{position:'right',ticks:{callback:v=>v.toFixed(1)+'€'},grid:{display:false},title:{display:true,text:'CPM',color:'#ed98df'}},x:{grid:{display:false}}}, plugins:{legend:{position:'top',labels:{usePointStyle:true,pointStyleWidth:12}}} }
     });
 
     // ===== Spend Chart =====
@@ -586,13 +587,13 @@ function renderAll() {
         type: isSingle ? 'doughnut' : 'bar',
         data: { labels: isSingle ? ['Meta','Google','Bing'] : agg.labels, datasets: isSingle ? [{
             data: [sum(raw,'meta_spend'), sum(raw,'google_spend'), sum(raw,'bing_spend')],
-            backgroundColor: ['rgba(59,130,246,0.7)','rgba(239,68,68,0.7)','rgba(139,139,158,0.7)']
+            backgroundColor: ['rgba(63,90,63,0.7)','rgba(186,106,73,0.7)','rgba(139,133,119,0.7)']
         }] : [
-            { label:'Meta', data: agg.data.map(g => sum(g,'meta_spend')), backgroundColor:'rgba(59,130,246,0.7)', borderRadius:2 },
-            { label:'Google', data: agg.data.map(g => sum(g,'google_spend')), backgroundColor:'rgba(239,68,68,0.7)', borderRadius:2 },
-            { label:'Bing', data: agg.data.map(g => sum(g,'bing_spend')), backgroundColor:'rgba(139,139,158,0.7)', borderRadius:2 }
+            { label:'Meta', data: agg.data.map(g => sum(g,'meta_spend')), backgroundColor:'rgba(63,90,63,0.7)', borderRadius:2 },
+            { label:'Google', data: agg.data.map(g => sum(g,'google_spend')), backgroundColor:'rgba(186,106,73,0.7)', borderRadius:2 },
+            { label:'Bing', data: agg.data.map(g => sum(g,'bing_spend')), backgroundColor:'rgba(139,133,119,0.7)', borderRadius:2 }
         ]},
-        options: isSingle ? { responsive:true, maintainAspectRatio:false, plugins:{legend:{position:'right',labels:{usePointStyle:true,pointStyleWidth:12,color:'#e4e4e7'}},tooltip:{callbacks:{label:c=>c.label+': '+fmt(Math.round(c.parsed))+'€'}}} }
+        options: isSingle ? { responsive:true, maintainAspectRatio:false, plugins:{legend:{position:'right',labels:{usePointStyle:true,pointStyleWidth:12,color:'#221e1b'}},tooltip:{callbacks:{label:c=>c.label+': '+fmt(Math.round(c.parsed))+'€'}}} }
         : { responsive:true, maintainAspectRatio:false, scales:{x:{stacked:true,grid:{display:false}},y:{stacked:true,ticks:{callback:v=>v+'€'}}}, plugins:{legend:{position:'top',labels:{usePointStyle:true,pointStyleWidth:12}}} }
     });
 
