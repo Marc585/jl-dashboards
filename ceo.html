@@ -244,11 +244,11 @@ const kpis = [
         name: "Amazon J&L (Q1 Umsatz)",
         ist: 874367, ziel: 2147000, unit: "€",
         trend: "up",
-        massnahme: "+5,9% über linearem Plan (nur 3/8 Märkte erfasst!)",
+        massnahme: "Nur 3/8 Märkte erfasst (DE, UK, USA). ES/FR/IT/NL/SE noch ohne Daten.",
         color: "--accent",
-        // Zeige Plan-Vergleich: Ist vs. linearer Plan nach KW5
         linearPlan: 825769, // 2.147.000 * 5/13
-        subtitle: "Q1 Ziel: 2,15 Mio € | Jahr: 11,3 Mio €"
+        dataWeeks: 5,
+        totalWeeks: 13
     }
 ];
 
@@ -365,10 +365,13 @@ function renderKPIs() {
 
         // Spezialfall: Amazon mit Plan-Vergleich (linearPlan vorhanden)
         if (k.linearPlan) {
+            const diff = k.ist - k.linearPlan;
+            const ahead = diff > 0;
             const aheadPct = ((k.ist / k.linearPlan) - 1) * 100;
-            const ahead = aheadPct > 0;
-            const zeitPct = 38; // KW5 von KW13 = 38%
-            const istStr = fmt(Math.round(k.ist)) + ' ' + k.unit;
+            const istStr = (k.ist / 1000).toFixed(0) + 'K ' + k.unit;
+            const planStr = (k.linearPlan / 1000).toFixed(0) + 'K ' + k.unit;
+            const diffStr = (Math.abs(diff) / 1000).toFixed(0) + 'K ' + k.unit;
+            const zielStr = fmt2(k.ziel / 1000000) + ' Mio ' + k.unit;
             const badgeClass = ahead ? 'badge-green' : 'badge-red';
             const badgeText = ahead ? '+' + aheadPct.toFixed(1) + '% über Plan' : aheadPct.toFixed(1) + '% unter Plan';
 
@@ -378,18 +381,25 @@ function renderKPIs() {
                     <span class="badge ${badgeClass}">${badgeText}</span>
                 </div>
                 <div class="kpi-values">
-                    <span class="kpi-ist" style="color: var(${k.color})">${istStr}</span>
-                    <span class="kpi-pct" style="color: var(--accent)">${pct}%</span>
+                    <span class="kpi-ist" style="color: var(${k.color})">${fmt(Math.round(k.ist))} ${k.unit}</span>
                 </div>
-                <div class="kpi-bar" style="position:relative;">
-                    <div class="kpi-fill" style="width: ${Math.min(pct, 100)}%; background: ${ahead ? 'var(--green)' : 'var(--orange)'};"></div>
-                    <div style="position:absolute;left:${zeitPct}%;top:-2px;bottom:-2px;width:2px;background:var(--red);border-radius:1px;" title="Zeitfortschritt ${zeitPct}%"></div>
+                <div style="font-size:13px;margin-bottom:12px;">
+                    <span style="color:var(--muted)">Q1-Ziel:</span> <strong>${zielStr}</strong>
+                    <span style="color:var(--muted);margin-left:8px;">|</span>
+                    <span style="color:var(--muted);margin-left:8px;">Nach ${k.dataWeeks} von ${k.totalWeeks} Wochen</span>
                 </div>
-                <div style="display:flex;justify-content:space-between;font-size:11px;color:var(--muted);margin-bottom:6px;">
-                    <span>${zielDisplay}</span>
-                    <span>${pct}% Ist vs. ${zeitPct}% Zeit</span>
+                <div style="display:flex;align-items:center;gap:10px;padding:10px 14px;background:${ahead ? 'rgba(34,197,94,0.08)' : 'rgba(239,68,68,0.08)'};border-radius:8px;margin-bottom:10px;">
+                    <span style="font-size:20px">${ahead ? '&#9650;' : '&#9660;'}</span>
+                    <div>
+                        <div style="font-size:14px;font-weight:700;color:${ahead ? 'var(--green)' : 'var(--red)'}">
+                            ${diffStr} ${ahead ? 'über' : 'unter'} Plan
+                        </div>
+                        <div style="font-size:12px;color:var(--muted)">
+                            Erwartet bis KW${k.dataWeeks}: ${planStr} &#8594; Tatsächlich: ${istStr}
+                        </div>
+                    </div>
                 </div>
-                <div class="kpi-context">&#9881; <strong>${k.massnahme}</strong></div>
+                <div class="kpi-context" style="font-size:11px;color:var(--muted)">&#9432; ${k.massnahme}</div>
             </div>`;
         }
 
