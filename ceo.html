@@ -234,14 +234,14 @@ const kpis = [
         color: "--yellow"
     },
     {
-        name: "Amazon J&L EU (Jahresprognose)",
-        ist: 11300000, ziel: 11300000, unit: "€",
-        trend: "stable",
-        massnahme: "Budget 320k€ DE, Peak-Season-Fokus",
+        name: "Amazon J&L (Q1 Umsatz)",
+        ist: 874367, ziel: 2147000, unit: "€",
+        trend: "up",
+        massnahme: "+5,9% über linearem Plan (nur 3/8 Märkte erfasst!)",
         color: "--accent",
-        // Sonderfall: zeige als "On Track" statt Prozentzahl
-        display: "On Track",
-        subtitle: "11,3 Mio € Jahresprognose"
+        // Zeige Plan-Vergleich: Ist vs. linearer Plan nach KW5
+        linearPlan: 825769, // 2.147.000 * 5/13
+        subtitle: "Q1 Ziel: 2,15 Mio € | Jahr: 11,3 Mio €"
     }
 ];
 
@@ -352,11 +352,43 @@ function fmt2(v) { return v == null ? '–' : v.toLocaleString('de-DE', { minimu
 function renderKPIs() {
     const grid = document.getElementById('kpiGrid');
     grid.innerHTML = kpis.map(k => {
-        const pct = k.display ? 100 : (typeof k.ist === 'number' && typeof k.ziel === 'number' ? Math.round((k.ist / k.ziel) * 100) : 0);
-        const fillColor = pct >= 95 ? 'var(--green)' : pct >= 80 ? 'var(--yellow)' : 'var(--orange)';
+        const pct = typeof k.ist === 'number' && typeof k.ziel === 'number' ? Math.round((k.ist / k.ziel) * 100) : 0;
         const trendIcon = k.trend === 'up' ? '&#8599;' : k.trend === 'down' ? '&#8600;' : '&#8594;';
-        const istDisplay = k.display ? k.display : (k.ist >= 1000000 ? fmt2(k.ist / 1000000) + ' Mio ' + k.unit : fmt2(k.ist) + ' ' + k.unit);
         const zielDisplay = k.subtitle ? k.subtitle : ('Ziel: ' + (k.ziel >= 1000000 ? fmt2(k.ziel / 1000000) + ' Mio ' + k.unit : fmt2(k.ziel) + ' ' + k.unit));
+
+        // Spezialfall: Amazon mit Plan-Vergleich (linearPlan vorhanden)
+        if (k.linearPlan) {
+            const aheadPct = ((k.ist / k.linearPlan) - 1) * 100;
+            const ahead = aheadPct > 0;
+            const zeitPct = 38; // KW5 von KW13 = 38%
+            const istStr = fmt(Math.round(k.ist)) + ' ' + k.unit;
+            const badgeClass = ahead ? 'badge-green' : 'badge-red';
+            const badgeText = ahead ? '+' + aheadPct.toFixed(1) + '% über Plan' : aheadPct.toFixed(1) + '% unter Plan';
+
+            return `<div class="card kpi-card" style="border-color:${ahead ? 'rgba(34,197,94,0.3)' : 'rgba(239,68,68,0.3)'}">
+                <div class="kpi-header">
+                    <span class="kpi-name">${k.name}</span>
+                    <span class="badge ${badgeClass}">${badgeText}</span>
+                </div>
+                <div class="kpi-values">
+                    <span class="kpi-ist" style="color: var(${k.color})">${istStr}</span>
+                    <span class="kpi-pct" style="color: var(--accent)">${pct}%</span>
+                </div>
+                <div class="kpi-bar" style="position:relative;">
+                    <div class="kpi-fill" style="width: ${Math.min(pct, 100)}%; background: ${ahead ? 'var(--green)' : 'var(--orange)'};"></div>
+                    <div style="position:absolute;left:${zeitPct}%;top:-2px;bottom:-2px;width:2px;background:var(--red);border-radius:1px;" title="Zeitfortschritt ${zeitPct}%"></div>
+                </div>
+                <div style="display:flex;justify-content:space-between;font-size:11px;color:var(--muted);margin-bottom:6px;">
+                    <span>${zielDisplay}</span>
+                    <span>${pct}% Ist vs. ${zeitPct}% Zeit</span>
+                </div>
+                <div class="kpi-context">&#9881; <strong>${k.massnahme}</strong></div>
+            </div>`;
+        }
+
+        // Standardfall: AOV, CR etc.
+        const fillColor = pct >= 95 ? 'var(--green)' : pct >= 80 ? 'var(--yellow)' : 'var(--orange)';
+        const istDisplay = k.ist >= 1000000 ? fmt2(k.ist / 1000000) + ' Mio ' + k.unit : fmt2(k.ist) + ' ' + k.unit;
 
         return `<div class="card kpi-card">
             <div class="kpi-header">
@@ -365,7 +397,7 @@ function renderKPIs() {
             </div>
             <div class="kpi-values">
                 <span class="kpi-ist" style="color: var(${k.color})">${istDisplay}</span>
-                <span class="kpi-pct" style="color: ${fillColor}">${k.display ? '' : pct + '%'}</span>
+                <span class="kpi-pct" style="color: ${fillColor}">${pct}%</span>
             </div>
             <div class="kpi-bar"><div class="kpi-fill" style="width: ${Math.min(pct, 100)}%; background: ${fillColor};"></div></div>
             <div style="font-size: 12px; color: var(--muted); margin-bottom: 6px;">${zielDisplay}</div>
