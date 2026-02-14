@@ -109,6 +109,12 @@
         .kpi .value { font-size: 28px; font-weight: 700; margin: 4px 0; }
         .kpi .label { font-size: 12px; color: var(--muted); }
         .kpi .sub { font-size: 11px; color: var(--muted); margin-top: 4px; }
+        .kpi .budget-line { font-size: 12px; color: var(--muted); margin-top: 8px; display: flex; align-items: center; justify-content: center; gap: 6px; flex-wrap: wrap; }
+        .kpi .budget-line strong { color: var(--text); }
+        .roas-tag { display: inline-block; padding: 1px 7px; border-radius: 10px; font-size: 10px; font-weight: 600; }
+        .roas-tag.roas-green { background: rgba(74,124,89,0.15); color: var(--green); }
+        .roas-tag.roas-yellow { background: rgba(186,106,73,0.15); color: var(--yellow); }
+        .roas-tag.roas-red { background: rgba(229,36,39,0.15); color: var(--red); }
 
         /* Total Banner */
         .total-banner {
@@ -316,73 +322,90 @@
 
     <!-- TOTAL BANNER -->
     <div class="total-banner">
-        <div class="label">Gesamtbudget Amazon Ads 2026 (alle Länder)</div>
-        <div class="amount">619.300 &euro;</div>
+        <div class="label">Amazon Ads 2026 &ndash; Budget &amp; Performance</div>
+        <div style="display: flex; justify-content: center; gap: 48px; flex-wrap: wrap; margin: 12px 0;">
+            <div>
+                <div class="amount" style="font-size: 40px;">619.300 &euro;</div>
+                <div style="font-size: 13px; color: var(--muted);">Ads Budget 2026 (7 L&auml;nder)</div>
+            </div>
+            <div>
+                <div class="amount" style="font-size: 40px; color: var(--green);">489.082 &euro;</div>
+                <div style="font-size: 13px; color: var(--muted);">Umsatz 2025 (5 L&auml;nder erfasst)</div>
+            </div>
+        </div>
         <div class="sub">
-            Umsatzprognose: <strong>11.300.000 &euro;</strong> |
-            8 Märkte | DE &bull; UK &bull; FR &bull; ES &bull; IT &bull; NL &bull; SE &bull; USA
+            Umsatzprognose '26: <strong>11.300.000 &euro;</strong> |
+            8 M&auml;rkte | DE &bull; UK &bull; FR &bull; ES &bull; IT &bull; NL &bull; SE &bull; USA
         </div>
     </div>
 
-    <!-- BUDGET PRO LAND -->
-    <div class="section-title">Budget pro Land 2026</div>
+    <!-- ÜBERSICHT PRO LAND -->
+    <div class="section-title">Umsatz &amp; Budget pro Land</div>
 
-    <div class="grid grid-8">
+    <div class="grid grid-4">
         <div class="card kpi">
             <div class="flag">&#127465;&#127466;</div>
             <div class="country">Deutschland</div>
-            <div class="value" style="color: var(--accent)">320.000&euro;</div>
-            <div class="label">Ads Budget</div>
-            <div class="sub">51,7% vom Gesamtbudget</div>
-        </div>
-        <div class="card kpi">
-            <div class="flag">&#127468;&#127463;</div>
-            <div class="country">UK</div>
-            <div class="value" style="color: var(--blue)">100.000&euro;</div>
-            <div class="label">Ads Budget</div>
-            <div class="sub">16,2%</div>
-        </div>
-        <div class="card kpi">
-            <div class="flag">&#127467;&#127479;</div>
-            <div class="country">Frankreich</div>
-            <div class="value" style="color: var(--cyan)">39.800&euro;</div>
-            <div class="label">Ads Budget</div>
-            <div class="sub">6,4%</div>
-        </div>
-        <div class="card kpi">
-            <div class="flag">&#127466;&#127480;</div>
-            <div class="country">Spanien</div>
-            <div class="value" style="color: var(--orange)">46.800&euro;</div>
-            <div class="label">Ads Budget</div>
-            <div class="sub">7,6%</div>
+            <div class="value" style="color: var(--accent)">&ndash;</div>
+            <div class="label">Umsatz 2025 nicht erfasst</div>
+            <div class="budget-line">Budget '26: <strong>320.000&euro;</strong></div>
+            <div class="sub">Spend '25: 246.803&euro; | 51,7% vom Budget</div>
         </div>
         <div class="card kpi">
             <div class="flag">&#127470;&#127481;</div>
             <div class="country">Italien</div>
-            <div class="value" style="color: var(--green)">50.400&euro;</div>
-            <div class="label">Ads Budget</div>
-            <div class="sub">8,1%</div>
+            <div class="value" style="color: var(--green)">167.391&euro;</div>
+            <div class="label">Umsatz 2025</div>
+            <div class="budget-line">Budget '26: <strong>50.400&euro;</strong> <span class="roas-tag roas-green">ROAS 3,84</span></div>
+            <div class="sub">Top Performer | Ziel '26: 101.372&euro;</div>
+        </div>
+        <div class="card kpi">
+            <div class="flag">&#127466;&#127480;</div>
+            <div class="country">Spanien</div>
+            <div class="value" style="color: var(--orange)">156.791&euro;</div>
+            <div class="label">Umsatz 2025</div>
+            <div class="budget-line">Budget '26: <strong>46.800&euro;</strong> <span class="roas-tag roas-green">ROAS 4,41</span></div>
+            <div class="sub">Top Performer | Ziel '26: 208.000&euro;</div>
+        </div>
+        <div class="card kpi">
+            <div class="flag">&#127468;&#127463;</div>
+            <div class="country">UK</div>
+            <div class="value" style="color: var(--blue)">47.832&euro;</div>
+            <div class="label">Umsatz 2025</div>
+            <div class="budget-line">Budget '26: <strong>100.000&euro;</strong> <span class="roas-tag roas-yellow">ROAS 1,26</span></div>
+            <div class="sub">Wachstumsmarkt | Budget +163% vs '25</div>
+        </div>
+        <div class="card kpi">
+            <div class="flag">&#127467;&#127479;</div>
+            <div class="country">Frankreich</div>
+            <div class="value" style="color: var(--cyan)">82.048&euro;</div>
+            <div class="label">Umsatz 2025</div>
+            <div class="budget-line">Budget '26: <strong>39.800&euro;</strong> <span class="roas-tag roas-green">ROAS 2,97</span></div>
+            <div class="sub">Stabil | Ziel '26: 79.000&euro;</div>
         </div>
         <div class="card kpi">
             <div class="flag">&#127475;&#127473;</div>
             <div class="country">Niederlande</div>
-            <div class="value" style="color: var(--purple)">5.000&euro;</div>
-            <div class="label">Ads Budget</div>
-            <div class="sub">0,8%</div>
+            <div class="value" style="color: var(--purple)">35.020&euro;</div>
+            <div class="label">Umsatz 2025</div>
+            <div class="budget-line">Budget '26: <strong>5.000&euro;</strong> <span class="roas-tag roas-green">ROAS 9,98</span></div>
+            <div class="sub">Cash Cow | Bester ROAS!</div>
         </div>
         <div class="card kpi">
             <div class="flag">&#127480;&#127466;</div>
             <div class="country">Schweden</div>
-            <div class="value" style="color: var(--pink)">57.300&euro;</div>
-            <div class="label">Ads Budget</div>
-            <div class="sub">9,3%</div>
+            <div class="value" style="color: var(--pink)">&ndash;</div>
+            <div class="label">Neuer Markt 2026</div>
+            <div class="budget-line">Budget '26: <strong>57.300&euro;</strong></div>
+            <div class="sub">4.775&euro;/Monat gleichm&auml;&szlig;ig</div>
         </div>
         <div class="card kpi">
             <div class="flag">&#127482;&#127480;</div>
             <div class="country">USA</div>
-            <div class="value" style="color: var(--yellow)">TBD</div>
-            <div class="label">In Planung</div>
-            <div class="sub">Launch Q1</div>
+            <div class="value" style="color: var(--yellow)">&ndash;</div>
+            <div class="label">Launch Q1 2026</div>
+            <div class="budget-line">Budget '26: <strong>TBD</strong></div>
+            <div class="sub">Ticket to Retail</div>
         </div>
     </div>
 
