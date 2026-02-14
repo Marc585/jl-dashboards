@@ -88,13 +88,33 @@
 
         .footer { margin-top: 40px; padding-top: 20px; border-top: 1px solid var(--border); color: var(--muted); font-size: 12px; text-align: center; }
 
+        /* Dashboard Navigation */
+        .dashboard-nav { display: flex; align-items: center; gap: 16px; margin-bottom: 20px; padding-bottom: 12px; border-bottom: 1px solid var(--border); flex-wrap: wrap; }
+        .dashboard-nav a { color: var(--accent); text-decoration: none; font-size: 13px; font-weight: 500; transition: color 0.2s; }
+        .dashboard-nav a:hover { color: var(--text); text-decoration: underline; }
+        .dashboard-nav .nav-sep { color: var(--border); font-size: 12px; }
+        .quick-links { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; margin-top: 32px; }
+        .quick-link { display: block; text-decoration: none; padding: 20px; text-align: center; border-radius: 12px; background: var(--card); border: 1px solid var(--border); transition: all 0.2s; }
+        .quick-link:hover { border-color: var(--accent); transform: translateY(-2px); }
+        .quick-link .ql-icon { font-size: 28px; margin-bottom: 6px; }
+        .quick-link .ql-title { font-size: 14px; font-weight: 700; color: var(--text); }
+        .quick-link .ql-desc { font-size: 12px; color: var(--muted); margin-top: 4px; }
+
         .period-label { font-size: 13px; color: var(--accent); font-weight: 600; text-align: center; margin-bottom: 16px; }
 
         @media (max-width: 1200px) { .grid-4, .grid-5 { grid-template-columns: repeat(2, 1fr); } }
-        @media (max-width: 768px) { .grid-4, .grid-3, .grid-2, .grid-5 { grid-template-columns: 1fr; } body { padding: 12px; } }
+        @media (max-width: 768px) { .grid-4, .grid-3, .grid-2, .grid-5, .quick-links { grid-template-columns: 1fr; } body { padding: 12px; } }
     </style>
 </head>
 <body>
+
+<div class="dashboard-nav">
+    <a href="landing.html">&#8592; Alle Dashboards</a>
+    <span class="nav-sep">|</span>
+    <a href="ceo.html">CEO Dashboard</a>
+    <span class="nav-sep">|</span>
+    <a href="amazon.html">Amazon Dashboard</a>
+</div>
 
 <div class="header">
     <div>
@@ -228,6 +248,24 @@
     <div class="table-wrapper" style="overflow-x:auto;">
         <table><thead id="tableHead"></thead><tbody id="tableBody"></tbody></table>
     </div>
+</div>
+
+<div class="quick-links">
+    <a href="landing.html" class="quick-link">
+        <div class="ql-icon">&#127968;</div>
+        <div class="ql-title">Übersicht</div>
+        <div class="ql-desc">Alle Dashboards</div>
+    </a>
+    <a href="ceo.html" class="quick-link">
+        <div class="ql-icon">&#128200;</div>
+        <div class="ql-title">CEO Dashboard</div>
+        <div class="ql-desc">Quartalsziele, 9 Steine, Roadmap</div>
+    </a>
+    <a href="amazon.html" class="quick-link">
+        <div class="ql-icon">&#127758;</div>
+        <div class="ql-title">Amazon International</div>
+        <div class="ql-desc">8 Märkte, Budget Allocation, ROAS</div>
+    </a>
 </div>
 
 <div class="footer">

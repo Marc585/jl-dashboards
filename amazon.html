@@ -258,6 +258,18 @@
         .warning .text strong { color: var(--yellow); }
 
         /* Footer */
+        /* Dashboard Navigation */
+        .dashboard-nav { display: flex; align-items: center; gap: 16px; margin-bottom: 20px; padding-bottom: 12px; border-bottom: 1px solid var(--border); flex-wrap: wrap; }
+        .dashboard-nav a { color: var(--accent); text-decoration: none; font-size: 13px; font-weight: 500; transition: color 0.2s; }
+        .dashboard-nav a:hover { color: var(--text); text-decoration: underline; }
+        .dashboard-nav .nav-sep { color: var(--border); font-size: 12px; }
+        .quick-links { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; margin-top: 32px; }
+        .quick-link { display: block; text-decoration: none; padding: 20px; text-align: center; border-radius: 12px; background: var(--card); border: 1px solid var(--border); transition: all 0.2s; }
+        .quick-link:hover { border-color: var(--accent); transform: translateY(-2px); }
+        .quick-link .ql-icon { font-size: 28px; margin-bottom: 6px; }
+        .quick-link .ql-title { font-size: 14px; font-weight: 700; color: var(--text); }
+        .quick-link .ql-desc { font-size: 12px; color: var(--muted); margin-top: 4px; }
+
         .footer {
             margin-top: 40px;
             padding-top: 20px;
@@ -279,6 +291,14 @@
     </style>
 </head>
 <body>
+
+    <div class="dashboard-nav">
+        <a href="landing.html">&#8592; Alle Dashboards</a>
+        <span class="nav-sep">|</span>
+        <a href="ceo.html">CEO Dashboard</a>
+        <span class="nav-sep">|</span>
+        <a href="index.html">Webshop Dashboard</a>
+    </div>
 
     <!-- HEADER -->
     <div class="header">
@@ -711,6 +731,25 @@
                 5. <strong>SE Baseline setzen</strong> - Erste ROAS-Ziele definieren
             </p>
         </div>
+    </div>
+
+    <!-- QUICK LINKS -->
+    <div class="quick-links">
+        <a href="landing.html" class="quick-link">
+            <div class="ql-icon">&#127968;</div>
+            <div class="ql-title">Übersicht</div>
+            <div class="ql-desc">Alle Dashboards</div>
+        </a>
+        <a href="ceo.html" class="quick-link">
+            <div class="ql-icon">&#128200;</div>
+            <div class="ql-title">CEO Dashboard</div>
+            <div class="ql-desc">Quartalsziele, 9 Steine, Roadmap</div>
+        </a>
+        <a href="index.html" class="quick-link">
+            <div class="ql-icon">&#128722;</div>
+            <div class="ql-title">Webshop Dashboard</div>
+            <div class="ql-desc">Umsatz, AOV, CR, Marketing-Kanäle</div>
+        </a>
     </div>
 
     <!-- FOOTER -->
