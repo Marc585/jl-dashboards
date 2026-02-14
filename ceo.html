@@ -290,6 +290,7 @@ const projekte = [
 
 // --- Umsatzübersicht ---
 // Webshop YTD: Summe aller Tagesumsätze aus Jessis Reporting (01.01.-12.02.2026)
+// Amazon YTD: Summe aus Budget Tracker Excel (DE KW1-5, UK KW1-4, USA KW1-5)
 const umsatz = {
     webshop: {
         label: "Webshop J&L",
@@ -301,25 +302,26 @@ const umsatz = {
     },
     amazon: {
         label: "Amazon J&L (alle Märkte)",
-        ist: null,   // Aktuelle Verkaufsdaten fehlen in Budget Files
-        plan: 2147000, // Q1 Prognose
-        zeitraum: "Q1 Plan: 2,15 Mio €",
-        detail: "8 Märkte | Ist-Daten ausstehend (Budget Files unvollständig)",
+        ist: 874367, // DE 844.753€ + UK 15.852€ + USA ~13.762€ (KW1-5)
+        plan: 2147000, // Q1 Prognose (11,3 Mio € Jahresprognose)
+        zeitraum: "YTD (KW1–KW5)",
+        detail: "3/8 Märkte erfasst (DE, UK, USA) | ES/FR/IT/NL/SE noch nicht eingetragen",
         color: "var(--accent)"
     }
 };
 
 // --- Amazon Länder ---
-// Budget Q1 2026 (Plan) + 2025 Referenz-ROAS
+// Daten aus Budget Tracker Excel (OneDrive), aktualisiert Mi wöchentlich
+// Total Sales Amazon = Paid + Organic Sales
 const amazonLaender = [
-    { flag: "&#127465;&#127466;", name: "Deutschland", budgetQ1: 60500, istQ1: null, roas2025: null, budgetJahr: 320000, status: "active" },
-    { flag: "&#127468;&#127463;", name: "UK", budgetQ1: 20000, istQ1: null, roas2025: 1.26, budgetJahr: 100000, status: "growth" },
-    { flag: "&#127466;&#127480;", name: "Spanien", budgetQ1: 9360, istQ1: null, roas2025: 4.41, budgetJahr: 46800, status: "active" },
-    { flag: "&#127467;&#127479;", name: "Frankreich", budgetQ1: 7600, istQ1: null, roas2025: 2.97, budgetJahr: 39800, status: "active" },
-    { flag: "&#127470;&#127481;", name: "Italien", budgetQ1: 10080, istQ1: null, roas2025: 3.84, budgetJahr: 50400, status: "active" },
-    { flag: "&#127475;&#127473;", name: "Niederlande", budgetQ1: 1200, istQ1: null, roas2025: 9.98, budgetJahr: 5000, status: "active" },
-    { flag: "&#127480;&#127466;", name: "Schweden", budgetQ1: 14325, istQ1: null, roas2025: null, budgetJahr: 57300, status: "new" },
-    { flag: "&#127482;&#127480;", name: "USA", budgetQ1: null, istQ1: null, roas2025: null, budgetJahr: null, status: "launch" }
+    { flag: "&#127465;&#127466;", name: "Deutschland", budgetQ1: 60500, istQ1: 844753, adSpend: 25650, roas: 13.59, orders: 61123, budgetJahr: 320000, status: "active", datenstand: "KW1–5" },
+    { flag: "&#127468;&#127463;", name: "UK", budgetQ1: 20000, istQ1: 15852, adSpend: 6373, roas: 2.08, orders: 1300, budgetJahr: 100000, status: "growth", datenstand: "KW1–4", note: "GBP→EUR" },
+    { flag: "&#127466;&#127480;", name: "Spanien", budgetQ1: 9360, istQ1: null, adSpend: null, roas: null, orders: null, budgetJahr: 46800, status: "active", datenstand: "–" },
+    { flag: "&#127467;&#127479;", name: "Frankreich", budgetQ1: 7600, istQ1: null, adSpend: null, roas: null, orders: null, budgetJahr: 39800, status: "active", datenstand: "–" },
+    { flag: "&#127470;&#127481;", name: "Italien", budgetQ1: 10080, istQ1: null, adSpend: null, roas: null, orders: null, budgetJahr: 50400, status: "active", datenstand: "–" },
+    { flag: "&#127475;&#127473;", name: "Niederlande", budgetQ1: 1200, istQ1: null, adSpend: null, roas: null, orders: null, budgetJahr: 5000, status: "active", datenstand: "–" },
+    { flag: "&#127480;&#127466;", name: "Schweden", budgetQ1: 14325, istQ1: null, adSpend: null, roas: null, orders: null, budgetJahr: 57300, status: "new", datenstand: "–" },
+    { flag: "&#127482;&#127480;", name: "USA", budgetQ1: null, istQ1: 13762, adSpend: 8875, roas: 0.74, orders: 551, budgetJahr: null, status: "launch", datenstand: "KW1–5", note: "USD→EUR" }
 ];
 
 // --- Artikelgruppen (Platzhalter für Power BI Daten) ---
@@ -394,47 +396,50 @@ function renderCountries() {
     const statusClasses = { active: '', growth: 'badge-blue', new: 'badge-purple', launch: 'badge-yellow' };
 
     let rows = amazonLaender.map(l => {
-        const budgetStr = l.budgetQ1 ? fmt(Math.round(l.budgetQ1)) + '€' : '<span style="color:var(--muted)">TBD</span>';
         const istStr = l.istQ1 ? fmt(Math.round(l.istQ1)) + '€' : '<span style="color:var(--muted)">–</span>';
-        const roasStr = l.roas2025 ? fmt2(l.roas2025) : '<span style="color:var(--muted)">–</span>';
-        const roasColor = l.roas2025 ? (l.roas2025 >= 3 ? 'var(--green)' : l.roas2025 >= 1.5 ? 'var(--yellow)' : 'var(--red)') : 'var(--muted)';
+        const roasStr = l.roas != null ? fmt2(l.roas) : '<span style="color:var(--muted)">–</span>';
+        const roasColor = l.roas != null ? (l.roas >= 3 ? 'var(--green)' : l.roas >= 1.5 ? 'var(--yellow)' : 'var(--red)') : 'var(--muted)';
+        const ordersStr = l.orders != null ? fmt(l.orders) : '<span style="color:var(--muted)">–</span>';
         const budgetJahrStr = l.budgetJahr ? fmt(Math.round(l.budgetJahr)) + '€' : '<span style="color:var(--muted)">TBD</span>';
         const statusTag = statusLabels[l.status] ? ` <span class="badge ${statusClasses[l.status]}">${statusLabels[l.status]}</span>` : '';
+        const datenstandStr = l.datenstand !== '–' ? `<span style="font-size:10px;color:var(--muted)">${l.datenstand}</span>` : '';
 
         return `<tr>
             <td><span class="country-flag">${l.flag}</span>${l.name}${statusTag}</td>
-            <td class="num">${budgetStr}</td>
-            <td class="num">${istStr}</td>
+            <td class="num">${istStr} ${datenstandStr}</td>
+            <td class="num">${ordersStr}</td>
             <td class="num" style="color:${roasColor};font-weight:600">${roasStr}</td>
             <td class="num">${budgetJahrStr}</td>
         </tr>`;
     }).join('');
 
     // Totals
-    const totalBudgetQ1 = amazonLaender.reduce((s,l) => s + (l.budgetQ1 || 0), 0);
+    const totalIst = amazonLaender.reduce((s,l) => s + (l.istQ1 || 0), 0);
+    const totalOrders = amazonLaender.reduce((s,l) => s + (l.orders || 0), 0);
     const totalBudgetJahr = amazonLaender.reduce((s,l) => s + (l.budgetJahr || 0), 0);
 
     card.innerHTML = `<table class="country-table">
         <thead><tr>
             <th>Land</th>
-            <th class="num">Budget Q1</th>
-            <th class="num">Umsatz Q1 (Ist)</th>
-            <th class="num">ROAS 2025</th>
-            <th class="num">Budget 2026</th>
+            <th class="num">Umsatz (Ist)</th>
+            <th class="num">Bestellungen</th>
+            <th class="num">Ad ROAS</th>
+            <th class="num">Ad Budget 2026</th>
         </tr></thead>
         <tbody>
             ${rows}
             <tr class="total-row">
-                <td>GESAMT</td>
-                <td class="num" style="color:var(--accent)">${fmt(Math.round(totalBudgetQ1))}€</td>
-                <td class="num" style="color:var(--muted)">ausstehend</td>
+                <td>GESAMT (erfasst)</td>
+                <td class="num" style="color:var(--accent)">${fmt(Math.round(totalIst))}€</td>
+                <td class="num" style="color:var(--accent)">${fmt(totalOrders)}</td>
                 <td class="num">–</td>
                 <td class="num" style="color:var(--accent)">${fmt(Math.round(totalBudgetJahr))}€</td>
             </tr>
         </tbody>
     </table>
     <div style="font-size:11px;color:var(--muted);margin-top:12px;padding:8px 12px;background:rgba(99,102,241,0.06);border-radius:6px;">
-        &#9432; Ist-Umsätze pro Land werden aktuell noch nicht in den Budget-Files erfasst. Nächster Schritt: Sales-Tracking in allen Länderdateien aktivieren.
+        &#9432; Quelle: Budget Tracker Excel (OneDrive, Mi-Update). DE dominiert mit 97% der erfassten Umsätze.
+        ES, FR, IT, NL, SE haben noch keine 2026-Daten im Tracker. USA-ROAS kritisch niedrig (0,74) – Marktaufbau-Phase.
     </div>`;
 }
 
