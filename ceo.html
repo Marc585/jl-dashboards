@@ -155,6 +155,9 @@
     <div class="meta">Stand: 13.02.2026 | KW07 | Datenquellen: Jessis Reporting, Amazon Allocation, Power BI</div>
 </div>
 
+<!-- Datenstand-Leiste -->
+<div id="freshnessBanner" style="display:flex;gap:12px;flex-wrap:wrap;justify-content:center;margin-bottom:28px;"></div>
+
 <!-- ===== SECTION 1: QUARTALSZIELE ===== -->
 <div class="section-title">Quartalsziele Q1 – Status</div>
 <div class="grid-3" id="kpiGrid"></div>
@@ -205,10 +208,7 @@
     </a>
 </div>
 
-<div class="footer">
-    J&L CEO Dashboard | Stand: 13.02.2026 | Erstellt mit Claude Code<br>
-    Nächstes Update: 17.02.2026 (Montag)
-</div>
+<div class="footer" id="dashboardFooter"></div>
 
 </div>
 
@@ -216,6 +216,13 @@
 // ============================================================
 //  DATEN – Hier einfach editieren für wöchentliche Updates
 // ============================================================
+
+// --- Datenstand (für Freshness-Anzeige) ---
+const datenstand = {
+    webshop: { datum: "12.02.2026", quelle: "Jessis Reporting Excel" },
+    amazon:  { datum: "KW5 (02.02.2026)", quelle: "Budget Tracker Excel" },
+    dashboard: { datum: "13.02.2026", autor: "Marc / Claude" }
+};
 
 // --- Kern-KPIs ---
 const kpis = [
@@ -637,7 +644,28 @@ function renderKategorien() {
     card.innerHTML = rows + note;
 }
 
+// --- Datenstand-Banner ---
+function renderFreshness() {
+    const banner = document.getElementById('freshnessBanner');
+    const items = [
+        { icon: '&#128722;', label: 'Webshop', datum: datenstand.webshop.datum, quelle: datenstand.webshop.quelle },
+        { icon: '&#127758;', label: 'Amazon', datum: datenstand.amazon.datum, quelle: datenstand.amazon.quelle },
+        { icon: '&#128197;', label: 'Dashboard', datum: datenstand.dashboard.datum, quelle: datenstand.dashboard.autor }
+    ];
+    banner.innerHTML = items.map(i =>
+        `<div style="display:flex;align-items:center;gap:8px;padding:6px 14px;background:rgba(99,102,241,0.08);border:1px solid var(--border);border-radius:8px;font-size:12px;">
+            <span style="font-size:16px">${i.icon}</span>
+            <span style="color:var(--muted)">${i.label}:</span>
+            <strong style="color:var(--text)">${i.datum}</strong>
+            <span style="color:var(--muted);font-size:11px">(${i.quelle})</span>
+        </div>`
+    ).join('');
+}
+
 // --- Render All ---
+renderFreshness();
+document.getElementById('dashboardFooter').innerHTML =
+    `J&L CEO Dashboard | Letzte Aktualisierung: ${datenstand.dashboard.datum} | Webshop-Daten: ${datenstand.webshop.datum} | Amazon-Daten: ${datenstand.amazon.datum}<br>Nächstes Update: 17.02.2026 (Montag) | Erstellt mit Claude Code`;
 renderKPIs();
 renderUmsatz();
 renderCountries();
