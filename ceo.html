@@ -467,14 +467,13 @@ function renderUmsatz() {
                     <strong>${amPlanJahrStr}</strong>
                 </div>
             </div>
-            <div class="rev-bar" style="position:relative;">
-                <div class="rev-fill" style="width:${Math.min(amPctQ1, 100)}%; background:var(--accent);"></div>
-                <div style="position:absolute;left:${amZeitPct}%;top:-2px;bottom:-2px;width:2px;background:var(--red);border-radius:1px;" title="Zeitfortschritt ${amZeitPct}%"></div>
-            </div>
-            <div style="display:flex;justify-content:space-between;font-size:11px;color:var(--muted);margin-bottom:8px;">
-                <span>Fortschritt: ${amPctQ1}% (Ist) vs. ${amZeitPct}% (Zeit)</span>
-                <span style="color:${amAheadOfPlan ? 'var(--green)' : 'var(--red)'};font-weight:700">
-                    ${amAheadOfPlan ? '+' : ''}${amLinearPct.toFixed(1)}% vs. linearer Plan
+            <div style="display:flex;align-items:center;gap:8px;padding:8px 12px;background:${amAheadOfPlan ? 'rgba(34,197,94,0.08)' : 'rgba(239,68,68,0.08)'};border-radius:6px;margin-bottom:8px;">
+                <span style="font-size:16px">${amAheadOfPlan ? '&#9650;' : '&#9660;'}</span>
+                <span style="font-size:13px;font-weight:700;color:${amAheadOfPlan ? 'var(--green)' : 'var(--red)'}">
+                    ${fmt(Math.abs(Math.round(amLinearDiff)))}€ ${amAheadOfPlan ? 'über' : 'unter'} Plan
+                </span>
+                <span style="font-size:11px;color:var(--muted)">
+                    (Erwartet nach ${am.dataWeeks} von ${am.totalWeeks} Wochen: ${fmt(Math.round(am.linearPlan))}€)
                 </span>
             </div>
             <div class="rev-detail">${am.zeitraum} | ${am.detail}</div>
