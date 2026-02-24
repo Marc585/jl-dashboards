@@ -650,8 +650,12 @@
     <!-- DETAIL TABELLE ALLE LÄNDER -->
     <div class="card" style="margin-top: 20px;">
         <div class="card-header">
-            <h3>Alle Länder - Budget 2026 vs. Performance 2025</h3>
+            <h3>Alle Märkte &ndash; Spend &amp; Paid Sales 2025 vs. Budget 2026</h3>
         </div>
+        <p style="font-size:0.8rem; color:var(--muted); padding-bottom:12px; border-bottom:1px solid var(--border); margin-bottom:14px;">
+            Paid Sales = Amazon externe Einnahmen &uuml;ber Advertising. EU-M&auml;rkte in &euro;, USA separat in USD. Quelle: jeweilige L&auml;nder-Budget-Allocation (Gesamt-Spalte).<br>
+            <strong>Update-Rhythmus:</strong> &#128260; DE / UK / USA w&ouml;chentlich &nbsp;|&nbsp; &#128197; ES / FR / IT / NL / SE monatlich (14. des Monats f&uuml;r Vormonat)
+        </p>
         <div class="table-wrapper">
             <table>
                 <thead>
@@ -659,23 +663,19 @@
                         <th>Land</th>
                         <th class="num">Budget 2026</th>
                         <th class="num">Spend 2025</th>
-                        <th class="num">Sales 2025</th>
+                        <th class="num">Paid Sales 2025</th>
                         <th class="num">Avg ROAS 2025</th>
                         <th class="num">Umsatzziel 2026</th>
-                        <th>Status</th>
-                        <th>Besonderheiten</th>
                     </tr>
                 </thead>
                 <tbody>
                     <tr>
                         <td><strong>&#127465;&#127466; Deutschland</strong></td>
                         <td class="num highlight">320.000 &euro;</td>
-                        <td class="num">246.803 &euro;</td>
+                        <td class="num">236.775 &euro;</td>
+                        <td class="num">2.870.691 &euro;</td>
+                        <td class="num" style="color: var(--green)">12,12</td>
                         <td class="num">-</td>
-                        <td class="num">-</td>
-                        <td class="num">-</td>
-                        <td><span class="dot dot-yellow"></span>Sales fehlen</td>
-                        <td>Hauptmarkt, Peak-Fokus</td>
                     </tr>
                     <tr>
                         <td><strong>&#127468;&#127463; UK</strong></td>
@@ -684,18 +684,14 @@
                         <td class="num">47.832 &euro;</td>
                         <td class="num" style="color: var(--yellow)">1,26</td>
                         <td class="num">-</td>
-                        <td><span class="dot dot-yellow"></span>Fulfilmentcrowd</td>
-                        <td>Budget +163% vs 2025</td>
                     </tr>
                     <tr>
                         <td><strong>&#127466;&#127480; Spanien</strong></td>
                         <td class="num highlight">46.800 &euro;</td>
                         <td class="num">35.596 &euro;</td>
-                        <td class="num">156.791 &euro;</td>
+                        <td class="num">156.886 &euro;</td>
                         <td class="num" style="color: var(--green)">4,41</td>
                         <td class="num">208.000 &euro;</td>
-                        <td><span class="dot dot-green"></span>Top Performer</td>
-                        <td>Bester ROAS aller Märkte</td>
                     </tr>
                     <tr>
                         <td><strong>&#127467;&#127479; Frankreich</strong></td>
@@ -704,18 +700,14 @@
                         <td class="num">82.048 &euro;</td>
                         <td class="num" style="color: var(--green)">2,97</td>
                         <td class="num">79.000 &euro;</td>
-                        <td><span class="dot dot-green"></span>Stabil</td>
-                        <td>Ziel bereits 2025 übertroffen</td>
                     </tr>
                     <tr>
                         <td><strong>&#127470;&#127481; Italien</strong></td>
                         <td class="num highlight">50.400 &euro;</td>
-                        <td class="num">43.574 &euro;</td>
-                        <td class="num">167.391 &euro;</td>
-                        <td class="num" style="color: var(--green)">3,84</td>
+                        <td class="num">43.572 &euro;</td>
+                        <td class="num">187.455 &euro;</td>
+                        <td class="num" style="color: var(--green)">4,30</td>
                         <td class="num">101.372 &euro;</td>
-                        <td><span class="dot dot-green"></span>Top Performer</td>
-                        <td>Ziel ROAS 3,8</td>
                     </tr>
                     <tr>
                         <td><strong>&#127475;&#127473; Niederlande</strong></td>
@@ -724,38 +716,30 @@
                         <td class="num">35.020 &euro;</td>
                         <td class="num" style="color: var(--green)">9,98</td>
                         <td class="num">-</td>
-                        <td><span class="dot dot-green"></span>Cash Cow</td>
-                        <td>Bester ROAS! Minimal Budget</td>
                     </tr>
                     <tr>
                         <td><strong>&#127480;&#127466; Schweden</strong></td>
                         <td class="num highlight">57.300 &euro;</td>
+                        <td class="num">2.439 &euro;</td>
+                        <td class="num">15.242 &euro;</td>
+                        <td class="num" style="color: var(--green)">6,25</td>
                         <td class="num">-</td>
-                        <td class="num">-</td>
-                        <td class="num">-</td>
-                        <td class="num">-</td>
-                        <td><span class="dot dot-yellow"></span>Neuer Markt</td>
-                        <td>4.775&euro;/Monat gleichmäßig</td>
                     </tr>
-                    <tr>
-                        <td><strong>&#127482;&#127480; USA</strong></td>
+                    <tr style="border-top: 1px solid var(--border);">
+                        <td><strong>&#127482;&#127480; USA</strong> <span style="font-size:0.75rem; color:var(--muted);">(USD)</span></td>
                         <td class="num highlight">TBD</td>
+                        <td class="num">$78.422</td>
+                        <td class="num">$97.977</td>
+                        <td class="num" style="color: var(--yellow)">1,81</td>
                         <td class="num">-</td>
-                        <td class="num">-</td>
-                        <td class="num">-</td>
-                        <td class="num">-</td>
-                        <td><span class="dot dot-yellow"></span>Launch Q1</td>
-                        <td>Ticket to Retail</td>
                     </tr>
                     <tr style="font-weight: 700; border-top: 2px solid var(--accent);">
-                        <td>GESAMT</td>
+                        <td>GESAMT EU <span style="font-size:0.75rem; font-weight:400; color:var(--muted);">exkl. USA</span></td>
                         <td class="num" style="color: var(--accent)">619.300 &euro;</td>
-                        <td class="num">395.095 &euro;</td>
-                        <td class="num">489.082 &euro;</td>
+                        <td class="num">387.504 &euro;</td>
+                        <td class="num">3.395.174 &euro;</td>
                         <td class="num">-</td>
                         <td class="num">-</td>
-                        <td></td>
-                        <td></td>
                     </tr>
                 </tbody>
             </table>
@@ -776,6 +760,13 @@
     </div>
 
     <div class="card" style="margin-top: 20px;">
+        <div class="card-header">
+            <h3>Geplante Werbebudgets je Land 2026</h3>
+            <span class="badge badge-blue">Plan 2026</span>
+        </div>
+        <p style="font-size:0.8rem; color:var(--muted); padding-bottom:12px; border-bottom:1px solid var(--border); margin-bottom:14px;">
+            Monatliche Ad-Spend-Planung nach Markt in &euro;. Peak-Monate hervorgehoben: Prime Day (Juli), Prime Day 2 (Oktober), Black Friday (November).
+        </p>
         <div class="table-wrapper">
             <table>
                 <thead>
@@ -856,11 +847,10 @@
         <div class="card" style="border-left: 3px solid var(--red);">
             <div class="card-header"><h3>Action Items</h3></div>
             <p style="font-size: 13px;">
-                1. <strong>UK Febr.&ndash;Daten eintragen</strong> - Tracker noch leer ab KW7<br>
-                2. <strong>UK Fulfilmentcrowd</strong> - Deal schliessen Q1<br>
-                3. <strong>NL Budget prüfen</strong> - Bei ROAS 10 mehr investieren?<br>
-                4. <strong>USA Budget definieren</strong> - File noch leer<br>
-                5. <strong>SE Baseline setzen</strong> - Erste ROAS-Ziele definieren
+                1. <strong>NL Budget prüfen</strong> &ndash; Bei ROAS 9,98 mehr investieren?<br>
+                2. <strong>SE ROAS-Ziele</strong> &ndash; Baseline für neuen Markt definieren<br>
+                3. <strong>UK Fulfilmentcrowd</strong> &ndash; Deal Q1 abschließen<br>
+                4. <strong>ES/FR/IT/NL/SE Update</strong> &ndash; Nächster Daten-Zug: 14. März (Feb-Zahlen)
             </p>
         </div>
     </div>
