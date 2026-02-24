@@ -333,8 +333,8 @@
                 <div style="font-size: 11px; color: var(--muted);">Paid ROAS YTD (EU)</div>
             </div>
             <div style="text-align: center;">
-                <div style="font-size: 28px; font-weight: 800; color: var(--accent);">1.059.988 &euro;</div>
-                <div style="font-size: 11px; color: var(--muted);">Amazon Umsatz YTD (KW1&ndash;6)</div>
+                <div id="banner-umsatz-value" style="font-size: 28px; font-weight: 800; color: var(--accent);">1.238.604 &euro;</div>
+                <div id="banner-umsatz-label" style="font-size: 11px; color: var(--muted);">Amazon Au&szlig;enumsatz YTD alle M&auml;rkte</div>
             </div>
             <div style="text-align: center;">
                 <div style="font-size: 28px; font-weight: 800; color: var(--muted);">49.395 &euro;</div>
@@ -347,7 +347,7 @@
         </div>
         <div class="sub" style="margin-top: 8px;">
             Umsatzprognose 2026: <strong>11.300.000 &euro;</strong> |
-            3 von 8 M&auml;rkten erfasst (DE, UK, USA) |
+            Alle 8 M&auml;rkte erfasst (DE, UK, USA, IT, ES, FR, NL, SE) |
             Paid ROAS = Einnahmen Paid / Ausgaben Paid &bull; Interner ROAS = ERP EU / Spend DE+UK
         </div>
     </div>
@@ -1283,6 +1283,19 @@
         var totalSpan = document.getElementById('cards-total-sum');
         if (totalSpan) {
             totalSpan.textContent = total.toLocaleString('de-DE') + ' €';
+        }
+
+        // Update banner
+        var bannerVal = document.getElementById('banner-umsatz-value');
+        var bannerLbl = document.getElementById('banner-umsatz-label');
+        if (bannerVal) {
+            if (year === '2025') {
+                bannerVal.textContent = '9.220.581 €';
+                if (bannerLbl) bannerLbl.textContent = 'Amazon Außenumsatz Gesamtjahr 2025 alle Märkte';
+            } else {
+                bannerVal.textContent = '1.238.604 €';
+                if (bannerLbl) bannerLbl.textContent = 'Amazon Außenumsatz YTD alle Märkte';
+            }
         }
     }
 
