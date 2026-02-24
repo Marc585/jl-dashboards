@@ -325,8 +325,9 @@
     <!-- TOTAL BANNER -->
     <div class="total-banner">
         <div class="label">Amazon Ads 2026 &ndash; Budget &amp; Performance</div>
-        <div class="amount">619.300 &euro;</div>
-        <div style="font-size: 14px; color: var(--muted); margin-bottom: 8px;">Ads Jahresbudget 2026 (alle 7 L&auml;nder, Jahresplan)</div>
+        <div id="banner-hero-umsatz" class="amount" style="color:var(--accent);">1.238.604 &euro;</div>
+        <div id="banner-hero-label" style="font-size: 15px; font-weight:600; color: var(--text); margin-bottom: 4px;">Amazon Au&szlig;enumsatz YTD 2026 &ndash; alle 8 M&auml;rkte</div>
+        <div style="font-size:13px; color:var(--muted); margin-bottom: 8px;">Ads Jahresbudget 2026: <strong>619.300 &euro;</strong> (alle 8 M&auml;rkte)</div>
         <div style="display: flex; justify-content: center; gap: 32px; flex-wrap: wrap; margin: 12px 0 8px;">
             <div style="text-align: center;">
                 <div style="font-size: 28px; font-weight: 800; color: var(--green);">11,2x</div>
@@ -359,16 +360,16 @@
     <div style="display:flex; gap:8px; margin-bottom:16px; align-items:center;">
       <span style="font-size:12px; color:var(--muted);">Zeitraum:</span>
       <button id="cards-btn-2025" onclick="setCardsView('2025')"
-        style="padding:5px 14px; border-radius:20px; border:1px solid var(--accent); background:var(--accent); color:#fff; font-size:12px; font-weight:600; cursor:pointer; font-family:inherit;">
+        style="padding:5px 14px; border-radius:20px; border:1px solid var(--border); background:transparent; color:var(--text); font-size:12px; font-weight:600; cursor:pointer; font-family:inherit;">
         2025 Gesamt
       </button>
       <button id="cards-btn-2026" onclick="setCardsView('2026')"
-        style="padding:5px 14px; border-radius:20px; border:1px solid var(--border); background:transparent; color:var(--text); font-size:12px; font-weight:600; cursor:pointer; font-family:inherit;">
+        style="padding:5px 14px; border-radius:20px; border:1px solid var(--accent); background:var(--accent); color:#fff; font-size:12px; font-weight:600; cursor:pointer; font-family:inherit;">
         2026 Aktuell
       </button>
-      <span id="cards-zeitraum-label" style="font-size:11px; color:var(--muted); margin-left:4px;">Amazon Au&szlig;enumsatz Gesamtjahr 2025 &ndash; alle M&auml;rkte</span>
+      <span id="cards-zeitraum-label" style="font-size:11px; color:var(--muted); margin-left:4px;">Amazon Au&szlig;enumsatz 2026 &ndash; DE/UK/USA KW1&ndash;6 YTD | IT: Feb | ES/FR/NL/SE: Jan</span>
       <span style="margin-left:auto;"></span>
-      <span style="font-size:12px; color:var(--muted);">Summe:&nbsp;</span><span id="cards-total-sum" style="font-size:14px; font-weight:700; color:var(--accent);">9.220.581 &euro;</span>
+      <span style="font-size:12px; color:var(--muted);">Summe:&nbsp;</span><span id="cards-total-sum" style="font-size:14px; font-weight:700; color:var(--accent);">1.238.604 &euro;</span>
     </div>
     <div class="grid grid-4">
         <div class="card kpi" style="border-color: rgba(63,90,63,0.3);" data-2025="7.727.122&euro;" data-2026="1.016.010&euro;" data-label-2025="Amazon Au&szlig;enumsatz 2025" data-label-2026="Amazon Au&szlig;enumsatz YTD KW1&ndash;6 &rsquo;26">
@@ -656,7 +657,8 @@
             <div style="font-size:12px; color:var(--muted); padding-top:2px;">Jahr:</div>
             <button id="year-btn-2023" onclick="setYear(2023)" style="padding:5px 14px; border-radius:20px; border:1px solid var(--border); background:transparent; color:var(--text); font-size:0.78rem; cursor:pointer; font-family:inherit;">2023</button>
             <button id="year-btn-2024" onclick="setYear(2024)" style="padding:5px 14px; border-radius:20px; border:1px solid var(--border); background:transparent; color:var(--text); font-size:0.78rem; cursor:pointer; font-family:inherit;">2024</button>
-            <button id="year-btn-2025" onclick="setYear(2025)" style="padding:5px 14px; border-radius:20px; border:1px solid var(--accent); background:var(--accent); color:#fff; font-size:0.78rem; cursor:pointer; font-family:inherit; font-weight:500;">2025</button>
+            <button id="year-btn-2025" onclick="setYear(2025)" style="padding:5px 14px; border-radius:20px; border:1px solid var(--border); background:transparent; color:var(--text); font-size:0.78rem; cursor:pointer; font-family:inherit;">2025</button>
+            <button id="year-btn-2026" onclick="setYear(2026)" style="padding:4px 12px; border-radius:20px; border:1px solid var(--accent); background:var(--accent); color:#fff; font-size:11px; cursor:pointer; font-family:inherit; font-weight:500;">2026</button>
             <button id="year-btn-alle" onclick="setYear('alle')" style="padding:5px 14px; border-radius:20px; border:1px solid var(--border); background:transparent; color:var(--text); font-size:0.78rem; cursor:pointer; font-family:inherit;">Alle Jahre</button>
         </div>
         <div id="monat-selector-sales" style="display:none; margin-bottom:12px;">
@@ -1030,6 +1032,7 @@
         // 4. UK ROAS 2025
         const ukRoas2025 = [null,null,null,null,null, 1.08, 1.46, 1.06, 1.01, 1.15, 1.19, 1.81];
         const ukSpend2025 = [0,0,0,0,0, 935, 1972, 3412, 8313, 8508, 7709, 7158];
+        const ukSales2025 = [0,0,0,0,0, 932, 2995, 3908, 9142, 12160, 10752, 17080];
 
         new Chart(document.getElementById('ukRoasChart'), {
             type: 'bar',
@@ -1037,6 +1040,7 @@
                 labels: months,
                 datasets: [
                     { label: 'Spend', data: ukSpend2025, backgroundColor: 'rgba(100,124,100,0.5)', borderRadius: 4, yAxisID: 'y' },
+                    { label: 'Total Sales', data: ukSales2025, type: 'line', borderColor: 'var(--accent)', backgroundColor: 'transparent', borderDash: [5,3], tension: 0.3, pointRadius: 4, pointBackgroundColor: 'var(--accent)', yAxisID: 'y', borderWidth: 2 },
                     { label: 'ROAS', data: ukRoas2025, type: 'line', borderColor: colors.uk, backgroundColor: 'transparent', tension: 0.3, pointRadius: 5, pointBackgroundColor: colors.uk, yAxisID: 'y1' }
                 ]
             },
@@ -1044,12 +1048,13 @@
                 responsive: true,
                 maintainAspectRatio: false,
                 scales: {
-                    y: { ticks: { callback: v => (v/1000) + 'k€' }, grid: { color: '#e6dcce' }},
+                    y: { ticks: { callback: v => (v/1000).toFixed(0) + 'k€' }, grid: { color: '#e6dcce' }, min: 0, suggestedMax: 20000 },
                     y1: { position: 'right', min: 0, max: 3, ticks: { callback: v => v.toFixed(1) + 'x' }, grid: { display: false }},
                     x: { grid: { display: false }}
                 },
                 plugins: {
                     legend: { position: 'top', labels: { usePointStyle: true, pointStyleWidth: 12 }},
+                    tooltip: { callbacks: { label: ctx => ctx.dataset.label === 'ROAS' ? `ROAS: ${ctx.parsed.y.toFixed(2)}x` : `${ctx.dataset.label}: ${ctx.parsed.y.toLocaleString('de-DE')}€` }}
                 }
             }
         });
@@ -1073,6 +1078,13 @@
         // 2025 SE Paid Sales (only Dec available as yearly total)
         const seSales2025 = [0,0,0,0,0,0,0,0,0,0,0,15242];
 
+        // 2026 Paid Sales (Jan verfügbar; IT hat Feb statt Jan)
+        const esSales2026 = [21710,0,0,0,0,0,0,0,0,0,0,0];
+        const frSales2026 = [15681,0,0,0,0,0,0,0,0,0,0,0];
+        const itSales2026 = [0,30918,0,0,0,0,0,0,0,0,0,0];
+        const nlSales2026 = [5027,0,0,0,0,0,0,0,0,0,0,0];
+        const seSales2026 = [3303,0,0,0,0,0,0,0,0,0,0,0];
+
         // 2025 Paid Sales (existing)
         const esSales = [5723,8153,10524,9264,11286,12364,13444,12839,12638,14803,23504,22248];
         const frSales = [6524,3273,4135,2897,3440,2753,4655,5690,5353,9696,13743,19889];
@@ -1086,10 +1098,10 @@
             data: {
                 labels: months,
                 datasets: [
-                    { label: 'ES', data: [...esSales], backgroundColor: colors.es + '99', borderRadius: 2 },
-                    { label: 'FR', data: [...frSales], backgroundColor: colors.fr + '99', borderRadius: 2 },
-                    { label: 'IT', data: [...itSales], backgroundColor: colors.it + '99', borderRadius: 2 },
-                    { label: 'NL', data: [...nlSales], backgroundColor: colors.nl + '99', borderRadius: 2 }
+                    { label: 'ES', data: [...esSales2026], backgroundColor: colors.es + '99', borderRadius: 2 },
+                    { label: 'FR', data: [...frSales2026], backgroundColor: colors.fr + '99', borderRadius: 2 },
+                    { label: 'IT', data: [...itSales2026], backgroundColor: colors.it + '99', borderRadius: 2 },
+                    { label: 'NL', data: [...nlSales2026], backgroundColor: colors.nl + '99', borderRadius: 2 }
                 ]
             },
             options: {
@@ -1152,11 +1164,11 @@
         }
 
         // Jahr-Auswahl für Multi-Year Chart
-        let currentYear = 2025;
+        let currentYear = 2026;
         function setYear(yr) {
             currentYear = yr;
             // Update button styles
-            [2023, 2024, 2025, 'alle'].forEach(y => {
+            [2023, 2024, 2025, 2026, 'alle'].forEach(y => {
                 const btn = document.getElementById('year-btn-' + y);
                 if (!btn) return;
                 const active = y === yr;
@@ -1182,7 +1194,8 @@
                 const dataMap = {
                     2023: [esSales2023, frSales2023, itSales2023, nlSales2023],
                     2024: [esSales2024, frSales2024, itSales2024, nlSales2024],
-                    2025: [esSales, frSales, itSales, nlSales]
+                    2025: [esSales, frSales, itSales, nlSales],
+                    2026: [esSales2026, frSales2026, itSales2026, nlSales2026]
                 };
                 const d = dataMap[yr];
                 salesChart.data.labels = months;
@@ -1299,6 +1312,8 @@
         }
     }
 
+        // Default: Ansicht 2026 aktivieren
+        setCardsView('2026');
     </script>
 
 </body>
