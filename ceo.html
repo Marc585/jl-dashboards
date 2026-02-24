@@ -144,6 +144,7 @@
         @media (max-width: 900px) { .grid-3 { grid-template-columns: 1fr 1fr; } }
         @media (max-width: 600px) { .grid-3, .grid-2, .quick-links { grid-template-columns: 1fr; } .roadmap-label { width: 120px; } }
     </style>
+    <script src="data.js"></script>
 </head>
 <body>
 <div class="container">
@@ -243,12 +244,12 @@ const kpis = [
     },
     {
         name: "Amazon J&L (Q1 Umsatz)",
-        ist: 874367, ziel: 2147000, unit: "€",
+        ist: 1238604, ziel: 2147000, unit: "€",
         trend: "up",
         massnahme: "Nur 3/8 Märkte erfasst (DE, UK, USA). ES/FR/IT/NL/SE noch ohne Daten.",
         color: "--accent",
         linearPlan: 825769, // 2.147.000 * 5/13
-        dataWeeks: 5,
+        dataWeeks: 6,
         totalWeeks: 13
     }
 ];
@@ -310,11 +311,11 @@ const umsatz = {
     },
     amazon: {
         label: "Amazon J&L (alle Märkte)",
-        ist: 874367, // DE 844.753€ + UK 15.852€ + USA ~13.762€ (KW1-5)
+        ist: 1238604, // DE 1.016.010€ + UK 27.154€ + USA 17.508€ + EU Jan (KW1-6)
         plan: 2147000, // Q1 Prognose (11,3 Mio € Jahresprognose = 19%)
         planJahr: 11300000, // Jahresprognose
         linearPlan: 825769, // Linearer Plan für KW1-5 (2.147.000 * 5/13)
-        dataWeeks: 5, // Wochen mit Daten
+        dataWeeks: 6, // Wochen mit Daten
         totalWeeks: 13, // Q1 Gesamtwochen
         zeitraum: "YTD (KW1–KW5)",
         detail: "3/8 Märkte erfasst (DE, UK, USA) | ES/FR/IT/NL/SE noch nicht eingetragen",
@@ -327,14 +328,14 @@ const umsatz = {
 // Daten aus Budget Tracker Excel (OneDrive), aktualisiert Mi wöchentlich
 // Total Sales Amazon = Paid + Organic Sales
 const amazonLaender = [
-    { flag: "&#127465;&#127466;", name: "Deutschland", budgetQ1: 60500, istQ1: 844753, adSpend: 25650, roas: 13.59, orders: 61123, budgetJahr: 320000, status: "active", datenstand: "KW1–5" },
-    { flag: "&#127468;&#127463;", name: "UK", budgetQ1: 20000, istQ1: 15852, adSpend: 6373, roas: 2.08, orders: 1300, budgetJahr: 100000, status: "growth", datenstand: "KW1–4", note: "GBP→EUR" },
-    { flag: "&#127466;&#127480;", name: "Spanien", budgetQ1: 9360, istQ1: null, adSpend: null, roas: null, orders: null, budgetJahr: 46800, status: "active", datenstand: "–" },
-    { flag: "&#127467;&#127479;", name: "Frankreich", budgetQ1: 7600, istQ1: null, adSpend: null, roas: null, orders: null, budgetJahr: 39800, status: "active", datenstand: "–" },
-    { flag: "&#127470;&#127481;", name: "Italien", budgetQ1: 10080, istQ1: null, adSpend: null, roas: null, orders: null, budgetJahr: 50400, status: "active", datenstand: "–" },
-    { flag: "&#127475;&#127473;", name: "Niederlande", budgetQ1: 1200, istQ1: null, adSpend: null, roas: null, orders: null, budgetJahr: 5000, status: "active", datenstand: "–" },
-    { flag: "&#127480;&#127466;", name: "Schweden", budgetQ1: 14325, istQ1: null, adSpend: null, roas: null, orders: null, budgetJahr: 57300, status: "new", datenstand: "–" },
-    { flag: "&#127482;&#127480;", name: "USA", budgetQ1: null, istQ1: 13762, adSpend: 8875, roas: 0.74, orders: 551, budgetJahr: null, status: "launch", datenstand: "KW1–5", note: "USD→EUR" }
+    { flag: "&#127465;&#127466;", name: "Deutschland", budgetQ1: 60500, istQ1: 1016010, adSpend: 29522, roas: 14.0, orders: 71942, budgetJahr: 320000, status: "active", datenstand: "KW1–6" },
+    { flag: "&#127468;&#127463;", name: "UK", budgetQ1: 20000, istQ1: 27154, adSpend: 9334, roas: 2.31, orders: 2209, budgetJahr: 100000, status: "growth", datenstand: "KW1–6", note: "GBP→EUR" },
+    { flag: "&#127466;&#127480;", name: "Spanien", budgetQ1: 9360, istQ1: 48565, adSpend: 3475, roas: null, orders: null, budgetJahr: 46800, status: "active", datenstand: "Jan '26" },
+    { flag: "&#127467;&#127479;", name: "Frankreich", budgetQ1: 7600, istQ1: 44011, adSpend: 3215, roas: null, orders: null, budgetJahr: 39800, status: "active", datenstand: "Jan '26" },
+    { flag: "&#127470;&#127481;", name: "Italien", budgetQ1: 10080, istQ1: 68985, adSpend: 5479, roas: null, orders: null, budgetJahr: 50400, status: "active", datenstand: "Feb '26" },
+    { flag: "&#127475;&#127473;", name: "Niederlande", budgetQ1: 1200, istQ1: 11277, adSpend: 600, roas: null, orders: null, budgetJahr: 5000, status: "active", datenstand: "Jan '26" },
+    { flag: "&#127480;&#127466;", name: "Schweden", budgetQ1: 14325, istQ1: 5094, adSpend: 637, roas: null, orders: null, budgetJahr: 57300, status: "new", datenstand: "Jan '26" },
+    { flag: "&#127482;&#127480;", name: "USA", budgetQ1: null, istQ1: 17508, adSpend: 10949, roas: 0.72, orders: 625, budgetJahr: null, status: "launch", datenstand: "KW1–5", note: "USD→EUR" }
 ];
 
 // --- Artikelgruppen (Platzhalter für Power BI Daten) ---
@@ -684,6 +685,63 @@ renderFuckups();
 renderRoadmap();
 renderInnovation();
 renderKategorien();
+</script>
+<script>
+// ─── SYNC MIT JL_DATA ──────────────────────────────────────────
+// Überschreibt hardcodierte Werte mit den aktuellen Zahlen aus data.js
+(function() {
+  if (!window.JL_DATA) return;
+  const D = window.JL_DATA;
+  const am = D.amazon;
+
+  // Datenstand aktualisieren
+  if (window.datenstand) {
+    datenstand.amazon.datum = 'KW6 (07.02.2026)';
+    datenstand.webshop.datum = D.stand.webshop;
+  }
+
+  // Amazon Q1 KPI
+  if (window.kpis && kpis[2]) {
+    kpis[2].ist = am.ytd_gesamt;
+    kpis[2].linearPlan = Math.round(am.q1_plan / 13 * am.data_weeks);
+    kpis[2].ziel = am.q1_plan;
+    kpis[2].dataWeeks = am.data_weeks;
+  }
+
+  // Umsatz-Block
+  if (window.umsatz) {
+    umsatz.amazon.ist = am.ytd_gesamt;
+    umsatz.amazon.plan = am.q1_plan;
+    umsatz.amazon.planJahr = am.jahresprognose;
+  }
+
+  // Ländertabelle
+  if (window.amazonLaender) {
+    const l = am.laender;
+    // DE
+    if (amazonLaender[0]) { amazonLaender[0].istQ1 = l.DE.ytd; amazonLaender[0].adSpend = l.DE.spend; amazonLaender[0].roas = l.DE.paid_roas; amazonLaender[0].orders = l.DE.orders; }
+    // UK
+    if (amazonLaender[1]) { amazonLaender[1].istQ1 = l.UK.ytd; amazonLaender[1].adSpend = l.UK.spend; amazonLaender[1].roas = l.UK.paid_roas; amazonLaender[1].orders = l.UK.orders; }
+    // ES
+    if (amazonLaender[2]) { amazonLaender[2].istQ1 = l.ES.ytd; }
+    // FR
+    if (amazonLaender[3]) { amazonLaender[3].istQ1 = l.FR.ytd; }
+    // IT
+    if (amazonLaender[4]) { amazonLaender[4].istQ1 = l.IT.ytd; }
+    // NL
+    if (amazonLaender[5]) { amazonLaender[5].istQ1 = l.NL.ytd; }
+    // SE
+    if (amazonLaender[6]) { amazonLaender[6].istQ1 = l.SE.ytd; }
+    // USA
+    if (amazonLaender[7]) { amazonLaender[7].istQ1 = l.USA.ytd; amazonLaender[7].adSpend = l.USA.spend; amazonLaender[7].roas = l.USA.paid_roas; amazonLaender[7].orders = l.USA.orders; }
+  }
+
+  // Re-render mit neuen Daten
+  if (typeof renderKPIs === 'function') renderKPIs();
+  if (typeof renderUmsatz === 'function') renderUmsatz();
+  if (typeof renderCountries === 'function') renderCountries();
+  if (typeof renderFreshness === 'function') renderFreshness();
+})();
 </script>
 </body>
 </html>

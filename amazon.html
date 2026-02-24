@@ -482,6 +482,7 @@
   /* FOOTER */
   .footer { text-align: center; font-size: 0.72rem; color: var(--text-muted); padding: 20px 0; border-top: 1px solid var(--border); margin-top: 8px; }
 </style>
+    <script src="data.js"></script>
 </head>
 <body>
 
@@ -1496,6 +1497,19 @@
             }
         }
     }
+
+        // Sync with JL_DATA (shared data source)
+        if (window.JL_DATA) {
+          const d = window.JL_DATA;
+          // Update banner hero
+          const heroEl = document.getElementById('banner-hero-umsatz');
+          if (heroEl) heroEl.textContent = d.amazon.ytd_gesamt.toLocaleString('de-DE') + ' €';
+          const heroLbl = document.getElementById('banner-hero-label');
+          if (heroLbl) heroLbl.textContent = d.amazon.ytd_gesamt_label;
+          // Update spend
+          const spendEl = document.querySelector('[data-kpi="spend"]');
+          if (spendEl) spendEl.textContent = d.amazon.ad_spend_ytd.toLocaleString('de-DE') + ' €';
+        }
 
         // Default: Ansicht 2026 aktivieren
         setCardsView('2026');
