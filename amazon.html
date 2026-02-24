@@ -354,71 +354,83 @@
 
     <!-- ÜBERSICHT PRO LAND -->
     <div class="section-title">Umsatz &amp; Budget pro Land</div>
-    <div style="font-size: 12px; color: var(--muted); margin: -8px 0 16px 16px;">DE/UK/USA: YTD 2026 (KW1&ndash;6, Stand 07.02.2026) | ES/FR/IT/NL: Gesamtjahr 2025 (2026-Daten noch nicht im Tracker)</div>
+    <div style="font-size: 12px; color: var(--muted); margin: -8px 0 16px 16px;">Amazon Paid Sales &ndash; alle M&auml;rkte auf gleicher Datenbasis</div>
 
+    <div style="display:flex; gap:8px; margin-bottom:16px; align-items:center;">
+      <span style="font-size:12px; color:var(--muted);">Zeitraum:</span>
+      <button id="cards-btn-2025" onclick="setCardsView('2025')"
+        style="padding:5px 14px; border-radius:20px; border:1px solid var(--accent); background:var(--accent); color:#fff; font-size:12px; font-weight:600; cursor:pointer; font-family:inherit;">
+        2025 Gesamt
+      </button>
+      <button id="cards-btn-2026" onclick="setCardsView('2026')"
+        style="padding:5px 14px; border-radius:20px; border:1px solid var(--border); background:transparent; color:var(--text); font-size:12px; font-weight:600; cursor:pointer; font-family:inherit;">
+        2026 Aktuell
+      </button>
+      <span id="cards-zeitraum-label" style="font-size:11px; color:var(--muted); margin-left:4px;">Amazon Paid Sales Gesamtjahr 2025 &ndash; alle M&auml;rkte</span>
+    </div>
     <div class="grid grid-4">
-        <div class="card kpi" style="border-color: rgba(63,90,63,0.3);">
+        <div class="card kpi" style="border-color: rgba(63,90,63,0.3);" data-2025="2.633.916&euro;" data-2026="315.042&euro;" data-label-2025="Paid Sales 2025" data-label-2026="Paid Sales Jan &rsquo;26">
             <div class="flag">&#127465;&#127466;</div>
             <div class="country">Deutschland</div>
-            <div class="value" style="color: var(--accent)">1.016.010&euro;</div>
-            <div class="label">Amazon Umsatz YTD 2026 (KW1&ndash;6)</div>
+            <div class="value card-main-value" style="color: var(--accent)">2.633.916&euro;</div>
+            <div class="label card-time-label">Paid Sales 2025</div>
             <div class="budget-line">Jahresbudget '26: <strong>320.000&euro;</strong> <span class="roas-tag roas-green">Paid ROAS: 14,0</span></div>
             <div class="sub">Hauptmarkt | Spend: 29.522&euro; | 71.942 Bestellungen</div>
         </div>
-        <div class="card kpi">
+        <div class="card kpi" data-2025="187.455&euro;" data-2026="30.918&euro;" data-label-2025="Paid Sales 2025" data-label-2026="Paid Sales Jan/Feb &rsquo;26">
             <div class="flag">&#127470;&#127481;</div>
             <div class="country">Italien</div>
-            <div class="value" style="color: var(--green)">167.391&euro;</div>
-            <div class="label">Umsatz Gesamtjahr 2025</div>
+            <div class="value card-main-value" style="color: var(--green)">187.455&euro;</div>
+            <div class="label card-time-label">Paid Sales 2025</div>
             <div class="budget-line">Jahresbudget '26: <strong>50.400&euro;</strong> <span class="roas-tag roas-green">Total ROAS '25: 3,84</span></div>
             <div class="sub">Top Performer | Ziel '26: 101.372&euro;</div>
         </div>
-        <div class="card kpi">
+        <div class="card kpi" data-2025="156.886&euro;" data-2026="21.710&euro;" data-label-2025="Paid Sales 2025" data-label-2026="Paid Sales Jan &rsquo;26">
             <div class="flag">&#127466;&#127480;</div>
             <div class="country">Spanien</div>
-            <div class="value" style="color: var(--orange)">156.791&euro;</div>
-            <div class="label">Umsatz Gesamtjahr 2025</div>
+            <div class="value card-main-value" style="color: var(--orange)">156.886&euro;</div>
+            <div class="label card-time-label">Paid Sales 2025</div>
             <div class="budget-line">Jahresbudget '26: <strong>46.800&euro;</strong> <span class="roas-tag roas-green">Total ROAS '25: 4,41</span></div>
             <div class="sub">Top Performer | Ziel '26: 208.000&euro;</div>
         </div>
-        <div class="card kpi">
+        <div class="card kpi" data-2025="78.960&euro;" data-2026="15.681&euro;" data-label-2025="Paid Sales 2025" data-label-2026="Paid Sales Jan &rsquo;26">
             <div class="flag">&#127467;&#127479;</div>
             <div class="country">Frankreich</div>
-            <div class="value" style="color: var(--cyan)">82.048&euro;</div>
-            <div class="label">Umsatz Gesamtjahr 2025</div>
+            <div class="value card-main-value" style="color: var(--cyan)">78.960&euro;</div>
+            <div class="label card-time-label">Paid Sales 2025</div>
             <div class="budget-line">Jahresbudget '26: <strong>39.800&euro;</strong> <span class="roas-tag roas-green">Total ROAS '25: 2,97</span></div>
             <div class="sub">Stabil | Ziel '26: 79.000&euro;</div>
         </div>
-        <div class="card kpi">
+        <div class="card kpi" data-2025="34.923&euro;" data-2026="5.027&euro;" data-label-2025="Paid Sales 2025" data-label-2026="Paid Sales Jan &rsquo;26">
             <div class="flag">&#127475;&#127473;</div>
             <div class="country">Niederlande</div>
-            <div class="value" style="color: var(--purple)">35.020&euro;</div>
-            <div class="label">Umsatz Gesamtjahr 2025</div>
+            <div class="value card-main-value" style="color: var(--purple)">34.923&euro;</div>
+            <div class="label card-time-label">Paid Sales 2025</div>
             <div class="budget-line">Jahresbudget '26: <strong>5.000&euro;</strong> <span class="roas-tag roas-green">Total ROAS '25: 9,98</span></div>
             <div class="sub">Cash Cow | Bester ROAS!</div>
         </div>
-        <div class="card kpi">
+        <div class="card kpi" data-2025="47.832&euro;" data-2026="14.947&euro;" data-label-2025="Paid Sales 2025" data-label-2026="Paid Sales Jan &rsquo;26">
             <div class="flag">&#127468;&#127463;</div>
             <div class="country">UK</div>
-            <div class="value" style="color: var(--blue)">27.154&euro;</div>
-            <div class="label">Amazon Umsatz YTD 2026 (KW1&ndash;6)</div>
+            <div class="value card-main-value" style="color: var(--blue)">47.832&euro;</div>
+            <div class="label card-time-label">Paid Sales 2025</div>
             <div class="budget-line">Jahresbudget '26: <strong>100.000&euro;</strong> <span class="roas-tag roas-green">Paid ROAS: 2,31</span></div>
             <div class="sub">Wachstumsmarkt | Spend: 9.334&euro; | 2.209 Bestellungen</div>
         </div>
-        <div class="card kpi">
+        <div class="card kpi" data-2025="94.000&euro;" data-2026="5.100&euro;" data-label-2025="Paid Sales 2025 (~97.977 USD)" data-label-2026="Paid Sales Jan &rsquo;26 (~5.313 USD)">
             <div class="flag">&#127482;&#127480;</div>
             <div class="country">USA</div>
-            <div class="value" style="color: var(--yellow)">17.508&euro;</div>
-            <div class="label">Amazon Umsatz YTD 2026 (KW1&ndash;6)</div>
-            <div style="font-size:10px; color:var(--muted); margin-top:2px; line-height:1.4;">(umgerechnet aus 18.208 USD, Kurs: 1 USD = 0,96 EUR)</div>
+            <div class="value card-main-value" style="color: var(--yellow)">94.000&euro;</div>
+            <div class="label card-time-label">Paid Sales 2025 (~97.977 USD)</div>
+            <div style="font-size:10px; color:var(--muted); margin-top:2px; line-height:1.4;">Umgerechnet, Kurs: 1 USD &asymp; 0,96 EUR</div>
             <div class="budget-line">Jahresbudget '26: <strong>TBD</strong> <span class="roas-tag roas-red">Paid ROAS: 0,72</span></div>
             <div class="sub">Marktaufbau | Ticket to Retail</div>
         </div>
-        <div class="card kpi">
+        <div class="card kpi" data-2025="167.486&euro;" data-2026="35.105&euro;" data-label-2025="Paid Sales 2025" data-label-2026="Paid Sales Jan &rsquo;26">
             <div class="flag">&#127480;&#127466;</div>
             <div class="country">Schweden</div>
-            <div class="value" style="color: var(--pink)">&ndash;</div>
-            <div class="label">Neuer Markt 2026</div>
+            <div class="value card-main-value" style="color: var(--pink)">167.486&euro;</div>
+            <div class="label card-time-label">Paid Sales 2025</div>
             <div class="budget-line">Jahresbudget '26: <strong>57.300&euro;</strong></div>
             <div class="sub">4.775&euro;/Monat gleichm&auml;&szlig;ig</div>
         </div>
@@ -507,8 +519,8 @@
         <div style="display: flex; align-items: flex-start; gap: 16px;">
             <div style="font-size: 40px; flex-shrink: 0; line-height: 1;">&#128680;</div>
             <div style="flex: 1;">
-                <div style="font-size: 13px; font-weight: 700; color: var(--muted); letter-spacing: 0.5px; margin-bottom: 6px;">&#127465;&#127466; Deutschland</div>
-                <div style="font-size: 17px; font-weight: 800; color: var(--red); letter-spacing: 0.5px; margin-bottom: 4px; text-transform: uppercase;">Budget &uuml;berschritten &ndash; Aktion erforderlich</div>
+                <div style="font-size: 20px; font-weight: 800; color: var(--red); margin-bottom: 4px; line-height: 1.2;">&#127465;&#127466; <span style="font-size: 20px;">Deutschland</span> &ndash; Budget&uuml;berschreitung erkannt</div>
+                <div style="font-size: 12px; font-weight: 700; color: var(--muted); letter-spacing: 0.5px; text-transform: uppercase; margin-bottom: 4px;">Aktion erforderlich</div>
                 <div style="font-size: 13px; color: var(--muted); margin-bottom: 16px;">Folgende Monate haben das geplante Ads-Budget &uuml;berschritten &rarr; Bitte Ursachen mit dem Team kl&auml;ren</div>
                 <table style="width: 100%; border-collapse: collapse; font-size: 13px;">
                     <thead>
@@ -586,8 +598,8 @@
         <div style="display: flex; align-items: flex-start; gap: 16px;">
             <div style="font-size: 40px; flex-shrink: 0; line-height: 1;">&#128680;</div>
             <div style="flex: 1;">
-                <div style="font-size: 13px; font-weight: 700; color: var(--muted); letter-spacing: 0.5px; margin-bottom: 6px;">&#127468;&#127463; United Kingdom</div>
-                <div style="font-size: 17px; font-weight: 800; color: var(--red); letter-spacing: 0.5px; margin-bottom: 4px; text-transform: uppercase;">Budget &uuml;berschritten &ndash; Aktion erforderlich</div>
+                <div style="font-size: 20px; font-weight: 800; color: var(--red); margin-bottom: 4px; line-height: 1.2;">&#127468;&#127463; <span style="font-size: 20px;">United Kingdom</span> &ndash; Budget&uuml;berschreitung erkannt</div>
+                <div style="font-size: 12px; font-weight: 700; color: var(--muted); letter-spacing: 0.5px; text-transform: uppercase; margin-bottom: 4px;">Aktion erforderlich</div>
                 <div style="font-size: 13px; color: var(--muted); margin-bottom: 16px;">Folgende Monate haben das geplante UK Ads-Budget &uuml;berschritten &rarr; Bitte Ursachen mit dem Team kl&auml;ren</div>
                 <table style="width: 100%; border-collapse: collapse; font-size: 13px;">
                     <thead>
@@ -1224,6 +1236,36 @@
                 }
             }
         });
+
+    function setCardsView(year) {
+        // Toggle button styles
+        ['2025','2026'].forEach(function(y) {
+            var btn = document.getElementById('cards-btn-' + y);
+            var active = y === year;
+            btn.style.background = active ? 'var(--accent)' : 'transparent';
+            btn.style.color = active ? '#fff' : 'var(--text)';
+            btn.style.borderColor = active ? 'var(--accent)' : 'var(--border)';
+        });
+
+        // Update label
+        var label = document.getElementById('cards-zeitraum-label');
+        if (year === '2025') {
+            label.textContent = 'Amazon Paid Sales Gesamtjahr 2025 – alle Märkte';
+        } else {
+            label.textContent = 'Amazon Paid Sales 2026 – DE/UK/USA KW1-6 YTD | EU-Märkte: Jan 2026';
+        }
+
+        // Update each card value
+        document.querySelectorAll('[data-2025]').forEach(function(el) {
+            var val = el.getAttribute('data-' + year);
+            var lbl = el.getAttribute('data-label-' + year);
+            var valueEl = el.querySelector('.card-main-value');
+            var labelEl = el.querySelector('.card-time-label');
+            if (valueEl && val) valueEl.textContent = val;
+            if (labelEl && lbl) labelEl.textContent = lbl;
+        });
+    }
+
     </script>
 
 </body>
