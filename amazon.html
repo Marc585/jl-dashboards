@@ -623,8 +623,24 @@
 
     <div class="card">
         <div class="card-header">
-            <h3>Sales 2025 (nach Land)</h3>
+            <h3>Paid Sales 2025 (nach Land) &ndash; Amazon Extern</h3>
             <span class="badge badge-blue">Umsatz</span>
+        </div>
+        <div style="padding:0 0 12px; color:var(--muted); font-size:0.8rem; line-height:1.6; border-bottom:1px solid var(--border); margin-bottom:14px;">
+            <strong style="color:var(--text);">Externe Amazon Paid Sales</strong> &ndash; &Auml;quivalent zu Scannerzahlen im Handel. Nur Einnahmen die direkt &uuml;ber Paid Advertising erzielt wurden (kein Organic). Gesamt-Sales je Land werden monatlich aus den Budget Allocation-Dateien der L&auml;nder (Zeile: Overall) gezogen.
+        </div>
+        <div style="display:flex; gap:8px; margin-bottom:16px; flex-wrap:wrap;">
+            <button onclick="setSalesView('gesamt')" id="sales-btn-gesamt" style="padding:5px 14px; border-radius:20px; border:1px solid var(--accent); background:var(--accent); color:#fff; font-size:0.78rem; cursor:pointer; font-family:inherit; font-weight:500;">Gesamtzeitraum</button>
+            <button onclick="setSalesView('ytd')" id="sales-btn-ytd" style="padding:5px 14px; border-radius:20px; border:1px solid var(--border); background:transparent; color:var(--text); font-size:0.78rem; cursor:pointer; font-family:inherit;">YTD kumulativ</button>
+            <button onclick="setSalesView('monat')" id="sales-btn-monat" style="padding:5px 14px; border-radius:20px; border:1px solid var(--border); background:transparent; color:var(--text); font-size:0.78rem; cursor:pointer; font-family:inherit;">Monat</button>
+        </div>
+        <div id="monat-selector-sales" style="display:none; margin-bottom:12px;">
+            <select id="monat-picker-sales" onchange="updateSalesMonthView()" style="padding:6px 12px; border-radius:8px; border:1px solid var(--border); background:var(--card); color:var(--text); font-family:inherit; font-size:0.82rem;">
+                <option value="0">Januar</option><option value="1">Februar</option><option value="2">M&auml;rz</option>
+                <option value="3">April</option><option value="4">Mai</option><option value="5">Juni</option>
+                <option value="6">Juli</option><option value="7">August</option><option value="8">September</option>
+                <option value="9">Oktober</option><option value="10">November</option><option value="11">Dezember</option>
+            </select>
         </div>
         <div class="chart-container-lg">
             <canvas id="salesCompareChart"></canvas>
@@ -1000,21 +1016,23 @@
             }
         });
 
-        // 5. Sales Comparison
+        // 5. Paid Sales Comparison (Amazon Extern – nach Land)
         const esSales = [5723,8153,10524,9264,11286,12364,13444,12839,12638,14803,23504,22248];
         const frSales = [6524,3273,4135,2897,3440,2753,4655,5690,5353,9696,13743,19889];
         const itSales = [7468,8364,12554,10000,12080,12034,12878,11235,12434,17834,32670,37841];
         const nlSales = [1377,1374,2633,1736,2279,2838,2697,2031,3889,3743,5958,4465];
 
-        new Chart(document.getElementById('salesCompareChart'), {
+        function cumSales(arr) { let s=0; return arr.map(v => (s+=v)); }
+
+        const salesChart = new Chart(document.getElementById('salesCompareChart'), {
             type: 'bar',
             data: {
                 labels: months,
                 datasets: [
-                    { label: 'ES', data: esSales, backgroundColor: colors.es + '99', borderRadius: 2 },
-                    { label: 'FR', data: frSales, backgroundColor: colors.fr + '99', borderRadius: 2 },
-                    { label: 'IT', data: itSales, backgroundColor: colors.it + '99', borderRadius: 2 },
-                    { label: 'NL', data: nlSales, backgroundColor: colors.nl + '99', borderRadius: 2 }
+                    { label: 'ES', data: [...esSales], backgroundColor: colors.es + '99', borderRadius: 2 },
+                    { label: 'FR', data: [...frSales], backgroundColor: colors.fr + '99', borderRadius: 2 },
+                    { label: 'IT', data: [...itSales], backgroundColor: colors.it + '99', borderRadius: 2 },
+                    { label: 'NL', data: [...nlSales], backgroundColor: colors.nl + '99', borderRadius: 2 }
                 ]
             },
             options: {
@@ -1030,6 +1048,51 @@
                 }
             }
         });
+
+        function setSalesView(mode) {
+            ['gesamt','ytd','monat'].forEach(m => {
+                const btn = document.getElementById('sales-btn-' + m);
+                if (!btn) return;
+                const active = m === mode;
+                btn.style.background = active ? 'var(--accent)' : 'transparent';
+                btn.style.color = active ? '#fff' : 'var(--text)';
+                btn.style.borderColor = active ? 'var(--accent)' : 'var(--border)';
+            });
+            document.getElementById('monat-selector-sales').style.display = mode === 'monat' ? 'block' : 'none';
+            if (mode === 'gesamt') {
+                salesChart.data.labels = months;
+                salesChart.data.datasets[0].data = [...esSales];
+                salesChart.data.datasets[1].data = [...frSales];
+                salesChart.data.datasets[2].data = [...itSales];
+                salesChart.data.datasets[3].data = [...nlSales];
+                salesChart.options.scales.x.stacked = true;
+                salesChart.options.scales.y.stacked = true;
+            } else if (mode === 'ytd') {
+                salesChart.data.labels = months;
+                salesChart.data.datasets[0].data = cumSales(esSales);
+                salesChart.data.datasets[1].data = cumSales(frSales);
+                salesChart.data.datasets[2].data = cumSales(itSales);
+                salesChart.data.datasets[3].data = cumSales(nlSales);
+                salesChart.options.scales.x.stacked = false;
+                salesChart.options.scales.y.stacked = false;
+            } else if (mode === 'monat') {
+                updateSalesMonthView();
+                return;
+            }
+            salesChart.update();
+        }
+
+        function updateSalesMonthView() {
+            const idx = parseInt(document.getElementById('monat-picker-sales').value);
+            salesChart.data.labels = [months[idx]];
+            salesChart.data.datasets[0].data = [esSales[idx]];
+            salesChart.data.datasets[1].data = [frSales[idx]];
+            salesChart.data.datasets[2].data = [itSales[idx]];
+            salesChart.data.datasets[3].data = [nlSales[idx]];
+            salesChart.options.scales.x.stacked = false;
+            salesChart.options.scales.y.stacked = false;
+            salesChart.update();
+        }
 
         // 7. All Countries Monthly Stacked
         const ukBudget26 = [6000,7000,7000,8000,9000,8000,10000,4000,6000,12000,14000,9000];
