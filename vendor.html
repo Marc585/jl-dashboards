@@ -1,1532 +1,519 @@
 <!DOCTYPE html>
 <html lang="de">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Amazon Vendor Sales 2025 – Jean & Len</title>
-  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
-  <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels@2.2.0/dist/chartjs-plugin-datalabels.min.js"></script>
-  <style>
-    :root {
-      --bg: #f2ece7;
-      --card: #ffffff;
-      --accent: #3f5a3f;
-      --accent-light: #6b8f6b;
-      --accent-bg: #e8f0e8;
-      --text: #2d2d2d;
-      --text-muted: #7a7a7a;
-      --border: #e0d8d0;
-      --shadow: 0 2px 12px rgba(63,90,63,0.08);
-      --shadow-hover: 0 6px 24px rgba(63,90,63,0.15);
-      --ret-ok: #3f5a3f;
-      --ret-medium: #d4860a;
-      --ret-high: #c0392b;
-    }
-    * { box-sizing: border-box; margin: 0; padding: 0; }
-    body {
-      font-family: 'Poppins', sans-serif;
-      background: var(--bg);
-      color: var(--text);
-      font-size: 14px;
-      line-height: 1.6;
-    }
-    /* ─── Header ─── */
-    .dashboard-header {
-      background: var(--accent);
-      color: white;
-      padding: 32px 40px 28px;
-    }
-    .header-top {
-      display: flex;
-      justify-content: space-between;
-      align-items: flex-start;
-      flex-wrap: wrap;
-      gap: 20px;
-    }
-    .header-title h1 {
-      font-size: 22px;
-      font-weight: 700;
-      letter-spacing: -0.3px;
-    }
-    .header-title p {
-      font-size: 13px;
-      opacity: 0.75;
-      margin-top: 4px;
-    }
-    .header-badge {
-      background: rgba(255,255,255,0.15);
-      border: 1px solid rgba(255,255,255,0.3);
-      border-radius: 20px;
-      padding: 4px 14px;
-      font-size: 11px;
-      font-weight: 500;
-    }
-    .kpi-row {
-      display: flex;
-      gap: 20px;
-      margin-top: 24px;
-      flex-wrap: wrap;
-    }
-    .kpi-card {
-      background: rgba(255,255,255,0.12);
-      border: 1px solid rgba(255,255,255,0.2);
-      border-radius: 12px;
-      padding: 16px 22px;
-      min-width: 160px;
-    }
-    .kpi-label {
-      font-size: 11px;
-      opacity: 0.7;
-      font-weight: 400;
-      text-transform: uppercase;
-      letter-spacing: 0.5px;
-    }
-    .kpi-value {
-      font-size: 26px;
-      font-weight: 700;
-      letter-spacing: -0.5px;
-      margin-top: 2px;
-    }
-    .kpi-sub {
-      font-size: 11px;
-      opacity: 0.6;
-      margin-top: 2px;
-    }
-    /* ─── Country KPI strip ─── */
-    .country-strip {
-      background: rgba(255,255,255,0.08);
-      border-top: 1px solid rgba(255,255,255,0.15);
-      margin-top: 24px;
-      padding-top: 16px;
-      display: flex;
-      gap: 0;
-      flex-wrap: wrap;
-    }
-    .country-kpi {
-      padding: 6px 20px 6px 0;
-      border-right: 1px solid rgba(255,255,255,0.15);
-      margin-right: 20px;
-    }
-    .country-kpi:last-child { border-right: none; }
-    .country-flag { font-size: 12px; opacity: 0.7; }
-    .country-rev { font-size: 15px; font-weight: 600; margin-top: 2px; }
-    /* ─── Main content ─── */
-    .main {
-      max-width: 1400px;
-      margin: 0 auto;
-      padding: 32px 24px;
-    }
-    /* ─── Section titles ─── */
-    .section-title {
-      font-size: 16px;
-      font-weight: 600;
-      color: var(--accent);
-      margin-bottom: 16px;
-      display: flex;
-      align-items: center;
-      gap: 8px;
-    }
-    .section-title::before {
-      content: '';
-      display: inline-block;
-      width: 4px;
-      height: 18px;
-      background: var(--accent);
-      border-radius: 2px;
-    }
-    /* ─── Cards ─── */
-    .card {
-      background: var(--card);
-      border-radius: 16px;
-      padding: 24px;
-      box-shadow: var(--shadow);
-      border: 1px solid var(--border);
-    }
-    /* ─── Charts row ─── */
-    .charts-row {
-      display: grid;
-      grid-template-columns: 360px 1fr;
-      gap: 20px;
-      margin-bottom: 24px;
-    }
-    @media (max-width: 900px) {
-      .charts-row { grid-template-columns: 1fr; }
-    }
-    .chart-wrap {
-      position: relative;
-      height: 380px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-    }
-    .chart-wrap-bar {
-      position: relative;
-      height: 380px;
-    }
-    /* ─── Donut legend ─── */
-    .donut-legend {
-      margin-top: 16px;
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 5px 16px;
-    }
-    .legend-item {
-      display: flex;
-      align-items: center;
-      gap: 6px;
-      font-size: 11px;
-      color: var(--text);
-    }
-    .legend-dot {
-      width: 10px;
-      height: 10px;
-      border-radius: 50%;
-      flex-shrink: 0;
-    }
-    /* ─── Tables ─── */
-    .table-wrap {
-      overflow-x: auto;
-      -webkit-overflow-scrolling: touch;
-      margin-bottom: 24px;
-    }
-    table {
-      width: 100%;
-      border-collapse: collapse;
-      font-size: 12.5px;
-      white-space: nowrap;
-    }
-    th {
-      background: var(--accent);
-      color: white;
-      padding: 10px 12px;
-      font-weight: 500;
-      font-size: 11px;
-      text-transform: uppercase;
-      letter-spacing: 0.4px;
-      position: sticky;
-      top: 0;
-    }
-    th:first-child { border-radius: 8px 0 0 0; text-align: left; }
-    th:last-child { border-radius: 0 8px 0 0; }
-    td {
-      padding: 9px 12px;
-      border-bottom: 1px solid var(--border);
-      text-align: right;
-      font-variant-numeric: tabular-nums;
-    }
-    td:first-child {
-      text-align: left;
-      font-weight: 500;
-      background: #fafaf8;
-      position: sticky;
-      left: 0;
-      z-index: 1;
-      max-width: 220px;
-      white-space: normal;
-    }
-    tr:hover td { background: #f7f3ef; }
-    tr:hover td:first-child { background: #f0ece7; }
-    .total-row td {
-      background: var(--accent-bg) !important;
-      font-weight: 600;
-      border-top: 2px solid var(--accent);
-    }
-    .total-col {
-      font-weight: 600;
-      color: var(--accent);
-      border-left: 1px solid var(--border);
-    }
-    .pct-col {
-      color: var(--text-muted);
-      font-size: 11px;
-    }
-    .cat-dot {
-      display: inline-block;
-      width: 8px;
-      height: 8px;
-      border-radius: 50%;
-      margin-right: 6px;
-      vertical-align: middle;
-      flex-shrink: 0;
-    }
-    /* ─── Return badges ─── */
-    .ret-ok { color: var(--ret-ok); font-weight: 500; }
-    .ret-medium { color: var(--ret-medium); font-weight: 600; }
-    .ret-high { color: var(--ret-high); font-weight: 700; }
-    .ret-ok small, .ret-medium small, .ret-high small {
-      display: block;
-      font-weight: 400;
-      font-size: 10px;
-      opacity: 0.7;
-    }
-    /* ─── Legend strip for returns ─── */
-    .ret-legend {
-      display: flex;
-      gap: 20px;
-      flex-wrap: wrap;
-      margin-bottom: 16px;
-      font-size: 12px;
-    }
-    .ret-legend-item {
-      display: flex;
-      align-items: center;
-      gap: 6px;
-    }
-    .ret-badge-sample {
-      padding: 2px 8px;
-      border-radius: 4px;
-      font-size: 11px;
-      font-weight: 600;
-    }
-    /* ─── Accordion ─── */
-    .accordion { display: flex; flex-direction: column; gap: 8px; }
-    .accordion-item {
-      border: 1px solid var(--border);
-      border-radius: 12px;
-      overflow: hidden;
-    }
-    .accordion-header {
-      width: 100%;
-      background: var(--card);
-      border: none;
-      padding: 14px 20px;
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      cursor: pointer;
-      font-family: 'Poppins', sans-serif;
-      font-size: 13px;
-      color: var(--text);
-      transition: background 0.2s;
-    }
-    .accordion-header:hover { background: #f7f3ef; }
-    .acc-left { display: flex; align-items: center; gap: 10px; }
-    .acc-right { display: flex; align-items: center; gap: 16px; }
-    .cat-dot-lg {
-      width: 14px;
-      height: 14px;
-      border-radius: 50%;
-      flex-shrink: 0;
-    }
-    .acc-cat-name { font-weight: 600; font-size: 13px; }
-    .acc-rev { font-weight: 700; font-size: 14px; color: var(--accent); }
-    .acc-units { font-size: 12px; color: var(--text-muted); }
-    .acc-pct {
-      font-size: 11px;
-      background: var(--accent-bg);
-      color: var(--accent);
-      padding: 2px 8px;
-      border-radius: 10px;
-      font-weight: 600;
-    }
-    .acc-arrow {
-      font-size: 11px;
-      color: var(--text-muted);
-      transition: transform 0.2s;
-    }
-    .accordion-body {
-      border-top: 1px solid var(--border);
-      padding: 12px 20px;
-      background: #fafaf8;
-    }
-    .product-item {
-      display: flex;
-      align-items: flex-start;
-      gap: 12px;
-      padding: 10px 0;
-      border-bottom: 1px solid var(--border);
-    }
-    .product-item:last-child { border-bottom: none; }
-    .product-rank-dot {
-      width: 10px;
-      height: 10px;
-      border-radius: 50%;
-      margin-top: 5px;
-      flex-shrink: 0;
-    }
-    .product-info { flex: 1; }
-    .product-title {
-      font-size: 12.5px;
-      font-weight: 500;
-      color: var(--text);
-      line-height: 1.4;
-    }
-    .product-meta {
-      display: flex;
-      gap: 8px;
-      margin-top: 5px;
-      flex-wrap: wrap;
-    }
-    .asin-badge, .rev-badge, .units-badge {
-      font-size: 11px;
-      padding: 2px 8px;
-      border-radius: 6px;
-    }
-    .asin-badge {
-      background: #e8f0e8;
-      color: var(--accent);
-      font-weight: 500;
-    }
-    .asin-badge a {
-      color: var(--accent);
-      text-decoration: none;
-      font-weight: 600;
-    }
-    .asin-badge a:hover { text-decoration: underline; }
-    .rev-badge {
-      background: var(--accent);
-      color: white;
-      font-weight: 600;
-    }
-    .units-badge {
-      background: #f0ece7;
-      color: var(--text-muted);
-    }
-    /* ─── Insight boxes ─── */
-    .insights-row {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
-      gap: 16px;
-      margin-bottom: 24px;
-    }
-    .insight-card {
-      background: var(--card);
-      border: 1px solid var(--border);
-      border-left: 4px solid var(--accent);
-      border-radius: 12px;
-      padding: 16px 18px;
-      box-shadow: var(--shadow);
-    }
-    .insight-card h4 {
-      font-size: 12px;
-      font-weight: 600;
-      color: var(--accent);
-      text-transform: uppercase;
-      letter-spacing: 0.4px;
-      margin-bottom: 6px;
-    }
-    .insight-card p {
-      font-size: 13px;
-      color: var(--text);
-      line-height: 1.5;
-    }
-    .insight-card .big-num {
-      font-size: 22px;
-      font-weight: 700;
-      color: var(--accent);
-    }
-    /* ─── Footer ─── */
-    .footer {
-      text-align: center;
-      padding: 24px;
-      font-size: 11px;
-      color: var(--text-muted);
-      border-top: 1px solid var(--border);
-      margin-top: 20px;
-    }
-    /* ─── Section spacer ─── */
-    .section { margin-bottom: 28px; }
-    /* ─── Tab nav ─── */
-    .tab-nav {
-      display: flex;
-      gap: 4px;
-      margin-bottom: 20px;
-      background: var(--card);
-      padding: 6px;
-      border-radius: 12px;
-      border: 1px solid var(--border);
-      width: fit-content;
-      box-shadow: var(--shadow);
-    }
-    .tab-btn {
-      padding: 8px 18px;
-      border: none;
-      background: transparent;
-      border-radius: 8px;
-      cursor: pointer;
-      font-family: 'Poppins', sans-serif;
-      font-size: 13px;
-      font-weight: 500;
-      color: var(--text-muted);
-      transition: all 0.2s;
-    }
-    .tab-btn.active {
-      background: var(--accent);
-      color: white;
-    }
-    .tab-btn:hover:not(.active) { background: var(--accent-bg); color: var(--accent); }
-    .tab-panel { display: none; }
-    .tab-panel.active { display: block; }
-  </style>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Jean & Len – Vendor Sales Dashboard 2025</title>
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+<style>
+  :root {
+    --bg: #f2ece7;
+    --card: #ffffff;
+    --border: #e6dcce;
+    --text: #221e1b;
+    --text-muted: #7a6f66;
+    --accent: #3f5a3f;
+    --green: #4a7c59;
+    --red: #e52427;
+    --orange: #d97706;
+    --yellow: #ca8a04;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: 'Poppins', sans-serif; background: var(--bg); color: var(--text); min-height: 100vh; }
+
+  /* HEADER */
+  .header {
+    background: var(--accent);
+    color: #fff;
+    padding: 28px 40px 24px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 12px;
+  }
+  .header h1 { font-size: 1.5rem; font-weight: 700; letter-spacing: -0.02em; }
+  .header .subtitle { font-size: 0.82rem; opacity: 0.75; margin-top: 3px; }
+  .header .badge {
+    background: rgba(255,255,255,0.18);
+    border: 1px solid rgba(255,255,255,0.3);
+    border-radius: 20px;
+    padding: 5px 14px;
+    font-size: 0.78rem;
+    font-weight: 500;
+    white-space: nowrap;
+  }
+
+  /* LAYOUT */
+  .container { max-width: 1400px; margin: 0 auto; padding: 32px 24px; }
+  .section-title {
+    font-size: 1rem;
+    font-weight: 600;
+    color: var(--accent);
+    margin-bottom: 16px;
+    padding-bottom: 8px;
+    border-bottom: 2px solid var(--border);
+    letter-spacing: 0.01em;
+  }
+
+  /* KPI CARDS */
+  .kpi-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; margin-bottom: 32px; }
+  .kpi-card {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 20px 24px;
+    position: relative;
+    overflow: hidden;
+  }
+  .kpi-card::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 3px;
+    background: var(--accent);
+  }
+  .kpi-label { font-size: 0.75rem; font-weight: 500; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.06em; margin-bottom: 6px; }
+  .kpi-value { font-size: 1.9rem; font-weight: 700; color: var(--text); line-height: 1; }
+  .kpi-sub { font-size: 0.75rem; color: var(--text-muted); margin-top: 4px; }
+
+  /* CHARTS GRID */
+  .charts-grid { display: grid; grid-template-columns: 340px 1fr; gap: 20px; margin-bottom: 32px; }
+  .card {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 24px;
+  }
+  .chart-wrap { position: relative; }
+  .chart-wrap canvas { display: block; }
+
+  /* DONUT LEGEND */
+  .donut-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 0; margin-top: 16px; }
+  .legend-item {
+    display: flex;
+    align-items: center;
+    gap: 7px;
+    padding: 4px 0;
+    font-size: 0.72rem;
+    color: var(--text);
+  }
+  .legend-dot { width: 10px; height: 10px; border-radius: 50%; flex-shrink: 0; }
+  .legend-pct { font-weight: 600; margin-left: auto; color: var(--text-muted); font-size: 0.7rem; }
+
+  /* DATA TABLE */
+  .table-wrap { overflow-x: auto; margin-bottom: 32px; }
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 0.82rem;
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    overflow: hidden;
+  }
+  thead th {
+    background: var(--accent);
+    color: #fff;
+    padding: 11px 12px;
+    text-align: right;
+    font-weight: 600;
+    font-size: 0.75rem;
+    white-space: nowrap;
+  }
+  thead th:first-child { text-align: left; min-width: 180px; }
+  tbody tr { border-bottom: 1px solid var(--border); }
+  tbody tr:last-child { border-bottom: none; }
+  tbody tr:nth-child(even) { background: #faf7f4; }
+  tbody tr:hover { background: #f0ebe4; }
+  tbody td {
+    padding: 9px 12px;
+    text-align: right;
+    white-space: nowrap;
+  }
+  tbody td:first-child { text-align: left; font-weight: 500; }
+  .total-row td { background: #eef2ee !important; font-weight: 700; color: var(--accent); border-top: 2px solid var(--border); }
+  .pct-pill {
+    display: inline-block;
+    background: #e8f0e8;
+    color: var(--accent);
+    border-radius: 4px;
+    padding: 1px 5px;
+    font-size: 0.68rem;
+    font-weight: 600;
+    margin-left: 4px;
+  }
+
+  /* RETURNS TABLE */
+  .two-col { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin-bottom: 32px; }
+  .ret-green { color: #166534; background: #dcfce7; }
+  .ret-orange { color: #92400e; background: #fef3c7; }
+  .ret-red { color: #991b1b; background: #fee2e2; }
+  .ret-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    padding: 2px 8px;
+    border-radius: 4px;
+    font-size: 0.75rem;
+    font-weight: 600;
+    min-width: 60px;
+    justify-content: center;
+  }
+
+  /* TOP PRODUCTS */
+  .top-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; margin-bottom: 32px; }
+  .top-cat-card {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 16px 18px;
+  }
+  .top-cat-title {
+    font-size: 0.8rem;
+    font-weight: 700;
+    color: var(--accent);
+    margin-bottom: 10px;
+    padding-bottom: 8px;
+    border-bottom: 1px solid var(--border);
+  }
+  .top-prod {
+    display: flex;
+    align-items: flex-start;
+    gap: 8px;
+    padding: 6px 0;
+    border-bottom: 1px solid #f0ebe4;
+  }
+  .top-prod:last-child { border-bottom: none; }
+  .top-rank {
+    width: 18px;
+    height: 18px;
+    border-radius: 50%;
+    background: var(--accent);
+    color: #fff;
+    font-size: 0.65rem;
+    font-weight: 700;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    margin-top: 1px;
+  }
+  .top-prod-title { font-size: 0.72rem; color: var(--text); line-height: 1.4; flex: 1; }
+  .top-prod-rev { font-size: 0.72rem; font-weight: 700; color: var(--green); white-space: nowrap; }
+
+  /* FOOTER */
+  .footer { text-align: center; font-size: 0.72rem; color: var(--text-muted); padding: 20px 0; border-top: 1px solid var(--border); margin-top: 8px; }
+
+  @media (max-width: 900px) {
+    .kpi-grid { grid-template-columns: 1fr 1fr; }
+    .charts-grid { grid-template-columns: 1fr; }
+    .two-col { grid-template-columns: 1fr; }
+    .top-grid { grid-template-columns: 1fr 1fr; }
+  }
+  @media (max-width: 600px) {
+    .kpi-grid { grid-template-columns: 1fr; }
+    .top-grid { grid-template-columns: 1fr; }
+    .header { padding: 20px; }
+  }
+</style>
 </head>
 <body>
 
-<div class="dashboard-header">
-  <div class="header-top">
-    <div class="header-title">
-      <h1>Amazon Vendor Sales 2025</h1>
-      <p>Kategorieanalyse · Manufacturing View · DE / IT / ES / FR / NL / GB / SE</p>
-    </div>
-    <span class="header-badge">01.01.2025 – 31.12.2025</span>
+<div class="header">
+  <div>
+    <h1>Jean &amp; Len – Vendor Sales Dashboard</h1>
+    <div class="subtitle">Amazon Vendor · Manufacturing View · Jahresumsatz 2025 · 7 Märkte</div>
   </div>
+  <div class="badge">Stand: 22.02.2026</div>
+</div>
 
-  <div class="kpi-row">
+<div class="container">
+
+  <!-- KPI CARDS -->
+  <div class="kpi-grid">
     <div class="kpi-card">
-      <div class="kpi-label">Gesamtumsatz</div>
-      <div class="kpi-value">9,19 Mio€</div>
-      <div class="kpi-sub">Ordered Revenue</div>
+      <div class="kpi-label">Gesamtumsatz (Ordered)</div>
+      <div class="kpi-value">9,19 Mio. €</div>
+      <div class="kpi-sub">01.01. – 31.12.2025</div>
     </div>
     <div class="kpi-card">
-      <div class="kpi-label">Bestellte Units</div>
-      <div class="kpi-value">1,83 Mio</div>
-      <div class="kpi-sub">Ordered Units</div>
+      <div class="kpi-label">Verkaufte Units</div>
+      <div class="kpi-value">1,83 Mio.</div>
+      <div class="kpi-sub">Ordered Units gesamt</div>
     </div>
     <div class="kpi-card">
       <div class="kpi-label">Ø Return Rate</div>
-      <div class="kpi-value">0,60%</div>
-      <div class="kpi-sub">Sehr niedrig ✓</div>
+      <div class="kpi-value">0,60 %</div>
+      <div class="kpi-sub">Customer Returns / Ordered Units</div>
     </div>
     <div class="kpi-card">
-      <div class="kpi-label">DE-Anteil</div>
-      <div class="kpi-value">84%</div>
-      <div class="kpi-sub">7,727,122€</div>
-    </div>
-    <div class="kpi-card">
-      <div class="kpi-label">Kategorien</div>
-      <div class="kpi-value">15</div>
-      <div class="kpi-sub">Produktgruppen</div>
+      <div class="kpi-label">DE-Marktanteil</div>
+      <div class="kpi-value">84,1 %</div>
+      <div class="kpi-sub">Deutschland dominiert klar</div>
     </div>
   </div>
 
-  <div class="country-strip">
-    <div class="country-kpi"><div class="country-flag">🇩🇪 DE</div><div class="country-rev">7,727,122€</div></div><div class="country-kpi"><div class="country-flag">🇮🇹 IT</div><div class="country-rev">452,200€</div></div><div class="country-kpi"><div class="country-flag">🇪🇸 ES</div><div class="country-rev">421,382€</div></div><div class="country-kpi"><div class="country-flag">🇫🇷 FR</div><div class="country-rev">321,428€</div></div><div class="country-kpi"><div class="country-flag">🇳🇱 NL</div><div class="country-rev">94,884€</div></div><div class="country-kpi"><div class="country-flag">🇬🇧 GB</div><div class="country-rev">58,713€</div></div><div class="country-kpi"><div class="country-flag">🇸🇪 SE</div><div class="country-rev">35,743€</div></div>
-  </div>
-</div>
-
-<div class="main">
-
-  <!-- ─── Key Insights ─── -->
-  <div class="section">
-    <div class="section-title">Key Insights</div>
-    <div class="insights-row">
-      <div class="insight-card">
-        <h4>Top-Kategorie</h4>
-        <p><span class="big-num">Nachfüller</span><br>2,43 Mio€ · 26,4% vom Gesamtumsatz</p>
-      </div>
-      <div class="insight-card">
-        <h4>Stärkster Markt</h4>
-        <p><span class="big-num">🇩🇪 Deutschland</span><br>84.1% des Umsatzes · 7,727,122€</p>
-      </div>
-      <div class="insight-card" style="border-left-color: #d4860a;">
-        <h4>Return-Alert</h4>
-        <p><span class="big-num" style="color:#d4860a;">Duft & Lifestyle</span><br>1,50% Return Rate · höchste aller Kategorien</p>
-      </div>
-      <div class="insight-card">
-        <h4>Internationalisierung</h4>
-        <p><span class="big-num">IT + ES</span><br>Zweit- und drittstärkste Märkte mit Wachstumspotenzial</p>
-      </div>
-    </div>
-  </div>
-
-  <!-- ─── Charts ─── -->
-  <div class="section">
-    <div class="section-title">Revenue-Verteilung</div>
-    <div class="charts-row">
-      <div class="card">
-        <div style="font-weight:600; font-size:13px; margin-bottom:4px;">Umsatzanteil pro Kategorie</div>
-        <div style="font-size:11px; color:var(--text-muted); margin-bottom:16px;">Ordered Revenue 2025</div>
-        <div class="chart-wrap">
-          <canvas id="donutChart"></canvas>
-        </div>
-        <div class="donut-legend" id="donutLegend"></div>
-      </div>
-      <div class="card">
-        <div style="font-weight:600; font-size:13px; margin-bottom:4px;">Revenue pro Land – gestapelt nach Kategorie</div>
-        <div style="font-size:11px; color:var(--text-muted); margin-bottom:16px;">Nur Hauptmärkte (DE/IT/ES/FR/NL/GB/SE)</div>
-        <div class="chart-wrap-bar">
-          <canvas id="stackedBar"></canvas>
-        </div>
-      </div>
-    </div>
-  </div>
-
-  <!-- ─── Revenue Matrix ─── -->
-  <div class="section">
-    <div class="section-title">Revenue-Matrix: Kategorie × Land</div>
+  <!-- CHARTS: Donut + Stacked Bar -->
+  <h2 class="section-title">Umsatzverteilung nach Kategorie</h2>
+  <div class="charts-grid">
+    <!-- Donut -->
     <div class="card">
-      <div class="table-wrap">
-        <table>
-          <thead>
-            <tr>
-              <th>Kategorie</th>
-              <th>🇩🇪 DE</th><th>🇮🇹 IT</th><th>🇪🇸 ES</th><th>🇫🇷 FR</th><th>🇳🇱 NL</th><th>🇬🇧 GB</th><th>🇸🇪 SE</th><th>🇧🇪 BE</th><th>🇵🇱 PL</th><th>🇮🇪 IE</th>
-              <th>Total</th>
-              <th>Anteil</th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr><td><span class="cat-dot" style="background:#3f5a3f"></span>Nachfüller</td><td style="background:rgba(63,90,63,0.35);">2.254.701€</td><td style="background:rgba(63,90,63,0.14);">77.822€</td><td style="background:rgba(63,90,63,0.03);">30.864€</td><td style="background:rgba(63,90,63,0.10);">28.724€</td><td style="background:rgba(63,90,63,0.35);">21.423€</td><td style="background:rgba(63,90,63,0.08);">3.796€</td><td style="background:rgba(63,90,63,0.03);">1.676€</td><td style="background:rgba(63,90,63,0.00);">249€</td><td style="background:rgba(63,90,63,0.09);">6.454€</td><td style="background:rgba(63,90,63,0.02);">160€</td><td class="total-col">2.425.870€</td><td class="pct-col">26.4%</td></tr>
-<tr><td><span class="cat-dot" style="background:#6b8f6b"></span>Sonstiges</td><td style="background:rgba(63,90,63,0.05);">350.213€</td><td style="background:rgba(63,90,63,0.35);">197.264€</td><td style="background:rgba(63,90,63,0.35);">309.913€</td><td style="background:rgba(63,90,63,0.28);">83.034€</td><td style="background:rgba(63,90,63,0.31);">18.936€</td><td style="background:rgba(63,90,63,0.00);">61€</td><td style="background:rgba(63,90,63,0.35);">20.287€</td><td style="background:rgba(63,90,63,0.15);">9.851€</td><td style="background:rgba(63,90,63,0.35);">24.142€</td><td style="background:rgba(63,90,63,0.06);">453€</td><td class="total-col">1.014.154€</td><td class="pct-col">11.0%</td></tr>
-<tr><td><span class="cat-dot" style="background:#9ab89a"></span>Handseife & Hand Wash</td><td style="background:rgba(63,90,63,0.10);">675.424€</td><td style="background:rgba(63,90,63,0.04);">24.620€</td><td style="background:rgba(63,90,63,0.02);">17.872€</td><td style="background:rgba(63,90,63,0.07);">20.184€</td><td style="background:rgba(63,90,63,0.09);">5.791€</td><td style="background:rgba(63,90,63,0.35);">16.156€</td><td style="background:rgba(63,90,63,0.03);">2.002€</td><td style="background:rgba(63,90,63,0.01);">405€</td><td style="background:rgba(63,90,63,0.02);">1.080€</td><td style="background:rgba(63,90,63,0.35);">2.457€</td><td class="total-col">765.992€</td><td class="pct-col">8.3%</td></tr>
-<tr><td><span class="cat-dot" style="background:#c9dfc9"></span>Duschgel & Körperwäsche</td><td style="background:rgba(63,90,63,0.10);">668.810€</td><td style="background:rgba(63,90,63,0.01);">6.490€</td><td style="background:rgba(63,90,63,0.00);">3.477€</td><td style="background:rgba(63,90,63,0.02);">7.217€</td><td style="background:rgba(63,90,63,0.03);">2.095€</td><td style="background:rgba(63,90,63,0.20);">9.042€</td><td style="background:rgba(63,90,63,0.06);">3.385€</td><td style="background:rgba(63,90,63,0.00);">109€</td><td style="background:rgba(63,90,63,0.00);">323€</td><td style="background:rgba(63,90,63,0.04);">287€</td><td class="total-col">701.233€</td><td class="pct-col">7.6%</td></tr>
-<tr><td><span class="cat-dot" style="background:#a0522d"></span>Duft & Lifestyle</td><td style="background:rgba(63,90,63,0.09);">553.419€</td><td style="background:rgba(63,90,63,0.02);">9.781€</td><td style="background:rgba(63,90,63,0.00);">1.698€</td><td style="background:rgba(63,90,63,0.35);">105.554€</td><td style="background:rgba(63,90,63,0.03);">2.031€</td><td style="background:rgba(63,90,63,0.04);">1.823€</td><td style="background:rgba(63,90,63,0.00);">81€</td><td style="background:rgba(63,90,63,0.35);">22.843€</td><td style="background:rgba(63,90,63,0.01);">440€</td><td style="background:rgba(63,90,63,0.00);">9€</td><td class="total-col">697.680€</td><td class="pct-col">7.6%</td></tr>
-<tr><td><span class="cat-dot" style="background:#cd853f"></span>Handcreme & Handbalsam</td><td style="background:rgba(63,90,63,0.09);">604.586€</td><td style="background:rgba(63,90,63,0.04);">21.080€</td><td style="background:rgba(63,90,63,0.01);">12.289€</td><td style="background:rgba(63,90,63,0.05);">14.114€</td><td style="background:rgba(63,90,63,0.00);">239€</td><td style="background:rgba(63,90,63,0.26);">12.014€</td><td style="background:rgba(63,90,63,0.02);">1.361€</td><td style=""><span style="color:#ccc">—</span></td><td style=""><span style="color:#ccc">—</span></td><td style="background:rgba(63,90,63,0.08);">589€</td><td class="total-col">666.272€</td><td class="pct-col">7.3%</td></tr>
-<tr><td><span class="cat-dot" style="background:#deb887"></span>Shampoo</td><td style="background:rgba(63,90,63,0.09);">557.157€</td><td style="background:rgba(63,90,63,0.09);">51.833€</td><td style=""><span style="color:#ccc">—</span></td><td style="background:rgba(63,90,63,0.11);">33.374€</td><td style="background:rgba(63,90,63,0.15);">9.481€</td><td style="background:rgba(63,90,63,0.13);">5.866€</td><td style="background:rgba(63,90,63,0.02);">978€</td><td style="background:rgba(63,90,63,0.05);">3.027€</td><td style=""><span style="color:#ccc">—</span></td><td style="background:rgba(63,90,63,0.05);">359€</td><td class="total-col">662.075€</td><td class="pct-col">7.2%</td></tr>
-<tr><td><span class="cat-dot" style="background:#f5deb3"></span>Sonnenschutz</td><td style="background:rgba(63,90,63,0.06);">356.370€</td><td style="background:rgba(63,90,63,0.01);">6.743€</td><td style="background:rgba(63,90,63,0.04);">33.055€</td><td style="background:rgba(63,90,63,0.01);">1.907€</td><td style="background:rgba(63,90,63,0.13);">7.692€</td><td style=""><span style="color:#ccc">—</span></td><td style="background:rgba(63,90,63,0.02);">1.185€</td><td style="background:rgba(63,90,63,0.00);">269€</td><td style="background:rgba(63,90,63,0.00);">163€</td><td style="background:rgba(63,90,63,0.02);">160€</td><td class="total-col">407.544€</td><td class="pct-col">4.4%</td></tr>
-<tr><td><span class="cat-dot" style="background:#2f4f6f"></span>Sets & Geschenke</td><td style="background:rgba(63,90,63,0.06);">396.485€</td><td style=""><span style="color:#ccc">—</span></td><td style=""><span style="color:#ccc">—</span></td><td style="background:rgba(63,90,63,0.00);">16€</td><td style="background:rgba(63,90,63,0.01);">638€</td><td style="background:rgba(63,90,63,0.00);">32€</td><td style=""><span style="color:#ccc">—</span></td><td style=""><span style="color:#ccc">—</span></td><td style=""><span style="color:#ccc">—</span></td><td style="background:rgba(63,90,63,0.00);">25€</td><td class="total-col">397.197€</td><td class="pct-col">4.3%</td></tr>
-<tr><td><span class="cat-dot" style="background:#5b7fa6"></span>Haarpflege</td><td style="background:rgba(63,90,63,0.05);">322.706€</td><td style="background:rgba(63,90,63,0.03);">17.824€</td><td style="background:rgba(63,90,63,0.01);">6.622€</td><td style="background:rgba(63,90,63,0.06);">17.541€</td><td style="background:rgba(63,90,63,0.07);">4.329€</td><td style=""><span style="color:#ccc">—</span></td><td style="background:rgba(63,90,63,0.03);">1.733€</td><td style="background:rgba(63,90,63,0.00);">125€</td><td style="background:rgba(63,90,63,0.01);">366€</td><td style="background:rgba(63,90,63,0.03);">196€</td><td class="total-col">371.443€</td><td class="pct-col">4.0%</td></tr>
-<tr><td><span class="cat-dot" style="background:#8fb3d4"></span>Körperpflege</td><td style="background:rgba(63,90,63,0.05);">323.895€</td><td style="background:rgba(63,90,63,0.05);">28.082€</td><td style="background:rgba(63,90,63,0.00);">4.222€</td><td style="background:rgba(63,90,63,0.02);">6.331€</td><td style="background:rgba(63,90,63,0.06);">3.845€</td><td style="background:rgba(63,90,63,0.00);">10€</td><td style="background:rgba(63,90,63,0.04);">2.442€</td><td style="background:rgba(63,90,63,0.01);">742€</td><td style="background:rgba(63,90,63,0.00);">193€</td><td style="background:rgba(63,90,63,0.06);">431€</td><td class="total-col">370.193€</td><td class="pct-col">4.0%</td></tr>
-<tr><td><span class="cat-dot" style="background:#c0d8ef"></span>Conditioner & Haarpflege</td><td style="background:rgba(63,90,63,0.04);">278.993€</td><td style="background:rgba(63,90,63,0.02);">8.795€</td><td style=""><span style="color:#ccc">—</span></td><td style="background:rgba(63,90,63,0.01);">2.779€</td><td style="background:rgba(63,90,63,0.06);">3.491€</td><td style="background:rgba(63,90,63,0.21);">9.913€</td><td style="background:rgba(63,90,63,0.01);">441€</td><td style=""><span style="color:#ccc">—</span></td><td style=""><span style="color:#ccc">—</span></td><td style="background:rgba(63,90,63,0.01);">78€</td><td class="total-col">304.489€</td><td class="pct-col">3.3%</td></tr>
-<tr><td><span class="cat-dot" style="background:#6d4c7a"></span>Gesichtspflege</td><td style="background:rgba(63,90,63,0.03);">186.550€</td><td style="background:rgba(63,90,63,0.00);">1.606€</td><td style="background:rgba(63,90,63,0.00);">1.370€</td><td style="background:rgba(63,90,63,0.00);">653€</td><td style="background:rgba(63,90,63,0.00);">242€</td><td style=""><span style="color:#ccc">—</span></td><td style="background:rgba(63,90,63,0.00);">155€</td><td style="background:rgba(63,90,63,0.00);">20€</td><td style="background:rgba(63,90,63,0.00);">71€</td><td style="background:rgba(63,90,63,0.00);">15€</td><td class="total-col">190.682€</td><td class="pct-col">2.1%</td></tr>
-<tr><td><span class="cat-dot" style="background:#b57db5"></span>Haushalt</td><td style="background:rgba(63,90,63,0.02);">155.560€</td><td style=""><span style="color:#ccc">—</span></td><td style=""><span style="color:#ccc">—</span></td><td style=""><span style="color:#ccc">—</span></td><td style="background:rgba(63,90,63,0.24);">14.652€</td><td style=""><span style="color:#ccc">—</span></td><td style=""><span style="color:#ccc">—</span></td><td style=""><span style="color:#ccc">—</span></td><td style=""><span style="color:#ccc">—</span></td><td style="background:rgba(63,90,63,0.00);">15€</td><td class="total-col">170.227€</td><td class="pct-col">1.9%</td></tr>
-<tr><td><span class="cat-dot" style="background:#d9b3d9"></span>Lippenpflege</td><td style="background:rgba(63,90,63,0.01);">42.251€</td><td style="background:rgba(63,90,63,0.00);">258€</td><td style=""><span style="color:#ccc">—</span></td><td style=""><span style="color:#ccc">—</span></td><td style=""><span style="color:#ccc">—</span></td><td style=""><span style="color:#ccc">—</span></td><td style="background:rgba(63,90,63,0.00);">16€</td><td style=""><span style="color:#ccc">—</span></td><td style=""><span style="color:#ccc">—</span></td><td style="background:rgba(63,90,63,0.00);">31€</td><td class="total-col">42.556€</td><td class="pct-col">0.5%</td></tr>
-<tr class="total-row"><td><strong>Gesamt</strong></td><td><strong>7.727.122€</strong></td><td><strong>452.200€</strong></td><td><strong>421.382€</strong></td><td><strong>321.428€</strong></td><td><strong>94.884€</strong></td><td><strong>58.713€</strong></td><td><strong>35.743€</strong></td><td><strong>37.642€</strong></td><td><strong>33.232€</strong></td><td><strong>5.264€</strong></td><td class="total-col"><strong>9.187.609€</strong></td><td class="pct-col"><strong>100%</strong></td></tr>
-
-          </tbody>
-        </table>
+      <div class="chart-wrap" style="height:280px;">
+        <canvas id="donutChart"></canvas>
       </div>
+      <div class="donut-grid" id="donutLegend"></div>
     </div>
-  </div>
-
-  <!-- ─── Returns ─── -->
-  <div class="section">
-    <div class="section-title">Return-Analyse: Rücksendequoten pro Kategorie & Land</div>
+    <!-- Stacked Bar -->
     <div class="card">
-      <div class="ret-legend">
-        <div class="ret-legend-item">
-          <span class="ret-badge-sample ret-ok" style="background:#e8f0e8;">≤ 1,0%</span>
-          <span>Normal</span>
-        </div>
-        <div class="ret-legend-item">
-          <span class="ret-badge-sample ret-medium" style="background:#fef3e2;">1,0 – 2,0%</span>
-          <span>Erhöht – beobachten</span>
-        </div>
-        <div class="ret-legend-item">
-          <span class="ret-badge-sample ret-high" style="background:#fde8e8;">&gt; 2,0%</span>
-          <span>Kritisch – Handlungsbedarf</span>
-        </div>
-      </div>
-      <div class="table-wrap">
-        <table>
-          <thead>
-            <tr>
-              <th>Kategorie</th>
-              <th>🇩🇪 DE</th><th>🇮🇹 IT</th><th>🇪🇸 ES</th><th>🇫🇷 FR</th><th>🇳🇱 NL</th><th>🇬🇧 GB</th><th>🇸🇪 SE</th><th>🇧🇪 BE</th><th>🇵🇱 PL</th><th>🇮🇪 IE</th>
-              <th>Gesamt</th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr><td><span class="cat-dot" style="background:#3f5a3f"></span>Nachfüller</td><td><span class="ret-ok">0.4%<br><small>(1056)</small></span></td><td><span class="ret-ok">0.6%<br><small>(24)</small></span></td><td><span class="ret-medium">1.1%<br><small>(14)</small></span></td><td><span class="ret-medium">1.0%<br><small>(9)</small></span></td><td><span class="ret-ok">0.6%<br><small>(7)</small></span></td><td><span style="color:#ccc">—</span></td><td><span style="color:#ccc">—</span></td><td><span style="color:#ccc">—</span></td><td><span class="ret-ok">0.4%<br><small>(2)</small></span></td><td><span style="color:#ccc">—</span></td><td class="total-col"><span class="ret-ok">0.4%<br><small>(1112)</small></span></td></tr>
-<tr><td><span class="cat-dot" style="background:#6b8f6b"></span>Sonstiges</td><td><span class="ret-ok">0.6%<br><small>(636)</small></span></td><td><span class="ret-ok">0.6%<br><small>(237)</small></span></td><td><span class="ret-ok">0.9%<br><small>(436)</small></span></td><td><span class="ret-ok">0.9%<br><small>(141)</small></span></td><td><span class="ret-medium">1.3%<br><small>(50)</small></span></td><td><span style="color:#ccc">—</span></td><td><span class="ret-ok">0.8%<br><small>(41)</small></span></td><td><span class="ret-medium">1.6%<br><small>(28)</small></span></td><td><span class="ret-medium">1.3%<br><small>(78)</small></span></td><td><span style="color:#ccc">—</span></td><td class="total-col"><span class="ret-ok">0.8%<br><small>(1647)</small></span></td></tr>
-<tr><td><span class="cat-dot" style="background:#9ab89a"></span>Handseife & Hand Wash</td><td><span class="ret-ok">0.5%<br><small>(699)</small></span></td><td><span class="ret-medium">1.2%<br><small>(35)</small></span></td><td><span class="ret-ok">0.8%<br><small>(15)</small></span></td><td><span class="ret-medium">1.8%<br><small>(39)</small></span></td><td><span class="ret-high">2.1%<br><small>(15)</small></span></td><td><span class="ret-ok">0.3%<br><small>(5)</small></span></td><td><span class="ret-medium">1.6%<br><small>(4)</small></span></td><td><span class="ret-medium">1.4%<br><small>(1)</small></span></td><td><span style="color:#ccc">—</span></td><td><span class="ret-ok">0.5%<br><small>(3)</small></span></td><td class="total-col"><span class="ret-ok">0.5%<br><small>(816)</small></span></td></tr>
-<tr><td><span class="cat-dot" style="background:#c9dfc9"></span>Duschgel & Körperwäsche</td><td><span class="ret-ok">0.6%<br><small>(1227)</small></span></td><td><span class="ret-ok">0.8%<br><small>(9)</small></span></td><td><span class="ret-ok">0.5%<br><small>(3)</small></span></td><td><span class="ret-medium">1.1%<br><small>(12)</small></span></td><td><span class="ret-ok">0.3%<br><small>(1)</small></span></td><td><span style="color:#ccc">—</span></td><td><span class="ret-high">2.3%<br><small>(28)</small></span></td><td><span style="color:#ccc">—</span></td><td><span style="color:#ccc">—</span></td><td><span class="ret-medium">1.1%<br><small>(1)</small></span></td><td class="total-col"><span class="ret-ok">0.6%<br><small>(1281)</small></span></td></tr>
-<tr><td><span class="cat-dot" style="background:#a0522d"></span>Duft & Lifestyle</td><td><span class="ret-medium">1.6%<br><small>(1192)</small></span></td><td><span class="ret-ok">0.6%<br><small>(6)</small></span></td><td><span class="ret-high">3.4%<br><small>(6)</small></span></td><td><span class="ret-medium">1.1%<br><small>(164)</small></span></td><td><span class="ret-high">2.6%<br><small>(8)</small></span></td><td><span class="ret-medium">1.4%<br><small>(3)</small></span></td><td><span style="color:#ccc">—</span></td><td><span class="ret-medium">1.2%<br><small>(37)</small></span></td><td><span style="color:#ccc">—</span></td><td><span style="color:#ccc">—</span></td><td class="total-col"><span class="ret-medium">1.5%<br><small>(1416)</small></span></td></tr>
-<tr><td><span class="cat-dot" style="background:#cd853f"></span>Handcreme & Handbalsam</td><td><span class="ret-ok">0.7%<br><small>(1542)</small></span></td><td><span class="ret-high">2.8%<br><small>(59)</small></span></td><td><span class="ret-ok">0.5%<br><small>(6)</small></span></td><td><span class="ret-high">2.1%<br><small>(26)</small></span></td><td><span style="color:#ccc">—</span></td><td><span class="ret-ok">0.7%<br><small>(8)</small></span></td><td><span class="ret-medium">1.5%<br><small>(4)</small></span></td><td><span style="color:#ccc">—</span></td><td><span style="color:#ccc">—</span></td><td><span style="color:#ccc">—</span></td><td class="total-col"><span class="ret-ok">0.8%<br><small>(1645)</small></span></td></tr>
-<tr><td><span class="cat-dot" style="background:#deb887"></span>Shampoo</td><td><span class="ret-ok">0.4%<br><small>(745)</small></span></td><td><span class="ret-ok">1.0%<br><small>(84)</small></span></td><td><span style="color:#ccc">—</span></td><td><span class="ret-medium">1.0%<br><small>(57)</small></span></td><td><span class="ret-medium">1.1%<br><small>(23)</small></span></td><td><span style="color:#ccc">—</span></td><td><span class="ret-high">2.4%<br><small>(6)</small></span></td><td><span class="ret-medium">1.3%<br><small>(8)</small></span></td><td><span style="color:#ccc">—</span></td><td><span style="color:#ccc">—</span></td><td class="total-col"><span class="ret-ok">0.5%<br><small>(923)</small></span></td></tr>
-<tr><td><span class="cat-dot" style="background:#f5deb3"></span>Sonnenschutz</td><td><span class="ret-ok">0.4%<br><small>(148)</small></span></td><td><span class="ret-high">2.6%<br><small>(14)</small></span></td><td><span class="ret-ok">0.7%<br><small>(21)</small></span></td><td><span class="ret-high">3.5%<br><small>(6)</small></span></td><td><span class="ret-medium">1.1%<br><small>(8)</small></span></td><td><span style="color:#ccc">—</span></td><td><span style="color:#ccc">—</span></td><td><span class="ret-high">4.5%<br><small>(1)</small></span></td><td><span class="ret-high">5.9%<br><small>(1)</small></span></td><td><span style="color:#ccc">—</span></td><td class="total-col"><span class="ret-ok">0.5%<br><small>(199)</small></span></td></tr>
-<tr><td><span class="cat-dot" style="background:#2f4f6f"></span>Sets & Geschenke</td><td><span class="ret-medium">1.4%<br><small>(265)</small></span></td><td><span style="color:#ccc">—</span></td><td><span style="color:#ccc">—</span></td><td><span style="color:#ccc">—</span></td><td><span class="ret-high">5.7%<br><small>(2)</small></span></td><td><span style="color:#ccc">—</span></td><td><span style="color:#ccc">—</span></td><td><span style="color:#ccc">—</span></td><td><span style="color:#ccc">—</span></td><td><span style="color:#ccc">—</span></td><td class="total-col"><span class="ret-medium">1.4%<br><small>(267)</small></span></td></tr>
-<tr><td><span class="cat-dot" style="background:#5b7fa6"></span>Haarpflege</td><td><span class="ret-ok">0.4%<br><small>(331)</small></span></td><td><span class="ret-ok">0.9%<br><small>(26)</small></span></td><td><span class="ret-ok">0.7%<br><small>(8)</small></span></td><td><span class="ret-medium">1.0%<br><small>(30)</small></span></td><td><span class="ret-ok">0.9%<br><small>(8)</small></span></td><td><span style="color:#ccc">—</span></td><td><span class="ret-ok">0.6%<br><small>(3)</small></span></td><td><span style="color:#ccc">—</span></td><td><span class="ret-ok">0.9%<br><small>(1)</small></span></td><td><span style="color:#ccc">—</span></td><td class="total-col"><span class="ret-ok">0.4%<br><small>(407)</small></span></td></tr>
-<tr><td><span class="cat-dot" style="background:#8fb3d4"></span>Körperpflege</td><td><span class="ret-ok">0.4%<br><small>(298)</small></span></td><td><span class="ret-ok">0.5%<br><small>(25)</small></span></td><td><span class="ret-ok">0.9%<br><small>(7)</small></span></td><td><span class="ret-ok">0.6%<br><small>(7)</small></span></td><td><span class="ret-medium">1.7%<br><small>(11)</small></span></td><td><span style="color:#ccc">—</span></td><td><span class="ret-ok">0.8%<br><small>(5)</small></span></td><td><span class="ret-ok">0.8%<br><small>(1)</small></span></td><td><span style="color:#ccc">—</span></td><td><span style="color:#ccc">—</span></td><td class="total-col"><span class="ret-ok">0.4%<br><small>(354)</small></span></td></tr>
-<tr><td><span class="cat-dot" style="background:#c0d8ef"></span>Conditioner & Haarpflege</td><td><span class="ret-ok">0.4%<br><small>(394)</small></span></td><td><span class="ret-ok">0.8%<br><small>(9)</small></span></td><td><span style="color:#ccc">—</span></td><td><span class="ret-ok">0.8%<br><small>(3)</small></span></td><td><span class="ret-medium">1.1%<br><small>(6)</small></span></td><td><span class="ret-ok">0.2%<br><small>(3)</small></span></td><td><span style="color:#ccc">—</span></td><td><span style="color:#ccc">—</span></td><td><span style="color:#ccc">—</span></td><td><span style="color:#ccc">—</span></td><td class="total-col"><span class="ret-ok">0.4%<br><small>(415)</small></span></td></tr>
-<tr><td><span class="cat-dot" style="background:#6d4c7a"></span>Gesichtspflege</td><td><span class="ret-ok">0.5%<br><small>(168)</small></span></td><td><span class="ret-medium">1.8%<br><small>(4)</small></span></td><td><span class="ret-ok">0.6%<br><small>(1)</small></span></td><td><span style="color:#ccc">—</span></td><td><span class="ret-high">10.0%<br><small>(3)</small></span></td><td><span style="color:#ccc">—</span></td><td><span style="color:#ccc">—</span></td><td><span style="color:#ccc">—</span></td><td><span style="color:#ccc">—</span></td><td><span style="color:#ccc">—</span></td><td class="total-col"><span class="ret-ok">0.5%<br><small>(176)</small></span></td></tr>
-<tr><td><span class="cat-dot" style="background:#b57db5"></span>Haushalt</td><td><span class="ret-ok">0.6%<br><small>(263)</small></span></td><td><span style="color:#ccc">—</span></td><td><span style="color:#ccc">—</span></td><td><span style="color:#ccc">—</span></td><td><span class="ret-medium">1.3%<br><small>(36)</small></span></td><td><span style="color:#ccc">—</span></td><td><span style="color:#ccc">—</span></td><td><span style="color:#ccc">—</span></td><td><span style="color:#ccc">—</span></td><td><span style="color:#ccc">—</span></td><td class="total-col"><span class="ret-ok">0.7%<br><small>(299)</small></span></td></tr>
-<tr><td><span class="cat-dot" style="background:#d9b3d9"></span>Lippenpflege</td><td><span class="ret-ok">0.2%<br><small>(39)</small></span></td><td><span class="ret-high">3.2%<br><small>(2)</small></span></td><td><span style="color:#ccc">—</span></td><td><span style="color:#ccc">—</span></td><td><span style="color:#ccc">—</span></td><td><span style="color:#ccc">—</span></td><td><span style="color:#ccc">—</span></td><td><span style="color:#ccc">—</span></td><td><span style="color:#ccc">—</span></td><td><span style="color:#ccc">—</span></td><td class="total-col"><span class="ret-ok">0.2%<br><small>(41)</small></span></td></tr>
-<tr class="total-row"><td><strong>Gesamt</strong></td><td><strong>0.6%</strong></td><td><strong>0.8%</strong></td><td><strong>0.9%</strong></td><td><strong>1.1%</strong></td><td><strong>1.3%</strong></td><td><strong>0.3%</strong></td><td><strong>1.1%</strong></td><td><strong>1.3%</strong></td><td><strong>1.2%</strong></td><td><strong>0.3%</strong></td><td class="total-col"><strong>0.6%</strong></td></tr>
-
-          </tbody>
-        </table>
+      <div class="chart-wrap" style="height:380px;">
+        <canvas id="stackedBar"></canvas>
       </div>
     </div>
   </div>
 
-  <!-- ─── Top Produkte ─── -->
-  <div class="section">
-    <div class="section-title">Top 3 Produkte pro Kategorie</div>
-    <div class="card">
-      <p style="font-size:12px; color:var(--text-muted); margin-bottom:16px;">Klick auf Kategorie zum Aufklappen · ASIN-Links führen direkt zu Amazon.de</p>
-      <div class="accordion">
-        
-    <div class="accordion-item">
-      <button class="accordion-header" onclick="toggleAccordion('Nachfueller')">
-        <div class="acc-left">
-          <span class="cat-dot-lg" style="background:#3f5a3f"></span>
-          <span class="acc-cat-name">Nachfüller</span>
-        </div>
-        <div class="acc-right">
-          <span class="acc-rev">2,425,870€</span>
-          <span class="acc-units">260,699 Units</span>
-          <span class="acc-pct">26.4%</span>
-          <span class="acc-arrow" id="arrow_Nachfueller">▼</span>
-        </div>
-      </button>
-      <div class="accordion-body" id="body_Nachfueller" style="display:none">
-        
-        <div class="product-item">
-          <div class="product-rank-dot" style="background:#3f5a3f"></div>
-          <div class="product-info">
-            <div class="product-title">Jean & Len Hand & Body Wash Rosemary und Ginger im Nachfüllbeutel, reinigt und pflegt die Haut, würz…</div>
-            <div class="product-meta">
-              <span class="asin-badge"><a href="https://www.amazon.de/dp/B085Z1SP6J" target="_blank">B085Z1SP6J</a></span>
-              <span class="rev-badge">1,256,838€</span>
-              <span class="units-badge">94000 Units</span>
-            </div>
-          </div>
-        </div>
-        <div class="product-item">
-          <div class="product-rank-dot" style="background:#3f5a3f"></div>
-          <div class="product-info">
-            <div class="product-title">Jean & Len Hand & Body Wash Rosemary und Ginger im Kanister, reinigt und pflegt die Haut, würzig-fri…</div>
-            <div class="product-meta">
-              <span class="asin-badge"><a href="https://www.amazon.de/dp/B092V7KGMQ" target="_blank">B092V7KGMQ</a></span>
-              <span class="rev-badge">247,281€</span>
-              <span class="units-badge">5356 Units</span>
-            </div>
-          </div>
-        </div>
-        <div class="product-item">
-          <div class="product-rank-dot" style="background:#3f5a3f"></div>
-          <div class="product-info">
-            <div class="product-title">Jean & Len Handseife Rosemary & Ginger, reinigt beanspruchte Hände, für die tägliche Anwendung, Flüs…</div>
-            <div class="product-meta">
-              <span class="asin-badge"><a href="https://www.amazon.de/dp/B078VBX61T" target="_blank">B078VBX61T</a></span>
-              <span class="rev-badge">225,986€</span>
-              <span class="units-badge">72858 Units</span>
-            </div>
-          </div>
-        </div>
+  <!-- REVENUE MATRIX TABLE -->
+  <h2 class="section-title">Umsatz-Matrix: Kategorie × Land (EUR)</h2>
+  <div class="table-wrap card" style="padding:0;">
+    <table id="matrixTable"></table>
+  </div>
+
+  <!-- RETURNS + CATEGORY TOTALS -->
+  <div class="two-col">
+    <!-- Returns by Category -->
+    <div>
+      <h2 class="section-title">Return-Quote pro Kategorie</h2>
+      <div class="card" style="padding:0;">
+        <table id="returnsTable"></table>
       </div>
     </div>
-    <div class="accordion-item">
-      <button class="accordion-header" onclick="toggleAccordion('Sonstiges')">
-        <div class="acc-left">
-          <span class="cat-dot-lg" style="background:#6b8f6b"></span>
-          <span class="acc-cat-name">Sonstiges</span>
-        </div>
-        <div class="acc-right">
-          <span class="acc-rev">1,014,154€</span>
-          <span class="acc-units">216,787 Units</span>
-          <span class="acc-pct">11.0%</span>
-          <span class="acc-arrow" id="arrow_Sonstiges">▼</span>
-        </div>
-      </button>
-      <div class="accordion-body" id="body_Sonstiges" style="display:none">
-        
-        <div class="product-item">
-          <div class="product-rank-dot" style="background:#6b8f6b"></div>
-          <div class="product-info">
-            <div class="product-title">Jean & Len Jabón de Manos con aroma de Romero y Jengibre, limpia y cuida, ideal para el uso diario, …</div>
-            <div class="product-meta">
-              <span class="asin-badge"><a href="https://www.amazon.de/dp/B078VBX61T" target="_blank">B078VBX61T</a></span>
-              <span class="rev-badge">69,370€</span>
-              <span class="units-badge">15536 Units</span>
-            </div>
-          </div>
-        </div>
-        <div class="product-item">
-          <div class="product-rank-dot" style="background:#6b8f6b"></div>
-          <div class="product-info">
-            <div class="product-title">Jean & Len Jabón de manos de romero y jengibre en paquete de recarga, limpia y cuida la piel, aroma …</div>
-            <div class="product-meta">
-              <span class="asin-badge"><a href="https://www.amazon.de/dp/B085Z1SP6J" target="_blank">B085Z1SP6J</a></span>
-              <span class="rev-badge">67,740€</span>
-              <span class="units-badge">5070 Units</span>
-            </div>
-          </div>
-        </div>
-        <div class="product-item">
-          <div class="product-rank-dot" style="background:#6b8f6b"></div>
-          <div class="product-info">
-            <div class="product-title">Jean & Len Savon Liquide pour les Mains Néroli et Jasmin, Nettoie et Nourrit les Mains en Douceur, e…</div>
-            <div class="product-meta">
-              <span class="asin-badge"><a href="https://www.amazon.de/dp/B08NKV8ZV6" target="_blank">B08NKV8ZV6</a></span>
-              <span class="rev-badge">44,061€</span>
-              <span class="units-badge">10128 Units</span>
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
-    <div class="accordion-item">
-      <button class="accordion-header" onclick="toggleAccordion('Handseife_und_Hand_Wash')">
-        <div class="acc-left">
-          <span class="cat-dot-lg" style="background:#9ab89a"></span>
-          <span class="acc-cat-name">Handseife & Hand Wash</span>
-        </div>
-        <div class="acc-right">
-          <span class="acc-rev">765,992€</span>
-          <span class="acc-units">164,895 Units</span>
-          <span class="acc-pct">8.3%</span>
-          <span class="acc-arrow" id="arrow_Handseife_und_Hand_Wash">▼</span>
-        </div>
-      </button>
-      <div class="accordion-body" id="body_Handseife_und_Hand_Wash" style="display:none">
-        
-        <div class="product-item">
-          <div class="product-rank-dot" style="background:#9ab89a"></div>
-          <div class="product-info">
-            <div class="product-title">Jean & Len Hand & Body Wash Rosemary und Ginger, reinigt und pflegt die Haut, Würzig-frischer Duft, …</div>
-            <div class="product-meta">
-              <span class="asin-badge"><a href="https://www.amazon.de/dp/B07XCLTNB7" target="_blank">B07XCLTNB7</a></span>
-              <span class="rev-badge">161,391€</span>
-              <span class="units-badge">25862 Units</span>
-            </div>
-          </div>
-        </div>
-        <div class="product-item">
-          <div class="product-rank-dot" style="background:#9ab89a"></div>
-          <div class="product-info">
-            <div class="product-title">Jean & Len Hand & Body Cleanser Bergamot & Cedarwood, für ein duftendes Reinigungserlebnis, Körper- …</div>
-            <div class="product-meta">
-              <span class="asin-badge"><a href="https://www.amazon.de/dp/B0CN19FVL5" target="_blank">B0CN19FVL5</a></span>
-              <span class="rev-badge">77,391€</span>
-              <span class="units-badge">8882 Units</span>
-            </div>
-          </div>
-        </div>
-        <div class="product-item">
-          <div class="product-rank-dot" style="background:#9ab89a"></div>
-          <div class="product-info">
-            <div class="product-title">Jean & Len Handseife Pfingstrose & Litschi, reinigt Hände sanft, Flüssigseife im Pumpspender für ges…</div>
-            <div class="product-meta">
-              <span class="asin-badge"><a href="https://www.amazon.de/dp/B0984CRTYQ" target="_blank">B0984CRTYQ</a></span>
-              <span class="rev-badge">56,763€</span>
-              <span class="units-badge">19333 Units</span>
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
-    <div class="accordion-item">
-      <button class="accordion-header" onclick="toggleAccordion('Duschgel_und_Koerperwaesche')">
-        <div class="acc-left">
-          <span class="cat-dot-lg" style="background:#c9dfc9"></span>
-          <span class="acc-cat-name">Duschgel & Körperwäsche</span>
-        </div>
-        <div class="acc-right">
-          <span class="acc-rev">701,233€</span>
-          <span class="acc-units">230,308 Units</span>
-          <span class="acc-pct">7.6%</span>
-          <span class="acc-arrow" id="arrow_Duschgel_und_Koerperwaesche">▼</span>
-        </div>
-      </button>
-      <div class="accordion-body" id="body_Duschgel_und_Koerperwaesche" style="display:none">
-        
-        <div class="product-item">
-          <div class="product-rank-dot" style="background:#c9dfc9"></div>
-          <div class="product-info">
-            <div class="product-title">Jean & Len Vitalizing Shower Gel To Mousse Rosemary & Ginger, mit Mandel-, Jojoba- und Babassuöl, fü…</div>
-            <div class="product-meta">
-              <span class="asin-badge"><a href="https://www.amazon.de/dp/B0CNH86WTH" target="_blank">B0CNH86WTH</a></span>
-              <span class="rev-badge">58,213€</span>
-              <span class="units-badge">10411 Units</span>
-            </div>
-          </div>
-        </div>
-        <div class="product-item">
-          <div class="product-rank-dot" style="background:#c9dfc9"></div>
-          <div class="product-info">
-            <div class="product-title">Jean & Len Duschgel Orange & Ingwer, pH-hautideal, erfrischendes Duscherlebnis, mit Orangen- und Ing…</div>
-            <div class="product-meta">
-              <span class="asin-badge"><a href="https://www.amazon.de/dp/B0CWL5B42T" target="_blank">B0CWL5B42T</a></span>
-              <span class="rev-badge">51,506€</span>
-              <span class="units-badge">29094 Units</span>
-            </div>
-          </div>
-        </div>
-        <div class="product-item">
-          <div class="product-rank-dot" style="background:#c9dfc9"></div>
-          <div class="product-info">
-            <div class="product-title">Jean & Len Caring Shower Gel To Mousse Peony & Lychee, mit Mandel-, Jojoba- und Babassuöl, für ein d…</div>
-            <div class="product-meta">
-              <span class="asin-badge"><a href="https://www.amazon.de/dp/B0CNH7Y3MH" target="_blank">B0CNH7Y3MH</a></span>
-              <span class="rev-badge">51,306€</span>
-              <span class="units-badge">8478 Units</span>
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
-    <div class="accordion-item">
-      <button class="accordion-header" onclick="toggleAccordion('Duft_und_Lifestyle')">
-        <div class="acc-left">
-          <span class="cat-dot-lg" style="background:#a0522d"></span>
-          <span class="acc-cat-name">Duft & Lifestyle</span>
-        </div>
-        <div class="acc-right">
-          <span class="acc-rev">697,680€</span>
-          <span class="acc-units">94,183 Units</span>
-          <span class="acc-pct">7.6%</span>
-          <span class="acc-arrow" id="arrow_Duft_und_Lifestyle">▼</span>
-        </div>
-      </button>
-      <div class="accordion-body" id="body_Duft_und_Lifestyle" style="display:none">
-        
-        <div class="product-item">
-          <div class="product-rank-dot" style="background:#a0522d"></div>
-          <div class="product-info">
-            <div class="product-title">Jean & Len Scent Experience Rosemary & Ginger, Eau de Toilette mit Rosmarin & Ingwer Duft, praktisch…</div>
-            <div class="product-meta">
-              <span class="asin-badge"><a href="https://www.amazon.de/dp/B0CN1G8V9Q" target="_blank">B0CN1G8V9Q</a></span>
-              <span class="rev-badge">61,671€</span>
-              <span class="units-badge">9795 Units</span>
-            </div>
-          </div>
-        </div>
-        <div class="product-item">
-          <div class="product-rank-dot" style="background:#a0522d"></div>
-          <div class="product-info">
-            <div class="product-title">Jean & Len Rosemary & Ginger Eau de Parfum, würzig-frischer Duft nach Rosmarin & Ingwer, hergestellt…</div>
-            <div class="product-meta">
-              <span class="asin-badge"><a href="https://www.amazon.de/dp/B0BSG1Y9WX" target="_blank">B0BSG1Y9WX</a></span>
-              <span class="rev-badge">59,714€</span>
-              <span class="units-badge">1571 Units</span>
-            </div>
-          </div>
-        </div>
-        <div class="product-item">
-          <div class="product-rank-dot" style="background:#a0522d"></div>
-          <div class="product-info">
-            <div class="product-title">Jean & Len Scented Candle Manuka Honey & Vanilla, hergestellt mit Sheabutter, Brenndauer ca. 40 Stun…</div>
-            <div class="product-meta">
-              <span class="asin-badge"><a href="https://www.amazon.de/dp/B0F3FXYVLP" target="_blank">B0F3FXYVLP</a></span>
-              <span class="rev-badge">55,229€</span>
-              <span class="units-badge">7282 Units</span>
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
-    <div class="accordion-item">
-      <button class="accordion-header" onclick="toggleAccordion('Handcreme_und_Handbalsam')">
-        <div class="acc-left">
-          <span class="cat-dot-lg" style="background:#cd853f"></span>
-          <span class="acc-cat-name">Handcreme & Handbalsam</span>
-        </div>
-        <div class="acc-right">
-          <span class="acc-rev">666,272€</span>
-          <span class="acc-units">213,667 Units</span>
-          <span class="acc-pct">7.3%</span>
-          <span class="acc-arrow" id="arrow_Handcreme_und_Handbalsam">▼</span>
-        </div>
-      </button>
-      <div class="accordion-body" id="body_Handcreme_und_Handbalsam" style="display:none">
-        
-        <div class="product-item">
-          <div class="product-rank-dot" style="background:#cd853f"></div>
-          <div class="product-info">
-            <div class="product-title">Jean & Len Sehr geile Handcreme Rosemary & Ginger, mit Urea, Handpflege für trockene und rissige Hän…</div>
-            <div class="product-meta">
-              <span class="asin-badge"><a href="https://www.amazon.de/dp/B085ZCQ7Q2" target="_blank">B085ZCQ7Q2</a></span>
-              <span class="rev-badge">129,726€</span>
-              <span class="units-badge">53098 Units</span>
-            </div>
-          </div>
-        </div>
-        <div class="product-item">
-          <div class="product-rank-dot" style="background:#cd853f"></div>
-          <div class="product-info">
-            <div class="product-title">Jean & Len Heavenly Hand- & Body Balm Rosemary & Ginger, für ein duftendes Pflegeerlebnis, mit Bio-A…</div>
-            <div class="product-meta">
-              <span class="asin-badge"><a href="https://www.amazon.de/dp/B0CN3KV3X2" target="_blank">B0CN3KV3X2</a></span>
-              <span class="rev-badge">94,861€</span>
-              <span class="units-badge">11175 Units</span>
-            </div>
-          </div>
-        </div>
-        <div class="product-item">
-          <div class="product-rank-dot" style="background:#cd853f"></div>
-          <div class="product-info">
-            <div class="product-title">Jean & Len Heavenly Hand- & Body Balm Bergamot & Cedarwood, für ein duftendes Pflegeerlebnis, mit Bi…</div>
-            <div class="product-meta">
-              <span class="asin-badge"><a href="https://www.amazon.de/dp/B0DF7QFSZ8" target="_blank">B0DF7QFSZ8</a></span>
-              <span class="rev-badge">48,744€</span>
-              <span class="units-badge">5210 Units</span>
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
-    <div class="accordion-item">
-      <button class="accordion-header" onclick="toggleAccordion('Shampoo')">
-        <div class="acc-left">
-          <span class="cat-dot-lg" style="background:#deb887"></span>
-          <span class="acc-cat-name">Shampoo</span>
-        </div>
-        <div class="acc-right">
-          <span class="acc-rev">662,075€</span>
-          <span class="acc-units">200,275 Units</span>
-          <span class="acc-pct">7.2%</span>
-          <span class="acc-arrow" id="arrow_Shampoo">▼</span>
-        </div>
-      </button>
-      <div class="accordion-body" id="body_Shampoo" style="display:none">
-        
-        <div class="product-item">
-          <div class="product-rank-dot" style="background:#deb887"></div>
-          <div class="product-info">
-            <div class="product-title">Jean & Len Traumlocken Shampoo Reiswasser & Açaibeere, für lockiges & welliges Haar, verleiht Sprung…</div>
-            <div class="product-meta">
-              <span class="asin-badge"><a href="https://www.amazon.de/dp/B0BVWMYMFX" target="_blank">B0BVWMYMFX</a></span>
-              <span class="rev-badge">68,228€</span>
-              <span class="units-badge">20368 Units</span>
-            </div>
-          </div>
-        </div>
-        <div class="product-item">
-          <div class="product-rank-dot" style="background:#deb887"></div>
-          <div class="product-info">
-            <div class="product-title">Jean & Len Feuchtigkeit Shampoo Rosemary & Ginger, für trockenes und sprödes Haar, mit Feuchtigkeits…</div>
-            <div class="product-meta">
-              <span class="asin-badge"><a href="https://www.amazon.de/dp/B0DG9LDPB9" target="_blank">B0DG9LDPB9</a></span>
-              <span class="rev-badge">61,796€</span>
-              <span class="units-badge">11218 Units</span>
-            </div>
-          </div>
-        </div>
-        <div class="product-item">
-          <div class="product-rank-dot" style="background:#deb887"></div>
-          <div class="product-info">
-            <div class="product-title">Jean & Len Volumen Shampoo Holunder & Jasmin, für kraftloses und feines Haar, verleiht Volumen, fruc…</div>
-            <div class="product-meta">
-              <span class="asin-badge"><a href="https://www.amazon.de/dp/B092V71TDJ" target="_blank">B092V71TDJ</a></span>
-              <span class="rev-badge">35,670€</span>
-              <span class="units-badge">11958 Units</span>
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
-    <div class="accordion-item">
-      <button class="accordion-header" onclick="toggleAccordion('Sonnenschutz')">
-        <div class="acc-left">
-          <span class="cat-dot-lg" style="background:#f5deb3"></span>
-          <span class="acc-cat-name">Sonnenschutz</span>
-        </div>
-        <div class="acc-right">
-          <span class="acc-rev">407,544€</span>
-          <span class="acc-units">43,719 Units</span>
-          <span class="acc-pct">4.4%</span>
-          <span class="acc-arrow" id="arrow_Sonnenschutz">▼</span>
-        </div>
-      </button>
-      <div class="accordion-body" id="body_Sonnenschutz" style="display:none">
-        
-        <div class="product-item">
-          <div class="product-rank-dot" style="background:#f5deb3"></div>
-          <div class="product-info">
-            <div class="product-title">Jean & Len Sensitiv Sonnenspray 50 LSF wasserfest, für empfindliche Haut geeignet, ohne Silikone, Oc…</div>
-            <div class="product-meta">
-              <span class="asin-badge"><a href="https://www.amazon.de/dp/B0B1J27BXY" target="_blank">B0B1J27BXY</a></span>
-              <span class="rev-badge">175,156€</span>
-              <span class="units-badge">15288 Units</span>
-            </div>
-          </div>
-        </div>
-        <div class="product-item">
-          <div class="product-rank-dot" style="background:#f5deb3"></div>
-          <div class="product-info">
-            <div class="product-title">Jean & Len Sensitiv Sonnenspray 30 LSF wasserfest, für empfindliche Haut, ohne Silikone, Nanopartike…</div>
-            <div class="product-meta">
-              <span class="asin-badge"><a href="https://www.amazon.de/dp/B01DSTM0ZW" target="_blank">B01DSTM0ZW</a></span>
-              <span class="rev-badge">90,586€</span>
-              <span class="units-badge">9522 Units</span>
-            </div>
-          </div>
-        </div>
-        <div class="product-item">
-          <div class="product-rank-dot" style="background:#f5deb3"></div>
-          <div class="product-info">
-            <div class="product-title">Jean & Len Sensitiv Sonnencreme 50+ LSF wasserfest, Sofortschutz für empfindliche Gesichtshaut, Sonn…</div>
-            <div class="product-meta">
-              <span class="asin-badge"><a href="https://www.amazon.de/dp/B092V6BVLJ" target="_blank">B092V6BVLJ</a></span>
-              <span class="rev-badge">69,961€</span>
-              <span class="units-badge">9791 Units</span>
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
-    <div class="accordion-item">
-      <button class="accordion-header" onclick="toggleAccordion('Sets_und_Geschenke')">
-        <div class="acc-left">
-          <span class="cat-dot-lg" style="background:#2f4f6f"></span>
-          <span class="acc-cat-name">Sets & Geschenke</span>
-        </div>
-        <div class="acc-right">
-          <span class="acc-rev">397,197€</span>
-          <span class="acc-units">18,907 Units</span>
-          <span class="acc-pct">4.3%</span>
-          <span class="acc-arrow" id="arrow_Sets_und_Geschenke">▼</span>
-        </div>
-      </button>
-      <div class="accordion-body" id="body_Sets_und_Geschenke" style="display:none">
-        
-        <div class="product-item">
-          <div class="product-rank-dot" style="background:#2f4f6f"></div>
-          <div class="product-info">
-            <div class="product-title">Jean & Len Adventskalender 2025, weihnachtliche 3D DIY-Szenerie, inklusive zwei Rosemary & Ginger De…</div>
-            <div class="product-meta">
-              <span class="asin-badge"><a href="https://www.amazon.de/dp/B0FL24DH5M" target="_blank">B0FL24DH5M</a></span>
-              <span class="rev-badge">161,255€</span>
-              <span class="units-badge">2154 Units</span>
-            </div>
-          </div>
-        </div>
-        <div class="product-item">
-          <div class="product-rank-dot" style="background:#2f4f6f"></div>
-          <div class="product-info">
-            <div class="product-title">Jean & Len Haarpflege Set Rosemary & Ginger für trockenes und glanzloses Haar, Feuchtigkeit Shampoo …</div>
-            <div class="product-meta">
-              <span class="asin-badge"><a href="https://www.amazon.de/dp/B0DMT2G73R" target="_blank">B0DMT2G73R</a></span>
-              <span class="rev-badge">38,851€</span>
-              <span class="units-badge">3727 Units</span>
-            </div>
-          </div>
-        </div>
-        <div class="product-item">
-          <div class="product-rank-dot" style="background:#2f4f6f"></div>
-          <div class="product-info">
-            <div class="product-title">Jean & Len Haarpflege Set Rosemary & Ginger für trockenes und glanzloses Haar, Feuchtigkeit Shampoo,…</div>
-            <div class="product-meta">
-              <span class="asin-badge"><a href="https://www.amazon.de/dp/B0DMSZCL7H" target="_blank">B0DMSZCL7H</a></span>
-              <span class="rev-badge">36,156€</span>
-              <span class="units-badge">2164 Units</span>
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
-    <div class="accordion-item">
-      <button class="accordion-header" onclick="toggleAccordion('Haarpflege')">
-        <div class="acc-left">
-          <span class="cat-dot-lg" style="background:#5b7fa6"></span>
-          <span class="acc-cat-name">Haarpflege</span>
-        </div>
-        <div class="acc-right">
-          <span class="acc-rev">371,443€</span>
-          <span class="acc-units">101,134 Units</span>
-          <span class="acc-pct">4.0%</span>
-          <span class="acc-arrow" id="arrow_Haarpflege">▼</span>
-        </div>
-      </button>
-      <div class="accordion-body" id="body_Haarpflege" style="display:none">
-        
-        <div class="product-item">
-          <div class="product-rank-dot" style="background:#5b7fa6"></div>
-          <div class="product-info">
-            <div class="product-title">Jean & Len Beat The Heat Hitzeschutzspray, mit Mango Duft, leichte Konsistenz, schützt das Haar vor …</div>
-            <div class="product-meta">
-              <span class="asin-badge"><a href="https://www.amazon.de/dp/B0CV4GJ575" target="_blank">B0CV4GJ575</a></span>
-              <span class="rev-badge">80,599€</span>
-              <span class="units-badge">19737 Units</span>
-            </div>
-          </div>
-        </div>
-        <div class="product-item">
-          <div class="product-rank-dot" style="background:#5b7fa6"></div>
-          <div class="product-info">
-            <div class="product-title">Jean & Len Haartonikum Rosmarin, wirkt anregend, regt das Haarwachstum an, fettet nicht, kann Haarau…</div>
-            <div class="product-meta">
-              <span class="asin-badge"><a href="https://www.amazon.de/dp/B0CV42KNY6" target="_blank">B0CV42KNY6</a></span>
-              <span class="rev-badge">69,219€</span>
-              <span class="units-badge">14774 Units</span>
-            </div>
-          </div>
-        </div>
-        <div class="product-item">
-          <div class="product-rank-dot" style="background:#5b7fa6"></div>
-          <div class="product-info">
-            <div class="product-title">Jean & Len Boost Moisture Leave In Pflegespray, für trockenes Haar, mit Anti-Stroh-Effekt, Leave In …</div>
-            <div class="product-meta">
-              <span class="asin-badge"><a href="https://www.amazon.de/dp/B09YHZ8B3Z" target="_blank">B09YHZ8B3Z</a></span>
-              <span class="rev-badge">39,912€</span>
-              <span class="units-badge">11734 Units</span>
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
-    <div class="accordion-item">
-      <button class="accordion-header" onclick="toggleAccordion('Koerperpflege')">
-        <div class="acc-left">
-          <span class="cat-dot-lg" style="background:#8fb3d4"></span>
-          <span class="acc-cat-name">Körperpflege</span>
-        </div>
-        <div class="acc-right">
-          <span class="acc-rev">370,193€</span>
-          <span class="acc-units">91,115 Units</span>
-          <span class="acc-pct">4.0%</span>
-          <span class="acc-arrow" id="arrow_Koerperpflege">▼</span>
-        </div>
-      </button>
-      <div class="accordion-body" id="body_Koerperpflege" style="display:none">
-        
-        <div class="product-item">
-          <div class="product-rank-dot" style="background:#8fb3d4"></div>
-          <div class="product-info">
-            <div class="product-title">Jean & Len Body Butter Cranberry & Vanille, versorgt die Haut ausreichend mit Feuchtigkeit, zartschm…</div>
-            <div class="product-meta">
-              <span class="asin-badge"><a href="https://www.amazon.de/dp/B0CWLFXF5X" target="_blank">B0CWLFXF5X</a></span>
-              <span class="rev-badge">43,166€</span>
-              <span class="units-badge">9076 Units</span>
-            </div>
-          </div>
-        </div>
-        <div class="product-item">
-          <div class="product-rank-dot" style="background:#8fb3d4"></div>
-          <div class="product-info">
-            <div class="product-title">Jean & Len Après Sun Aloe Vera Gel, Unterstützende Pflege bei Sonnenbrand, beruhigt & kühlt die Haut…</div>
-            <div class="product-meta">
-              <span class="asin-badge"><a href="https://www.amazon.de/dp/B092V77QWL" target="_blank">B092V77QWL</a></span>
-              <span class="rev-badge">33,092€</span>
-              <span class="units-badge">5705 Units</span>
-            </div>
-          </div>
-        </div>
-        <div class="product-item">
-          <div class="product-rank-dot" style="background:#8fb3d4"></div>
-          <div class="product-info">
-            <div class="product-title">Jean & Len After Sun Pflege Lotion, wirkt hautberuhigend & erfrischend, mit Aloe Vera & Vitamin E, b…</div>
-            <div class="product-meta">
-              <span class="asin-badge"><a href="https://www.amazon.de/dp/B0C7LMWQBG" target="_blank">B0C7LMWQBG</a></span>
-              <span class="rev-badge">30,757€</span>
-              <span class="units-badge">5390 Units</span>
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
-    <div class="accordion-item">
-      <button class="accordion-header" onclick="toggleAccordion('Conditioner_und_Haarpflege')">
-        <div class="acc-left">
-          <span class="cat-dot-lg" style="background:#c0d8ef"></span>
-          <span class="acc-cat-name">Conditioner & Haarpflege</span>
-        </div>
-        <div class="acc-right">
-          <span class="acc-rev">304,489€</span>
-          <span class="acc-units">96,049 Units</span>
-          <span class="acc-pct">3.3%</span>
-          <span class="acc-arrow" id="arrow_Conditioner_und_Haarpflege">▼</span>
-        </div>
-      </button>
-      <div class="accordion-body" id="body_Conditioner_und_Haarpflege" style="display:none">
-        
-        <div class="product-item">
-          <div class="product-rank-dot" style="background:#c0d8ef"></div>
-          <div class="product-info">
-            <div class="product-title">Jean & Len Traumlocken Conditioner Reiswasser & Açaibeere, für lockiges & welliges Haar, bekämpft Fr…</div>
-            <div class="product-meta">
-              <span class="asin-badge"><a href="https://www.amazon.de/dp/B0BTDVS3WG" target="_blank">B0BTDVS3WG</a></span>
-              <span class="rev-badge">44,289€</span>
-              <span class="units-badge">13817 Units</span>
-            </div>
-          </div>
-        </div>
-        <div class="product-item">
-          <div class="product-rank-dot" style="background:#c0d8ef"></div>
-          <div class="product-info">
-            <div class="product-title">Jean & Len Conditioner Repair Kokos & Macadamia, für geschädigtes und kraftloses Haar, repariert Haa…</div>
-            <div class="product-meta">
-              <span class="asin-badge"><a href="https://www.amazon.de/dp/B07ZTDSPKD" target="_blank">B07ZTDSPKD</a></span>
-              <span class="rev-badge">27,597€</span>
-              <span class="units-badge">8993 Units</span>
-            </div>
-          </div>
-        </div>
-        <div class="product-item">
-          <div class="product-rank-dot" style="background:#c0d8ef"></div>
-          <div class="product-info">
-            <div class="product-title">Jean & Len Conditioner Feuchtigkeit Rosemary & Ginger, für stumpfes und glanzloses Haar, pflegt inte…</div>
-            <div class="product-meta">
-              <span class="asin-badge"><a href="https://www.amazon.de/dp/B0DG9FM6T4" target="_blank">B0DG9FM6T4</a></span>
-              <span class="rev-badge">26,491€</span>
-              <span class="units-badge">4535 Units</span>
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
-    <div class="accordion-item">
-      <button class="accordion-header" onclick="toggleAccordion('Gesichtspflege')">
-        <div class="acc-left">
-          <span class="cat-dot-lg" style="background:#6d4c7a"></span>
-          <span class="acc-cat-name">Gesichtspflege</span>
-        </div>
-        <div class="acc-right">
-          <span class="acc-rev">190,682€</span>
-          <span class="acc-units">32,533 Units</span>
-          <span class="acc-pct">2.1%</span>
-          <span class="acc-arrow" id="arrow_Gesichtspflege">▼</span>
-        </div>
-      </button>
-      <div class="accordion-body" id="body_Gesichtspflege" style="display:none">
-        
-        <div class="product-item">
-          <div class="product-rank-dot" style="background:#6d4c7a"></div>
-          <div class="product-info">
-            <div class="product-title">Jean & Len Ultimate Glow Cream, ideal für jeden Hauttyp geeignet, sorgt für ein strahlendes Hautbild…</div>
-            <div class="product-meta">
-              <span class="asin-badge"><a href="https://www.amazon.de/dp/B0DL5KYFR1" target="_blank">B0DL5KYFR1</a></span>
-              <span class="rev-badge">26,300€</span>
-              <span class="units-badge">3906 Units</span>
-            </div>
-          </div>
-        </div>
-        <div class="product-item">
-          <div class="product-rank-dot" style="background:#6d4c7a"></div>
-          <div class="product-info">
-            <div class="product-title">Jean & Len Nährendes Trockenöl Kokos & Sandelholz, für den Körper & das Gesicht, pflegt intensiv & z…</div>
-            <div class="product-meta">
-              <span class="asin-badge"><a href="https://www.amazon.de/dp/B08L9SVX9R" target="_blank">B08L9SVX9R</a></span>
-              <span class="rev-badge">25,887€</span>
-              <span class="units-badge">6279 Units</span>
-            </div>
-          </div>
-        </div>
-        <div class="product-item">
-          <div class="product-rank-dot" style="background:#6d4c7a"></div>
-          <div class="product-info">
-            <div class="product-title">Jean & Len Feuchtigkeitsspendende Gesichtscreme Kaktusfeige & Hyaluron, reduziert Spannungsgefühle &…</div>
-            <div class="product-meta">
-              <span class="asin-badge"><a href="https://www.amazon.de/dp/B0CDL6F2KK" target="_blank">B0CDL6F2KK</a></span>
-              <span class="rev-badge">21,915€</span>
-              <span class="units-badge">3364 Units</span>
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
-    <div class="accordion-item">
-      <button class="accordion-header" onclick="toggleAccordion('Haushalt')">
-        <div class="acc-left">
-          <span class="cat-dot-lg" style="background:#b57db5"></span>
-          <span class="acc-cat-name">Haushalt</span>
-        </div>
-        <div class="acc-right">
-          <span class="acc-rev">170,227€</span>
-          <span class="acc-units">44,930 Units</span>
-          <span class="acc-pct">1.9%</span>
-          <span class="acc-arrow" id="arrow_Haushalt">▼</span>
-        </div>
-      </button>
-      <div class="accordion-body" id="body_Haushalt" style="display:none">
-        
-        <div class="product-item">
-          <div class="product-rank-dot" style="background:#b57db5"></div>
-          <div class="product-info">
-            <div class="product-title">Jean & Len Faserschonendes Feinwaschmittel Wolle & Feines Veilchen & Jasmin, schützt empfindliche Fa…</div>
-            <div class="product-meta">
-              <span class="asin-badge"><a href="https://www.amazon.de/dp/B0CG9X4D83" target="_blank">B0CG9X4D83</a></span>
-              <span class="rev-badge">35,696€</span>
-              <span class="units-badge">7858 Units</span>
-            </div>
-          </div>
-        </div>
-        <div class="product-item">
-          <div class="product-rank-dot" style="background:#b57db5"></div>
-          <div class="product-info">
-            <div class="product-title">Jean & Len Universalwaschmittel Wasserlilie & Hibiskus, Fasertiefe Reinigung, mit Fleck-Weg-Effekt, …</div>
-            <div class="product-meta">
-              <span class="asin-badge"><a href="https://www.amazon.de/dp/B0D1RJT6N4" target="_blank">B0D1RJT6N4</a></span>
-              <span class="rev-badge">25,734€</span>
-              <span class="units-badge">6085 Units</span>
-            </div>
-          </div>
-        </div>
-        <div class="product-item">
-          <div class="product-rank-dot" style="background:#b57db5"></div>
-          <div class="product-info">
-            <div class="product-title">Jean & Len Schaumseife Rosemary & Ginger, reinigt beanspruchte Hände sanft mit angenehmen Schaum, fr…</div>
-            <div class="product-meta">
-              <span class="asin-badge"><a href="https://www.amazon.de/dp/B0DSGGSWBW" target="_blank">B0DSGGSWBW</a></span>
-              <span class="rev-badge">18,423€</span>
-              <span class="units-badge">6595 Units</span>
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
-    <div class="accordion-item">
-      <button class="accordion-header" onclick="toggleAccordion('Lippenpflege')">
-        <div class="acc-left">
-          <span class="cat-dot-lg" style="background:#d9b3d9"></span>
-          <span class="acc-cat-name">Lippenpflege</span>
-        </div>
-        <div class="acc-right">
-          <span class="acc-rev">42,556€</span>
-          <span class="acc-units">17,495 Units</span>
-          <span class="acc-pct">0.5%</span>
-          <span class="acc-arrow" id="arrow_Lippenpflege">▼</span>
-        </div>
-      </button>
-      <div class="accordion-body" id="body_Lippenpflege" style="display:none">
-        
-        <div class="product-item">
-          <div class="product-rank-dot" style="background:#d9b3d9"></div>
-          <div class="product-info">
-            <div class="product-title">Jean & Len Intensiv pflegender Lip Balm, für geschmeidig weiche Lippen, bewahrt die Lippen vor dem A…</div>
-            <div class="product-meta">
-              <span class="asin-badge"><a href="https://www.amazon.de/dp/B0C8B2V31C" target="_blank">B0C8B2V31C</a></span>
-              <span class="rev-badge">21,566€</span>
-              <span class="units-badge">9405 Units</span>
-            </div>
-          </div>
-        </div>
-        <div class="product-item">
-          <div class="product-rank-dot" style="background:#d9b3d9"></div>
-          <div class="product-info">
-            <div class="product-title">Jean & Len Sensitiver Lip Balm mit Bio-Sheabutter & Bio-Mandelöl, beruhigt, bewahrt die Lippen vor d…</div>
-            <div class="product-meta">
-              <span class="asin-badge"><a href="https://www.amazon.de/dp/B0C5RXYHJ3" target="_blank">B0C5RXYHJ3</a></span>
-              <span class="rev-badge">14,531€</span>
-              <span class="units-badge">5861 Units</span>
-            </div>
-          </div>
-        </div>
-        <div class="product-item">
-          <div class="product-rank-dot" style="background:#d9b3d9"></div>
-          <div class="product-info">
-            <div class="product-title">Jean & Len Lip Balm Beere, bewahrt die Lippenhaut vor dem Austrocknen, mit natürlichen Wachsen, mit …</div>
-            <div class="product-meta">
-              <span class="asin-badge"><a href="https://www.amazon.de/dp/B0F4KSKKXL" target="_blank">B0F4KSKKXL</a></span>
-              <span class="rev-badge">3,379€</span>
-              <span class="units-badge">1357 Units</span>
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
+    <!-- Category Revenue Summary -->
+    <div>
+      <h2 class="section-title">Kategorie-Übersicht</h2>
+      <div class="card" style="padding:0;">
+        <table id="catSummaryTable"></table>
       </div>
     </div>
   </div>
 
-</div>
+  <!-- TOP PRODUCTS PER CATEGORY -->
+  <h2 class="section-title">Top-Produkte pro Kategorie (Top 3 nach Umsatz)</h2>
+  <div class="top-grid" id="topProdsGrid"></div>
 
-<div class="footer">
-  Jean & Len GmbH · Amazon Vendor Sales Dashboard · Datenstand: 01.01.2025 – 31.12.2025 · Erstellt: 24.02.2026
+  <div class="footer">Jean &amp; Len GmbH · Vendor Sales Dashboard 2025 · Daten: Amazon Vendor Central (Manufacturing View) · Erstellt: 25.02.2026</div>
 </div>
 
 <script>
-// ─── DATA ───
-const catsData = [2425869.87, 1014154.11, 765992.39, 701233.42, 697680.22, 666271.56, 662075.15, 407544.35, 397196.66, 371442.86, 370193.14, 304489.14, 190682.36, 170227.49, 42556.16];
-const catsLabels = ["Nachf\u00fcller", "Sonstiges", "Handseife & Hand Wash", "Duschgel & K\u00f6rperw\u00e4sche", "Duft & Lifestyle", "Handcreme & Handbalsam", "Shampoo", "Sonnenschutz", "Sets & Geschenke", "Haarpflege", "K\u00f6rperpflege", "Conditioner & Haarpflege", "Gesichtspflege", "Haushalt", "Lippenpflege"];
-const catsColors = ["#3f5a3f", "#6b8f6b", "#9ab89a", "#c9dfc9", "#a0522d", "#cd853f", "#deb887", "#f5deb3", "#2f4f6f", "#5b7fa6", "#8fb3d4", "#c0d8ef", "#6d4c7a", "#b57db5", "#d9b3d9"];
-const barDatasets = [{"label": "Nachf\u00fcller", "data": [2254701.0, 77822.0, 30864.0, 28724.0, 21423.0, 3796.0, 1676.0], "backgroundColor": "#3f5a3f"}, {"label": "Sonstiges", "data": [350213.0, 197264.0, 309913.0, 83034.0, 18936.0, 61.0, 20287.0], "backgroundColor": "#6b8f6b"}, {"label": "Handseife & Hand Wash", "data": [675424.0, 24620.0, 17872.0, 20184.0, 5791.0, 16156.0, 2002.0], "backgroundColor": "#9ab89a"}, {"label": "Duschgel & K\u00f6rperw\u00e4sche", "data": [668810.0, 6490.0, 3477.0, 7217.0, 2095.0, 9042.0, 3385.0], "backgroundColor": "#c9dfc9"}, {"label": "Duft & Lifestyle", "data": [553419.0, 9781.0, 1698.0, 105554.0, 2031.0, 1823.0, 81.0], "backgroundColor": "#a0522d"}, {"label": "Handcreme & Handbalsam", "data": [604586.0, 21080.0, 12289.0, 14114.0, 239.0, 12014.0, 1361.0], "backgroundColor": "#cd853f"}, {"label": "Shampoo", "data": [557157.0, 51833.0, 0, 33374.0, 9481.0, 5866.0, 978.0], "backgroundColor": "#deb887"}, {"label": "Sonnenschutz", "data": [356370.0, 6743.0, 33055.0, 1907.0, 7692.0, 0, 1185.0], "backgroundColor": "#f5deb3"}, {"label": "Sets & Geschenke", "data": [396485.0, 0, 0, 16.0, 638.0, 32.0, 0], "backgroundColor": "#2f4f6f"}, {"label": "Haarpflege", "data": [322706.0, 17824.0, 6622.0, 17541.0, 4329.0, 0, 1733.0], "backgroundColor": "#5b7fa6"}, {"label": "K\u00f6rperpflege", "data": [323895.0, 28082.0, 4222.0, 6331.0, 3845.0, 10.0, 2442.0], "backgroundColor": "#8fb3d4"}, {"label": "Conditioner & Haarpflege", "data": [278993.0, 8795.0, 0, 2779.0, 3491.0, 9913.0, 441.0], "backgroundColor": "#c0d8ef"}, {"label": "Gesichtspflege", "data": [186550.0, 1606.0, 1370.0, 653.0, 242.0, 0, 155.0], "backgroundColor": "#6d4c7a"}, {"label": "Haushalt", "data": [155560.0, 0, 0, 0, 14652.0, 0, 0], "backgroundColor": "#b57db5"}, {"label": "Lippenpflege", "data": [42251.0, 258.0, 0, 0, 0, 0, 16.0], "backgroundColor": "#d9b3d9"}];
-const barLabels = ["DE", "IT", "ES", "FR", "NL", "GB", "SE"];
+const DATA = {
+  "grand_total": 9187609,
+  "total_units": 1826696,
+  "total_returns_rate": 0.6,
+  "de_pct": 84.1,
+  "cats_sorted": ["Nachfüller","Duft & Lifestyle","Handseife & Hand Wash","Duschgel & Körperwäsche","Sonstiges","Handcreme & Handbalsam","Sonnenschutz & After Sun","Shampoo","Haar-Treatments","Sets & Adventskalender","Körperpflege","Conditioner","Haushalt & Reinigung","Gesichtspflege","Deodorant","Lippenpflege"],
+  "cat_totals": {"Nachfüller":{"rev":2371936,"units":259840,"returns":1099,"pct":25.8,"ret_rate":0.42},"Duft & Lifestyle":{"rev":922736,"units":131038,"returns":1647,"pct":10.0,"ret_rate":1.26},"Handseife & Hand Wash":{"rev":771215,"units":169671,"returns":828,"pct":8.4,"ret_rate":0.49},"Duschgel & Körperwäsche":{"rev":733009,"units":237229,"returns":1353,"pct":8.0,"ret_rate":0.57},"Sonstiges":{"rev":693620,"units":117819,"returns":1239,"pct":7.5,"ret_rate":1.05},"Handcreme & Handbalsam":{"rev":649372,"units":212166,"returns":1590,"pct":7.1,"ret_rate":0.75},"Sonnenschutz & After Sun":{"rev":602299,"units":104186,"returns":476,"pct":6.6,"ret_rate":0.46},"Shampoo":{"rev":599910,"units":187551,"returns":839,"pct":6.5,"ret_rate":0.45},"Haar-Treatments":{"rev":455838,"units":128417,"returns":527,"pct":5.0,"ret_rate":0.41},"Sets & Adventskalender":{"rev":410049,"units":19669,"returns":276,"pct":4.5,"ret_rate":1.40},"Körperpflege":{"rev":285171,"units":71471,"returns":276,"pct":3.1,"ret_rate":0.39},"Conditioner":{"rev":235950,"units":68702,"returns":309,"pct":2.6,"ret_rate":0.45},"Haushalt & Reinigung":{"rev":167607,"units":39506,"returns":264,"pct":1.8,"ret_rate":0.67},"Gesichtspflege":{"rev":158593,"units":26638,"returns":112,"pct":1.7,"ret_rate":0.42},"Deodorant":{"rev":87053,"units":35206,"returns":121,"pct":0.9,"ret_rate":0.34},"Lippenpflege":{"rev":43251,"units":17587,"returns":42,"pct":0.5,"ret_rate":0.24}},
+  "cat_country": {"Nachfüller":{"DE":{"rev":2254701,"units":252138},"IT":{"rev":63879,"units":4045},"ES":{"rev":14826,"units":941},"FR":{"rev":5977,"units":358},"NL":{"rev":16395,"units":1097},"GB":{"rev":3847,"units":303},"SE":{"rev":3837,"units":370}},"Duft & Lifestyle":{"DE":{"rev":658073,"units":97568},"IT":{"rev":18787,"units":2011},"ES":{"rev":5249,"units":544},"FR":{"rev":208636,"units":26263},"NL":{"rev":3654,"units":634},"GB":{"rev":1823,"units":207},"SE":{"rev":81,"units":8}},"Handseife & Hand Wash":{"DE":{"rev":693863,"units":161284},"IT":{"rev":24620,"units":2920},"ES":{"rev":17872,"units":1917},"FR":{"rev":1305,"units":296},"NL":{"rev":11905,"units":870},"GB":{"rev":16104,"units":1495},"SE":{"rev":2671,"units":257}},"Duschgel & Körperwäsche":{"DE":{"rev":717408,"units":234429},"IT":{"rev":0,"units":0},"ES":{"rev":2075,"units":359},"FR":{"rev":753,"units":102},"NL":{"rev":646,"units":103},"GB":{"rev":9028,"units":1044},"SE":{"rev":2664,"units":1083}},"Sonstiges":{"DE":{"rev":39353,"units":4446},"IT":{"rev":198832,"units":35922},"ES":{"rev":308151,"units":46791},"FR":{"rev":80672,"units":15225},"NL":{"rev":17766,"units":3481},"GB":{"rev":67,"units":3},"SE":{"rev":16164,"units":4382}},"Handcreme & Handbalsam":{"DE":{"rev":602559,"units":207267},"IT":{"rev":20933,"units":2055},"ES":{"rev":11613,"units":1121},"FR":{"rev":0,"units":0},"NL":{"rev":239,"units":21},"GB":{"rev":12014,"units":1097},"SE":{"rev":1444,"units":307}},"Sonnenschutz & After Sun":{"DE":{"rev":533652,"units":96184},"IT":{"rev":10525,"units":1192},"ES":{"rev":36413,"units":3717},"FR":{"rev":9370,"units":1482},"NL":{"rev":8277,"units":838},"GB":{"rev":0,"units":0},"SE":{"rev":2419,"units":492}},"Shampoo":{"DE":{"rev":537308,"units":176147},"IT":{"rev":39666,"units":7267},"ES":{"rev":0,"units":0},"FR":{"rev":9144,"units":1399},"NL":{"rev":6499,"units":1603},"GB":{"rev":5866,"units":723},"SE":{"rev":621,"units":213}},"Haar-Treatments":{"DE":{"rev":407085,"units":120172},"IT":{"rev":26773,"units":4355},"ES":{"rev":7897,"units":1383},"FR":{"rev":1591,"units":248},"NL":{"rev":4350,"units":893},"GB":{"rev":5489,"units":641},"SE":{"rev":1810,"units":508}},"Sets & Adventskalender":{"DE":{"rev":380264,"units":17863},"IT":{"rev":13037,"units":783},"ES":{"rev":13399,"units":790},"FR":{"rev":87,"units":5},"NL":{"rev":2057,"units":145},"GB":{"rev":32,"units":2},"SE":{"rev":987,"units":73}},"Körperpflege":{"DE":{"rev":252988,"units":65835},"IT":{"rev":25106,"units":4257},"ES":{"rev":932,"units":173},"FR":{"rev":479,"units":84},"NL":{"rev":3301,"units":558},"GB":{"rev":10,"units":3},"SE":{"rev":1783,"units":437}},"Conditioner":{"DE":{"rev":220848,"units":66641},"IT":{"rev":5816,"units":697},"ES":{"rev":0,"units":0},"FR":{"rev":1022,"units":159},"NL":{"rev":3491,"units":570},"GB":{"rev":4423,"units":550},"SE":{"rev":273,"units":64}},"Haushalt & Reinigung":{"DE":{"rev":152121,"units":36525},"IT":{"rev":0,"units":0},"ES":{"rev":0,"units":0},"FR":{"rev":0,"units":0},"NL":{"rev":15471,"units":2978},"GB":{"rev":0,"units":0},"SE":{"rev":0,"units":0}},"Gesichtspflege":{"DE":{"rev":150555,"units":25494},"IT":{"rev":1945,"units":268},"ES":{"rev":2954,"units":353},"FR":{"rev":2391,"units":407},"NL":{"rev":252,"units":32},"GB":{"rev":0,"units":0},"SE":{"rev":247,"units":44}},"Deodorant":{"DE":{"rev":83399,"units":34213},"IT":{"rev":2021,"units":471},"ES":{"rev":0,"units":0},"FR":{"rev":0,"units":0},"NL":{"rev":581,"units":127},"GB":{"rev":7,"units":1},"SE":{"rev":728,"units":307}},"Lippenpflege":{"DE":{"rev":42946,"units":17509},"IT":{"rev":258,"units":63},"ES":{"rev":0,"units":0},"FR":{"rev":0,"units":0},"NL":{"rev":0,"units":0},"GB":{"rev":0,"units":0},"SE":{"rev":16,"units":4}}},
+  "cat_top3": {"Nachfüller":[{"asin":"B085Z1SP6J","title":"Jean & Len Hand & Body Wash Rosemary und Ginger im Nachfüllbeutel, reinigt und pflegt die Haut","rev":1353031},{"asin":"B078VBX61T","title":"Jean & Len Handseife Rosemary & Ginger, reinigt beanspruchte Hände, Flüssigseife im nachfüllbaren Pumpspender, 250 ml","rev":300776},{"asin":"B092V7KGMQ","title":"Jean & Len Hand & Body Wash Rosemary und Ginger im Kanister, reinigt und pflegt die Haut","rev":251287}],"Sets & Adventskalender":[{"asin":"B0FL24DH5M","title":"Jean & Len Adventskalender 2025, weihnachtliche 3D DIY-Szenerie, inklusive zwei Produkte","rev":161255},{"asin":"B0DMT2G73R","title":"Jean & Len Haarpflege Set Rosemary & Ginger für trockenes und glanzloses Haar","rev":50643},{"asin":"B0DMSZCL7H","title":"Jean & Len Haarpflege Set Rosemary & Ginger für trockenes und glanzloses Haar","rev":48500}],"Handseife & Hand Wash":[{"asin":"B07XCLTNB7","title":"Jean & Len Hand & Body Wash Rosemary und Ginger, reinigt und pflegt die Haut, Würzig-frischer Duft","rev":183510},{"asin":"B0DMFM92B6","title":"Jean & Len Handseife Bergamot & Cedarwood, reinigt beanspruchte Hände","rev":100711},{"asin":"B0CN19FVL5","title":"Jean & Len Hand & Body Cleanser Bergamot & Cedarwood, für ein duftendes Reinigungserlebnis","rev":78272}],"Sonnenschutz & After Sun":[{"asin":"B0B1J27BXY","title":"Jean & Len Sensitiv Sonnenspray 50 LSF wasserfest, für empfindliche Haut","rev":176335},{"asin":"B01DSTM0ZW","title":"Jean & Len Sensitiv Sonnenspray 30 LSF wasserfest, für empfindliche Haut","rev":90586},{"asin":"B092V6BVLJ","title":"Jean & Len Sensitiv Sonnencreme 50+ LSF wasserfest, Sofortschutz für empfindliche Haut","rev":69961}],"Handcreme & Handbalsam":[{"asin":"B085ZCQ7Q2","title":"Jean & Len Sehr geile Handcreme Rosemary & Ginger, mit Urea, Handpflege für trockene Hände","rev":136437},{"asin":"B0CN3KV3X2","title":"Jean & Len Heavenly Hand- & Body Balm Rosemary & Ginger, für ein duftendes Pflegeerlebnis","rev":97176},{"asin":"B0DF7QFSZ8","title":"Jean & Len Heavenly Hand- & Body Balm Bergamot & Cedarwood","rev":49414}],"Haar-Treatments":[{"asin":"B0CV4GJ575","title":"Jean & Len Beat The Heat Hitzeschutzspray, mit Mango Duft, leichte Konsistenz","rev":80599},{"asin":"B0CV42KNY6","title":"Jean & Len Haartonikum Rosmarin, wirkt anregend, regt das Haarwachstum an","rev":72595},{"asin":"B0DG9S89YW","title":"Jean & Len Hair Mask Rosemary und Ginger, für stark strapaziertes, trockenes und glanzloses Haar","rev":33617}],"Shampoo":[{"asin":"B0BVWMYMFX","title":"Jean & Len Traumlocken Shampoo Reiswasser & Açaibeere, für lockiges & welliges Haar","rev":72458},{"asin":"B0DG9LDPB9","title":"Jean & Len Feuchtigkeit Shampoo Rosemary & Ginger, für trockenes und sprödes Haar","rev":70773},{"asin":"B092V71TDJ","title":"Jean & Len Volumen Shampoo Holunder & Jasmin, für kraftloses und feines Haar","rev":37398}],"Duft & Lifestyle":[{"asin":"B0CN1G8V9Q","title":"Jean & Len Scent Experience Rosemary & Ginger, Eau de Toilette mit Rosmarin & Ingwer","rev":61671},{"asin":"B0C8621QK5","title":"Jean & Len Duftkerze Amber & Vanilla, für gemütliche Abende Zuhause, Handgemacht","rev":60600},{"asin":"B0BSG1Y9WX","title":"Jean & Len Rosemary & Ginger Eau de Parfum, würzig-frischer Duft nach Rosmarin & Ingwer","rev":59714}],"Duschgel & Körperwäsche":[{"asin":"B0CNH86WTH","title":"Jean & Len Vitalizing Shower Gel To Mousse Rosemary & Ginger, mit Mandel-, Jojobaöl","rev":58926},{"asin":"B0CQM4DMDH","title":"Jean & Len Reichhaltiger Traumschaum Kokos & Hafermilch, Gel-to-Mousse Technologie","rev":57446},{"asin":"B0CWL5B42T","title":"Jean & Len Duschgel Orange & Ingwer, pH-hautideal, erfrischendes Duscherlebnis","rev":53135}],"Conditioner":[{"asin":"B0BTDVS3WG","title":"Jean & Len Traumlocken Conditioner Reiswasser & Açaibeere, für lockiges & welliges Haar","rev":54651},{"asin":"B0DG9FM6T4","title":"Jean & Len Conditioner Feuchtigkeit Rosemary & Ginger, für stumpfes und glanzloses Haar","rev":31873},{"asin":"B07ZTDSPKD","title":"Jean & Len Conditioner Repair Kokos & Macadamia, für geschädigtes und kraftloses Haar","rev":29588}],"Haushalt & Reinigung":[{"asin":"B0CG9X4D83","title":"Jean & Len Faserschonendes Feinwaschmittel Wolle & Feines Veilchen & Jasmin","rev":35709},{"asin":"B0D1RJT6N4","title":"Jean & Len Universalwaschmittel Wasserlilie & Hibiskus, Fasertiefe Reinigung","rev":25753},{"asin":"B0CP62LPJW","title":"Jean & Len Body Ceremony Peony und Lychee Hand- und Körperreiniger","rev":17287}],"Gesichtspflege":[{"asin":"B0DL5KYFR1","title":"Jean & Len Ultimate Glow Cream, ideal für jeden Hauttyp, sorgt für ein strahlendes Hautbild","rev":28642},{"asin":"B0CDL6F2KK","title":"Jean & Len Feuchtigkeitsspendende Gesichtscreme Kaktusfeige & Hyaluron","rev":22800},{"asin":"B0DLH5XMY7","title":"Jean & Len Hydrating Booster Serum, tiefenwirksame 24h-Feuchtigkeit","rev":14422}],"Körperpflege":[{"asin":"B0CWLFXF5X","title":"Jean & Len Body Butter Cranberry & Vanille, versorgt die Haut ausreichend mit Feuchtigkeit","rev":52947},{"asin":"B08FC3HPVG","title":"Jean & Len Fußcreme Sheabutter & Calendula, für trockene & beanspruchte Haut","rev":25102},{"asin":"B085ZKWF2T","title":"Jean & Len Reichhaltige Bodymilk mit Sheabutter, pflegt trockene Haut intensiv","rev":24885}],"Lippenpflege":[{"asin":"B0C8B2V31C","title":"Jean & Len Intensiv pflegender Lip Balm, für geschmeidig weiche Lippen","rev":22770},{"asin":"B0C5RXYHJ3","title":"Jean & Len Sensitiver Lip Balm mit Bio-Sheabutter & Bio-Mandelöl","rev":15690},{"asin":"B0F4KSKKXL","title":"Jean & Len Lip Balm Beere, bewahrt die Lippenhaut vor dem Austrocknen","rev":3734}],"Deodorant":[{"asin":"B092V85LL8","title":"Jean & Len Deobalsam Baumwolle, schenkt auf natürliche Weise bis zu 24h Deo-Schutz","rev":22278},{"asin":"B0BFJ7ZZTX","title":"Jean & Len Deobalsam Rosenwasser, schenkt auf natürliche Weise bis zu 24h Deo-Schutz","rev":12741},{"asin":"B092V8PPZF","title":"Jean & Len Deobalsam Wasserlilie, schenkt auf natürliche Weise bis zu 24h Deo-Schutz","rev":11167}],"Sonstiges":[{"asin":"B0FPGGP951","title":"Jean & Len Aufbewahrungskorb, rund, aus Baumwolle und Stroh","rev":3460},{"asin":"B0984DBNS9","title":"Jean & Len Desinfektionsmittel für Hände, Hautschonender Hand Sanitizer","rev":3240},{"asin":"B0FPM97YN3","title":"Jean & Len Kosmetikspiegel, aus Eisen, robust und Kratzfest, Mattes & stilvolles Finish","rev":2866}]},
+  "countries": ["DE","IT","ES","FR","NL","GB","SE"]
+};
 
-// ─── DONUT CHART ───
-const donutCtx = document.getElementById('donutChart').getContext('2d');
-const donutChart = new Chart(donutCtx, {
-  type: 'doughnut',
-  data: {
-    labels: catsLabels,
-    datasets: [{
-      data: catsData,
-      backgroundColor: catsColors,
-      borderWidth: 2,
-      borderColor: '#ffffff',
-      hoverBorderWidth: 3,
-      hoverOffset: 6
-    }]
-  },
-  options: {
-    responsive: true,
-    maintainAspectRatio: false,
-    cutout: '62%',
-    plugins: {
-      legend: { display: false },
-      tooltip: {
-        callbacks: {
-          label: function(ctx) {
-            const val = ctx.raw;
-            const total = ctx.dataset.data.reduce((a, b) => a + b, 0);
-            const pct = (val / total * 100).toFixed(1);
-            return ` ${val.toLocaleString('de-DE', {minimumFractionDigits:0})}€  (${pct}%)`;
-          }
-        }
-      }
-    }
-  }
-});
+const PALETTE = [
+  '#3f5a3f','#4a7c59','#6aab7d','#a8d5b5','#c8e6d5',
+  '#7c4f3f','#b8735a','#e09070','#d4a574','#e8c89a',
+  '#3f4f7c','#5a6fab','#8a9fd4','#b5bfe8','#6b3f7c',
+  '#b85ab8'
+];
 
-// Build legend
-const legendEl = document.getElementById('donutLegend');
-const totalRev = catsData.reduce((a,b) => a+b, 0);
-catsLabels.forEach((label, i) => {
-  const pct = (catsData[i] / totalRev * 100).toFixed(1);
-  const item = document.createElement('div');
-  item.className = 'legend-item';
-  item.innerHTML = `<span class="legend-dot" style="background:${catsColors[i]}"></span><span>${label} <strong>${pct}%</strong></span>`;
-  legendEl.appendChild(item);
-});
+const cats = DATA.cats_sorted;
+const countries = DATA.countries;
+const countryLabels = {'DE':'Deutschland','IT':'Italien','ES':'Spanien','FR':'Frankreich','NL':'Niederlande','GB':'Großbritannien','SE':'Schweden'};
 
-// ─── STACKED BAR ───
-const barCtx = document.getElementById('stackedBar').getContext('2d');
-new Chart(barCtx, {
-  type: 'bar',
-  data: {
-    labels: barLabels,
-    datasets: barDatasets
-  },
-  options: {
-    responsive: true,
-    maintainAspectRatio: false,
-    plugins: {
-      legend: { display: false },
-      tooltip: {
-        mode: 'index',
-        callbacks: {
-          label: function(ctx) {
-            if (ctx.raw === 0) return null;
-            return ` ${ctx.dataset.label}: ${ctx.raw.toLocaleString('de-DE')}€`;
-          },
-          footer: function(items) {
-            const total = items.reduce((a, b) => a + b.raw, 0);
-            return `Gesamt: ${total.toLocaleString('de-DE')}€`;
-          }
-        }
-      }
+// DONUT CHART
+(function() {
+  const ctx = document.getElementById('donutChart').getContext('2d');
+  // Filter out Sonstiges from donut for cleaner view, show separate
+  const chartCats = cats.filter(c => c !== 'Sonstiges').concat(['Sonstiges']);
+  const vals = chartCats.map(c => DATA.cat_totals[c].rev);
+  const colors = chartCats.map((c, i) => PALETTE[i % PALETTE.length]);
+
+  new Chart(ctx, {
+    type: 'doughnut',
+    data: {
+      labels: chartCats,
+      datasets: [{ data: vals, backgroundColor: colors, borderWidth: 2, borderColor: '#fff', hoverOffset: 8 }]
     },
-    scales: {
-      x: {
-        stacked: true,
-        grid: { display: false },
-        ticks: { font: { family: 'Poppins', size: 12 }, color: '#555' }
-      },
-      y: {
-        stacked: true,
-        ticks: {
-          font: { family: 'Poppins', size: 11 },
-          color: '#888',
-          callback: v => v >= 1000000 ? (v/1000000).toFixed(1) + 'M€' : v >= 1000 ? (v/1000).toFixed(0) + 'K€' : v + '€'
-        },
-        grid: { color: 'rgba(0,0,0,0.05)' }
+    options: {
+      responsive: true,
+      maintainAspectRatio: false,
+      cutout: '62%',
+      plugins: {
+        legend: { display: false },
+        tooltip: {
+          callbacks: {
+            label: ctx => ` ${ctx.label}: ${(ctx.raw/1000).toFixed(0)}k€ (${DATA.cat_totals[ctx.label].pct}%)`
+          }
+        }
       }
     }
-  }
-});
+  });
 
-// ─── ACCORDION ───
-function toggleAccordion(id) {
-  const body = document.getElementById('body_' + id);
-  const arrow = document.getElementById('arrow_' + id);
-  if (body.style.display === 'none') {
-    body.style.display = 'block';
-    arrow.style.transform = 'rotate(180deg)';
-  } else {
-    body.style.display = 'none';
-    arrow.style.transform = 'rotate(0deg)';
-  }
-}
+  // Legend
+  const legend = document.getElementById('donutLegend');
+  chartCats.forEach((cat, i) => {
+    const item = document.createElement('div');
+    item.className = 'legend-item';
+    item.innerHTML = `<span class="legend-dot" style="background:${colors[i]}"></span><span>${cat}</span><span class="legend-pct">${DATA.cat_totals[cat].pct}%</span>`;
+    legend.appendChild(item);
+  });
+})();
 
-// Auto-open top 3 categories
-['Nachfüller', 'Handseife__Hand_Wash', 'Duschgel__Koerperwaesche'].forEach(id => {
-  const body = document.getElementById('body_' + id);
-  const arrow = document.getElementById('arrow_' + id);
-  if (body) { body.style.display = 'block'; if(arrow) arrow.style.transform = 'rotate(180deg)'; }
-});
+// STACKED BAR CHART
+(function() {
+  const ctx = document.getElementById('stackedBar').getContext('2d');
+  // Show top 8 categories by revenue for readability
+  const topCats = cats.slice(0, 9).filter(c => c !== 'Sonstiges');
+
+  const datasets = topCats.map((cat, i) => ({
+    label: cat,
+    data: countries.map(c => Math.round((DATA.cat_country[cat][c]?.rev || 0) / 1000)),
+    backgroundColor: PALETTE[i % PALETTE.length],
+    borderWidth: 0,
+    borderRadius: 2
+  }));
+
+  new Chart(ctx, {
+    type: 'bar',
+    data: {
+      labels: countries.map(c => countryLabels[c] || c),
+      datasets
+    },
+    options: {
+      responsive: true,
+      maintainAspectRatio: false,
+      scales: {
+        x: { stacked: true, grid: { display: false }, ticks: { font: { family: 'Poppins', size: 11 } } },
+        y: {
+          stacked: true,
+          grid: { color: '#e6dcce' },
+          ticks: {
+            font: { family: 'Poppins', size: 10 },
+            callback: v => v + 'k€'
+          },
+          title: { display: true, text: 'Umsatz (Tsd. EUR)', font: { family: 'Poppins', size: 11 } }
+        }
+      },
+      plugins: {
+        legend: {
+          position: 'bottom',
+          labels: { font: { family: 'Poppins', size: 10 }, boxWidth: 12, padding: 10 }
+        },
+        tooltip: {
+          callbacks: {
+            label: ctx => ` ${ctx.dataset.label}: ${ctx.raw}k€`
+          }
+        }
+      }
+    }
+  });
+})();
+
+// MATRIX TABLE
+(function() {
+  const table = document.getElementById('matrixTable');
+  let html = '<thead><tr><th>Kategorie</th>';
+  countries.forEach(c => { html += `<th>${c}</th>`; });
+  html += '<th>Gesamt</th><th>Anteil</th></tr></thead><tbody>';
+
+  cats.forEach(cat => {
+    const total = DATA.cat_totals[cat].rev;
+    html += `<tr><td>${cat}</td>`;
+    countries.forEach(c => {
+      const rev = DATA.cat_country[cat][c]?.rev || 0;
+      html += `<td>${rev > 0 ? (rev/1000).toFixed(0)+'k' : '–'}</td>`;
+    });
+    html += `<td><strong>${(total/1000).toFixed(0)}k€</strong></td>`;
+    html += `<td><span class="pct-pill">${DATA.cat_totals[cat].pct}%</span></td>`;
+    html += '</tr>';
+  });
+
+  // Totals row
+  html += '<tr class="total-row"><td>GESAMT</td>';
+  countries.forEach(c => {
+    const tot = cats.reduce((s, cat) => s + (DATA.cat_country[cat][c]?.rev || 0), 0);
+    html += `<td>${(tot/1000).toFixed(0)}k</td>`;
+  });
+  html += `<td>${(DATA.grand_total/1000000).toFixed(2)} Mio. €</td><td>100%</td></tr>`;
+  html += '</tbody>';
+  table.innerHTML = html;
+})();
+
+// RETURNS TABLE
+(function() {
+  const table = document.getElementById('returnsTable');
+  let html = '<thead><tr><th style="text-align:left;padding:11px 12px;background:var(--accent);color:#fff;font-size:0.75rem;font-weight:600;">Kategorie</th><th style="text-align:center;padding:11px 12px;background:var(--accent);color:#fff;font-size:0.75rem;font-weight:600;">Return Rate</th><th style="text-align:right;padding:11px 12px;background:var(--accent);color:#fff;font-size:0.75rem;font-weight:600;">Returns</th></tr></thead><tbody>';
+
+  const sorted = [...cats].sort((a,b) => DATA.cat_totals[b].ret_rate - DATA.cat_totals[a].ret_rate);
+  sorted.forEach(cat => {
+    const rr = DATA.cat_totals[cat].ret_rate;
+    const ret = DATA.cat_totals[cat].returns;
+    let cls = rr < 0.5 ? 'ret-green' : rr <= 1.5 ? 'ret-orange' : 'ret-red';
+    html += `<tr>
+      <td style="padding:8px 12px;font-size:0.8rem;font-weight:500;">${cat}</td>
+      <td style="padding:8px 12px;text-align:center;"><span class="ret-badge ${cls}">${rr.toFixed(2)}%</span></td>
+      <td style="padding:8px 12px;text-align:right;font-size:0.8rem;color:var(--text-muted);">${ret.toLocaleString('de-DE')}</td>
+    </tr>`;
+  });
+  html += '</tbody>';
+  table.innerHTML = html;
+})();
+
+// CATEGORY SUMMARY TABLE
+(function() {
+  const table = document.getElementById('catSummaryTable');
+  let html = '<thead><tr><th style="text-align:left;padding:11px 12px;background:var(--accent);color:#fff;font-size:0.75rem;font-weight:600;">Kategorie</th><th style="text-align:right;padding:11px 12px;background:var(--accent);color:#fff;font-size:0.75rem;font-weight:600;">Umsatz</th><th style="text-align:right;padding:11px 12px;background:var(--accent);color:#fff;font-size:0.75rem;font-weight:600;">Units</th><th style="text-align:right;padding:11px 12px;background:var(--accent);color:#fff;font-size:0.75rem;font-weight:600;">Ø Preis</th></tr></thead><tbody>';
+
+  cats.forEach((cat, i) => {
+    const d = DATA.cat_totals[cat];
+    const avgPrice = d.units > 0 ? (d.rev / d.units).toFixed(2) : '–';
+    const bg = i % 2 === 1 ? 'background:#faf7f4;' : '';
+    html += `<tr style="${bg}">
+      <td style="padding:8px 12px;font-size:0.79rem;font-weight:500;">${cat}</td>
+      <td style="padding:8px 12px;text-align:right;font-size:0.79rem;font-weight:600;">${(d.rev/1000).toFixed(0)}k€</td>
+      <td style="padding:8px 12px;text-align:right;font-size:0.79rem;color:var(--text-muted);">${d.units.toLocaleString('de-DE')}</td>
+      <td style="padding:8px 12px;text-align:right;font-size:0.79rem;color:var(--text-muted);">${avgPrice}€</td>
+    </tr>`;
+  });
+  html += '</tbody>';
+  table.innerHTML = html;
+})();
+
+// TOP PRODUCTS GRID
+(function() {
+  const grid = document.getElementById('topProdsGrid');
+  // Show all meaningful categories (not Sonstiges)
+  const showCats = cats.filter(c => c !== 'Sonstiges');
+
+  showCats.forEach((cat, ci) => {
+    const prods = DATA.cat_top3[cat] || [];
+    if (!prods.length) return;
+    let prodsHtml = '';
+    prods.forEach((p, i) => {
+      const shortTitle = p.title.length > 72 ? p.title.substring(0, 72) + '…' : p.title;
+      prodsHtml += `<div class="top-prod">
+        <div class="top-rank">${i+1}</div>
+        <div style="flex:1;">
+          <div class="top-prod-title">${shortTitle}</div>
+          <div style="font-size:0.67rem;color:var(--text-muted);margin-top:2px;">${p.asin}</div>
+        </div>
+        <div class="top-prod-rev">${(p.rev/1000).toFixed(0)}k€</div>
+      </div>`;
+    });
+    grid.innerHTML += `<div class="top-cat-card">
+      <div class="top-cat-title" style="border-left:3px solid ${PALETTE[ci % PALETTE.length]};padding-left:8px;">${cat}</div>
+      ${prodsHtml}
+    </div>`;
+  });
+})();
 </script>
-
 </body>
 </html>
