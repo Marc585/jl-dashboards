@@ -306,6 +306,8 @@
         <a href="ceo.html">CEO Dashboard</a>
         <span class="nav-sep">|</span>
         <a href="webshop.html">Webshop Dashboard</a>
+        <span class="nav-sep">|</span>
+        <a href="vendor.html">&#8594; Vendor Sales</a>
     </div>
 
     <!-- HEADER -->
@@ -406,8 +408,9 @@
         <div class="card kpi">
             <div class="flag">&#127482;&#127480;</div>
             <div class="country">USA</div>
-            <div class="value" style="color: var(--yellow)">16.824&euro;</div>
+            <div class="value" style="color: var(--yellow)">17.508&euro;</div>
             <div class="label">Amazon Umsatz YTD 2026 (KW1&ndash;6)</div>
+            <div style="font-size:10px; color:var(--muted); margin-top:2px; line-height:1.4;">(umgerechnet aus 18.208 USD, Kurs: 1 USD = 0,96 EUR)</div>
             <div class="budget-line">Jahresbudget '26: <strong>TBD</strong> <span class="roas-tag roas-red">Paid ROAS: 0,72</span></div>
             <div class="sub">Marktaufbau | Ticket to Retail</div>
         </div>
@@ -504,7 +507,8 @@
         <div style="display: flex; align-items: flex-start; gap: 16px;">
             <div style="font-size: 40px; flex-shrink: 0; line-height: 1;">&#128680;</div>
             <div style="flex: 1;">
-                <div style="font-size: 17px; font-weight: 800; color: var(--red); letter-spacing: 0.5px; margin-bottom: 4px; text-transform: uppercase;">Budget&uuml;berschreitung erkannt &ndash; Aktion erforderlich</div>
+                <div style="font-size: 13px; font-weight: 700; color: var(--muted); letter-spacing: 0.5px; margin-bottom: 6px;">&#127465;&#127466; Deutschland</div>
+                <div style="font-size: 17px; font-weight: 800; color: var(--red); letter-spacing: 0.5px; margin-bottom: 4px; text-transform: uppercase;">Budget &uuml;berschritten &ndash; Aktion erforderlich</div>
                 <div style="font-size: 13px; color: var(--muted); margin-bottom: 16px;">Folgende Monate haben das geplante Ads-Budget &uuml;berschritten &rarr; Bitte Ursachen mit dem Team kl&auml;ren</div>
                 <table style="width: 100%; border-collapse: collapse; font-size: 13px;">
                     <thead>
@@ -563,7 +567,6 @@
                 <tr><td style="color: var(--muted)">Q1 Budget</td><td class="num">20.000 &euro;</td></tr>
                 <tr><td style="color: var(--muted)">ROAS Ziel (mit Amalyze)</td><td class="num"><strong style="color: var(--green)">4,0</strong></td></tr>
                 <tr><td style="color: var(--muted)">Shift Budget (Prime)</td><td class="num">20.000 &euro;</td></tr>
-                <tr><td style="color: var(--muted)">Status Fulfilmentcrowd</td><td class="num"><span class="dot dot-yellow"></span>In Verhandlung</td></tr>
             </table>
         </div>
         <div class="card">
@@ -583,7 +586,8 @@
         <div style="display: flex; align-items: flex-start; gap: 16px;">
             <div style="font-size: 40px; flex-shrink: 0; line-height: 1;">&#128680;</div>
             <div style="flex: 1;">
-                <div style="font-size: 17px; font-weight: 800; color: var(--red); letter-spacing: 0.5px; margin-bottom: 4px; text-transform: uppercase;">UK Budget&uuml;berschreitung erkannt &ndash; Aktion erforderlich</div>
+                <div style="font-size: 13px; font-weight: 700; color: var(--muted); letter-spacing: 0.5px; margin-bottom: 6px;">&#127468;&#127463; United Kingdom</div>
+                <div style="font-size: 17px; font-weight: 800; color: var(--red); letter-spacing: 0.5px; margin-bottom: 4px; text-transform: uppercase;">Budget &uuml;berschritten &ndash; Aktion erforderlich</div>
                 <div style="font-size: 13px; color: var(--muted); margin-bottom: 16px;">Folgende Monate haben das geplante UK Ads-Budget &uuml;berschritten &rarr; Bitte Ursachen mit dem Team kl&auml;ren</div>
                 <table style="width: 100%; border-collapse: collapse; font-size: 13px;">
                     <thead>
@@ -629,10 +633,17 @@
         <div style="padding:0 0 12px; color:var(--muted); font-size:0.8rem; line-height:1.6; border-bottom:1px solid var(--border); margin-bottom:14px;">
             <strong style="color:var(--text);">Externe Amazon Paid Sales</strong> &ndash; &Auml;quivalent zu Scannerzahlen im Handel. Nur Einnahmen die direkt &uuml;ber Paid Advertising erzielt wurden (kein Organic). Gesamt-Sales je Land werden monatlich aus den Budget Allocation-Dateien der L&auml;nder (Zeile: Overall) gezogen.
         </div>
-        <div style="display:flex; gap:8px; margin-bottom:16px; flex-wrap:wrap;">
+        <div style="display:flex; gap:8px; margin-bottom:8px; flex-wrap:wrap;">
             <button onclick="setSalesView('gesamt')" id="sales-btn-gesamt" style="padding:5px 14px; border-radius:20px; border:1px solid var(--accent); background:var(--accent); color:#fff; font-size:0.78rem; cursor:pointer; font-family:inherit; font-weight:500;">Gesamtzeitraum</button>
             <button onclick="setSalesView('ytd')" id="sales-btn-ytd" style="padding:5px 14px; border-radius:20px; border:1px solid var(--border); background:transparent; color:var(--text); font-size:0.78rem; cursor:pointer; font-family:inherit;">YTD kumulativ</button>
             <button onclick="setSalesView('monat')" id="sales-btn-monat" style="padding:5px 14px; border-radius:20px; border:1px solid var(--border); background:transparent; color:var(--text); font-size:0.78rem; cursor:pointer; font-family:inherit;">Monat</button>
+        </div>
+        <div style="display:flex; gap:8px; flex-wrap:wrap; margin-bottom:16px; align-items:center;">
+            <div style="font-size:12px; color:var(--muted); padding-top:2px;">Jahr:</div>
+            <button id="year-btn-2023" onclick="setYear(2023)" style="padding:5px 14px; border-radius:20px; border:1px solid var(--border); background:transparent; color:var(--text); font-size:0.78rem; cursor:pointer; font-family:inherit;">2023</button>
+            <button id="year-btn-2024" onclick="setYear(2024)" style="padding:5px 14px; border-radius:20px; border:1px solid var(--border); background:transparent; color:var(--text); font-size:0.78rem; cursor:pointer; font-family:inherit;">2024</button>
+            <button id="year-btn-2025" onclick="setYear(2025)" style="padding:5px 14px; border-radius:20px; border:1px solid var(--accent); background:var(--accent); color:#fff; font-size:0.78rem; cursor:pointer; font-family:inherit; font-weight:500;">2025</button>
+            <button id="year-btn-alle" onclick="setYear('alle')" style="padding:5px 14px; border-radius:20px; border:1px solid var(--border); background:transparent; color:var(--text); font-size:0.78rem; cursor:pointer; font-family:inherit;">Alle Jahre</button>
         </div>
         <div id="monat-selector-sales" style="display:none; margin-bottom:12px;">
             <select id="monat-picker-sales" onchange="updateSalesMonthView()" style="padding:6px 12px; border-radius:8px; border:1px solid var(--border); background:var(--card); color:var(--text); font-family:inherit; font-size:0.82rem;">
@@ -1030,6 +1041,25 @@
         });
 
         // 5. Paid Sales Comparison (Amazon Extern – nach Land)
+
+        // 2023 Paid Sales (nach EU-Marktstart Feb/Mär 2023)
+        const esSales2023 = [0, 88, 1604, 1508, 1918, 2832, 4769, 3500, 4286, 5025, 4575, 4623];
+        const frSales2023 = [0, 158, 1040, 1104, 1886, 2946, 2995, 2493, 3227, 4114, 3797, 3862];
+        const itSales2023 = [0, 162, 1793, 1992, 3516, 4604, 5472, 3690, 3543, 4867, 4970, 5629];
+        const nlSales2023 = [0, 0, 31, 72, 65, 241, 376, 468, 479, 401, 509, 159];
+        const seSales2023 = [0, 0, 152, 67, 676, 1772, 1910, 5221, 2010, 1545, 3323, 4034];
+
+        // 2024 Paid Sales
+        const esSales2024 = [5849, 4928, 5714, 5952, 6225, 6224, 6364, 4767, 4447, 5609, 4464, 5162];
+        const frSales2024 = [3656, 3306, 5367, 4637, 4578, 5375, 6500, 5136, 5807, 5191, 6040, 7223];
+        const itSales2024 = [3375, 4284, 6879, 7932, 8451, 7728, 8044, 7884, 3112, 6269, 7494, 7778];
+        const nlSales2024 = [329, 444, 653, 1013, 1292, 1293, 1394, 1368, 1363, 820, 1398, 1739];
+        const seSales2024 = [3037, 3023, 3907, 3805, 4774, 4151, 5190, 6244, 5236, 3839, 7268, 6596];
+
+        // 2025 SE Paid Sales (only Dec available as yearly total)
+        const seSales2025 = [0,0,0,0,0,0,0,0,0,0,0,15242];
+
+        // 2025 Paid Sales (existing)
         const esSales = [5723,8153,10524,9264,11286,12364,13444,12839,12638,14803,23504,22248];
         const frSales = [6524,3273,4135,2897,3440,2753,4655,5690,5353,9696,13743,19889];
         const itSales = [7468,8364,12554,10000,12080,12034,12878,11235,12434,17834,32670,37841];
@@ -1104,6 +1134,53 @@
             salesChart.data.datasets[3].data = [nlSales[idx]];
             salesChart.options.scales.x.stacked = false;
             salesChart.options.scales.y.stacked = false;
+            salesChart.update();
+        }
+
+        // Jahr-Auswahl für Multi-Year Chart
+        let currentYear = 2025;
+        function setYear(yr) {
+            currentYear = yr;
+            // Update button styles
+            [2023, 2024, 2025, 'alle'].forEach(y => {
+                const btn = document.getElementById('year-btn-' + y);
+                if (!btn) return;
+                const active = y === yr;
+                btn.style.background = active ? 'var(--accent)' : 'transparent';
+                btn.style.color = active ? '#fff' : 'var(--text)';
+                btn.style.borderColor = active ? 'var(--accent)' : 'var(--border)';
+                btn.style.fontWeight = active ? '500' : 'normal';
+            });
+
+            if (yr === 'alle') {
+                // Grouped bar: X = countries, datasets = years
+                salesChart.data.labels = ['ES', 'FR', 'IT', 'NL'];
+                salesChart.data.datasets = [
+                    { label: '2023', data: [34729, 27622, 40239, 2800], backgroundColor: '#6b7280' + 'cc', borderRadius: 3, borderSkipped: false },
+                    { label: '2024', data: [65706, 62816, 79230, 13107], backgroundColor: '#818cf8' + 'cc', borderRadius: 3, borderSkipped: false },
+                    { label: '2025', data: [156886, 82047, 187455, 34923], backgroundColor: '#4f46e5' + 'cc', borderRadius: 3, borderSkipped: false }
+                ];
+                salesChart.options.scales.x.stacked = false;
+                salesChart.options.scales.y.stacked = false;
+                salesChart.options.scales.y.ticks.callback = v => (v/1000).toFixed(0) + 'k€';
+                salesChart.options.plugins.tooltip.callbacks.label = ctx => `${ctx.dataset.label}: ${ctx.parsed.y.toLocaleString('de-DE')}€`;
+            } else {
+                const dataMap = {
+                    2023: [esSales2023, frSales2023, itSales2023, nlSales2023],
+                    2024: [esSales2024, frSales2024, itSales2024, nlSales2024],
+                    2025: [esSales, frSales, itSales, nlSales]
+                };
+                const d = dataMap[yr];
+                salesChart.data.labels = months;
+                salesChart.data.datasets = [
+                    { label: 'ES', data: [...d[0]], backgroundColor: colors.es + '99', borderRadius: 2, borderSkipped: false },
+                    { label: 'FR', data: [...d[1]], backgroundColor: colors.fr + '99', borderRadius: 2, borderSkipped: false },
+                    { label: 'IT', data: [...d[2]], backgroundColor: colors.it + '99', borderRadius: 2, borderSkipped: false },
+                    { label: 'NL', data: [...d[3]], backgroundColor: colors.nl + '99', borderRadius: 2, borderSkipped: false }
+                ];
+                salesChart.options.scales.x.stacked = true;
+                salesChart.options.scales.y.stacked = true;
+            }
             salesChart.update();
         }
 
