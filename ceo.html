@@ -154,7 +154,7 @@
 <div class="header">
     <h1>E-Commerce CEO Dashboard</h1>
     <div class="sub">Q1 2026 | Marc Böhle, CDO</div>
-    <div class="meta">Stand: 13.02.2026 | KW07 | Datenquellen: Jessis Reporting, Amazon Allocation, Power BI</div>
+    <div class="meta" id="header-meta">Stand: 25.02.2026 | KW09 | Datenquellen: Jessis Reporting, Amazon Allocation, Power BI</div>
 </div>
 
 <!-- Datenstand-Leiste -->
@@ -222,8 +222,8 @@
 // --- Datenstand (für Freshness-Anzeige) ---
 const datenstand = {
     webshop: { datum: "12.02.2026", quelle: "Jessis Reporting Excel" },
-    amazon:  { datum: "KW5 (02.02.2026)", quelle: "Budget Tracker Excel" },
-    dashboard: { datum: "13.02.2026", autor: "Marc / Claude" }
+    amazon:  { datum: "KW6 (07.02.2026)", quelle: "Budget Tracker Excel" },
+    dashboard: { datum: "25.02.2026", autor: "Marc / Claude" }
 };
 
 // --- Kern-KPIs ---
@@ -317,7 +317,7 @@ const umsatz = {
         linearPlan: 825769, // Linearer Plan für KW1-5 (2.147.000 * 5/13)
         dataWeeks: 6, // Wochen mit Daten
         totalWeeks: 13, // Q1 Gesamtwochen
-        zeitraum: "YTD (KW1–KW5)",
+        zeitraum: "YTD (KW1–KW6)",
         detail: "3/8 Märkte erfasst (DE, UK, USA) | ES/FR/IT/NL/SE noch nicht eingetragen",
         monatsPlan: { jan: 791000, feb: 565000 }, // Aus DE Budget Tracker (ERP Monthly Plan)
         color: "var(--accent)"
@@ -696,8 +696,14 @@ renderKategorien();
 
   // Datenstand aktualisieren
   if (window.datenstand) {
-    datenstand.amazon.datum = 'KW6 (07.02.2026)';
+    datenstand.amazon.datum  = D.stand.amazon_weekly;
     datenstand.webshop.datum = D.stand.webshop;
+    datenstand.dashboard.datum = D.stand.dashboard;
+  }
+  // Header-Meta live aktualisieren
+  const headerMeta = document.getElementById('header-meta');
+  if (headerMeta) {
+    headerMeta.textContent = `Stand: ${D.stand.dashboard} | Datenquellen: Jessis Reporting, Amazon Allocation, Power BI`;
   }
 
   // Amazon Q1 KPI

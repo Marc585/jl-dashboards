@@ -4,7 +4,7 @@
  * WICHTIG: Nur diese Datei ändern, wenn Zahlen aktualisiert werden.
  * amazon.html und ceo.html lesen automatisch aus dieser Datei.
  * 
- * Letztes Update: 25.02.2026 | KW8
+ * Letztes Update: 25.02.2026 | KW9
  */
 window.JL_DATA = {
 
