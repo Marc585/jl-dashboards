@@ -57,7 +57,7 @@
         .kpi-card .kpi-context strong { color: var(--text); }
         .kpi-pct { font-size: 14px; font-weight: 700; }
 
-        /* ===== SECTION 2: 9 Steine ===== */
+        /* ===== SECTION 2: Rocks ===== */
         .steine-summary { display: flex; gap: 16px; margin-bottom: 16px; flex-wrap: wrap; }
         .steine-summary .sum-item { font-size: 13px; font-weight: 600; }
         .stein-card { padding: 14px 16px; border-left: 3px solid var(--muted); }
@@ -172,8 +172,8 @@
 <div class="section-title">Amazon J&L – Umsatz nach Land</div>
 <div class="card" style="padding: 16px 20px; overflow-x: auto;" id="countryCard"></div>
 
-<!-- ===== SECTION 2: 9 STEINE ===== -->
-<div class="section-title">Die 9 Steine – Accountability Tracker</div>
+<!-- ===== SECTION 2: ROCKS ===== -->
+<div class="section-title">Rocks – Accountability Tracker</div>
 <div class="steine-summary" id="steineSummary"></div>
 <div class="grid-3" id="steineGrid"></div>
 
@@ -254,17 +254,17 @@ const kpis = [
     }
 ];
 
-// --- 9 Steine ---
+// --- Rocks ---
 const steine = [
-    { nr: 1, name: "UK-Expansion", detail: "Fulfilmentcrowd-Deal", owner: "Marc", status: "yellow", meilenstein: "Vertragsabschluss", deadline: "Q1" },
+    { nr: 1, name: "UK-Expansion", detail: "Ziel: 5.000 GBP/Woche (Break-even Pick & Pack)", owner: "Lena", status: "yellow", meilenstein: "5.000 GBP/Woche stabil erreichen", deadline: "Q1" },
     { nr: 2, name: "AOV-Booster", detail: "Shopware Plugin", owner: "Marc", status: "green", meilenstein: "Rollout + A/B-Test", deadline: "Feb" },
-    { nr: 3, name: "Amazon USA", detail: "Launch als Ticket to Retail", owner: "Marc", status: "yellow", meilenstein: "Erste Listings live", deadline: "März" },
-    { nr: 4, name: "OOS-Quote", detail: "Webshop < 4%", owner: "Marc/Jessi", status: "yellow", meilenstein: "Tracking aufsetzen", deadline: "laufend" },
-    { nr: 5, name: "Amazon TOX", detail: "Hybrid-Strategie", owner: "Marc", status: "yellow", meilenstein: "Entscheidung Vendor/Seller", deadline: "Q1" },
-    { nr: 6, name: "Vendor Quality DE", detail: "JEBG3 Shipment Defects", owner: "Marc", status: "red", meilenstein: "Defects senken", deadline: "ASAP" },
-    { nr: 7, name: "Home-Anteil", detail: "Webshop 11% Umsatz", owner: "Marc/Jessi", status: "green", meilenstein: "11% halten", deadline: "Q1" },
-    { nr: 8, name: "Amazon Profitabilität", detail: "ROAS > 1,5 alle Märkte", owner: "Marc", status: "yellow", meilenstein: "ROAS-Monitoring", deadline: "Q1" },
-    { nr: 9, name: "USA Retail Prep", detail: "Amazon als Proof für Handel", owner: "Marc", status: "yellow", meilenstein: "Proof-of-Concept", deadline: "Q2" }
+    { nr: 3, name: "Amazon USA", detail: "Launch 5 US Handseifen auf Amazon", owner: "Marc", status: "yellow", meilenstein: "Go-Live kurz bevor – Launch bis 01.03.", deadline: "01.03." },
+    { nr: 4, name: "OOS-Quote", detail: "Webshop aktuell ~2,1% (Ziel < 4%) – wird noch geprüft", owner: "Marc/Jessi", status: "green", meilenstein: "Quote unter 4% halten", deadline: "laufend" },
+    { nr: 5, name: "Amazon TOX", detail: "Hybrid-Projekt gestartet, ext. Berater an Bord", owner: "Marc", status: "yellow", meilenstein: "Projekt-Abschluss in 4 Monaten", deadline: "Jun" },
+    { nr: 6, name: "Vendor Chargebacks", detail: "Aktuell 0,73% → Ziel < 0,5%", owner: "Kevin", status: "yellow", meilenstein: "Chargeback-Quote unter 0,5% senken", deadline: "Q2" },
+    { nr: 7, name: "Home-Anteil", detail: "Webshop aktuell 11% → Ziel 15%", owner: "Marc/Jessi", status: "yellow", meilenstein: "Home-Anteil auf 15% steigern", deadline: "Q2" },
+    { nr: 8, name: "Amazon Profitabilität", detail: "DB5 aktuell 13,4% → Ziel 15%", owner: "Marc", status: "yellow", meilenstein: "DB5 auf 15% steigern", deadline: "Q2" },
+    { nr: 9, name: "Jahresgespräche Amazon", detail: "Kopfkonditionen: 23,5% → Ziel 20,5%", owner: "Marc", status: "red", meilenstein: "Konditionen auf 20,5% verhandeln", deadline: "Q1" }
 ];
 
 // --- Fuck-ups & Blockaden ---
@@ -536,7 +536,7 @@ function renderCountries() {
     </div>`;
 }
 
-// --- Section 2: 9 Steine ---
+// --- Section 2: Rocks ---
 function renderSteine() {
     const counts = { green: 0, yellow: 0, red: 0 };
     steine.forEach(s => counts[s.status]++);
