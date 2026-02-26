@@ -221,35 +221,35 @@
 
 // --- Datenstand (für Freshness-Anzeige) ---
 const datenstand = {
-    webshop: { datum: "12.02.2026", quelle: "Jessis Reporting Excel" },
-    amazon:  { datum: "KW6 (07.02.2026)", quelle: "Budget Tracker Excel" },
-    dashboard: { datum: "25.02.2026", autor: "Marc / Claude" }
+    webshop: { datum: "25.02.2026", quelle: "Jessis Reporting Excel" },
+    amazon:  { datum: "KW7 (14.02.2026)", quelle: "Budget Tracker Excel" },
+    dashboard: { datum: "26.02.2026", autor: "Marc / Claude" }
 };
 
 // --- Kern-KPIs ---
 const kpis = [
     {
         name: "Webshop AOV",
-        ist: 45.03, ziel: 49.15, unit: "€",
+        ist: 45.54, ziel: 49.15, unit: "€",
         trend: "up", // up, down, stable
         massnahme: "AOV-Booster Plugin (Rollout KW07)",
         color: "--orange"
     },
     {
         name: "Webshop CR",
-        ist: 2.79, ziel: 2.81, unit: "%",
+        ist: 2.83, ziel: 2.81, unit: "%",
         trend: "up",
         massnahme: "CRO-Optimierung läuft, fast am Ziel",
         color: "--yellow"
     },
     {
         name: "Amazon J&L (Q1 Umsatz)",
-        ist: 1238604, ziel: 2147000, unit: "€",
+        ist: 1376070, ziel: 2147000, unit: "€",
         trend: "up",
-        massnahme: "Nur 3/8 Märkte erfasst (DE, UK, USA). ES/FR/IT/NL/SE noch ohne Daten.",
+        massnahme: "DE/USA KW1–7, UK KW1–6. IT Feb, ES/FR/NL/SE Jan eingetragen.",
         color: "--accent",
         linearPlan: 825769, // 2.147.000 * 5/13
-        dataWeeks: 6,
+        dataWeeks: 7,
         totalWeeks: 13
     }
 ];
@@ -285,7 +285,7 @@ const roadmapItems = [
     { name: "Beiersdorf Produktliste", start: 6, end: 8, phase: "Abstimmung → Umsetzung", color: "var(--yellow)" },
     { name: "INCI-Check Tool", start: 1, end: 7, phase: "Entwicklung → Live", color: "var(--green)" }
 ];
-const currentKW = 7; // Aktuelle Kalenderwoche
+const currentKW = 9; // Aktuelle Kalenderwoche
 const kwStart = 1;
 const kwEnd = 13;
 
@@ -298,27 +298,27 @@ const projekte = [
 ];
 
 // --- Umsatzübersicht ---
-// Webshop YTD: Summe aller Tagesumsätze aus Jessis Reporting (01.01.-12.02.2026)
-// Amazon YTD: Summe aus Budget Tracker Excel (DE KW1-5, UK KW1-4, USA KW1-5)
+// Webshop YTD: Summe aller Tagesumsätze aus Jessis Reporting (01.01.-25.02.2026)
+// Amazon YTD: Summe aus Budget Tracker Excel (DE KW1-7, UK KW1-6, USA KW1-7)
 const umsatz = {
     webshop: {
         label: "Webshop J&L",
-        ist: 460337, // YTD Summe aus 43 Tagen Jessis Reporting
+        ist: 604580, // YTD Summe aus 56 Tagen Jessis Reporting
         plan: null,  // Kein explizites Umsatzziel für Webshop Q1 definiert
-        zeitraum: "YTD (01.01.–12.02.)",
-        detail: "43 Tage | Ø 10.745€/Tag | 10.043 Bestellungen",
+        zeitraum: "YTD (01.01.–25.02.)",
+        detail: "56 Tage | Ø 10.796€/Tag | 13.275 Bestellungen",
         color: "var(--green)"
     },
     amazon: {
         label: "Amazon J&L (alle Märkte)",
-        ist: 1238604, // DE 1.016.010€ + UK 27.154€ + USA 17.508€ + EU Jan (KW1-6)
+        ist: 1376070, // DE 1.150.725€ + UK 27.153€ + USA 20.259€ + IT Feb + EU Jan
         plan: 2147000, // Q1 Prognose (11,3 Mio € Jahresprognose = 19%)
         planJahr: 11300000, // Jahresprognose
         linearPlan: 825769, // Linearer Plan für KW1-5 (2.147.000 * 5/13)
-        dataWeeks: 6, // Wochen mit Daten
+        dataWeeks: 7, // Wochen mit Daten
         totalWeeks: 13, // Q1 Gesamtwochen
-        zeitraum: "YTD (KW1–KW6)",
-        detail: "3/8 Märkte erfasst (DE, UK, USA) | ES/FR/IT/NL/SE noch nicht eingetragen",
+        zeitraum: "YTD (KW1–KW7)",
+        detail: "DE/USA KW7, UK KW6 | IT Feb | ES/FR/NL/SE Jan eingetragen",
         monatsPlan: { jan: 791000, feb: 565000 }, // Aus DE Budget Tracker (ERP Monthly Plan)
         color: "var(--accent)"
     }
@@ -328,14 +328,14 @@ const umsatz = {
 // Daten aus Budget Tracker Excel (OneDrive), aktualisiert Mi wöchentlich
 // Total Sales Amazon = Paid + Organic Sales
 const amazonLaender = [
-    { flag: "&#127465;&#127466;", name: "Deutschland", budgetQ1: 60500, istQ1: 1016010, adSpend: 29522, roas: 14.0, orders: 71942, budgetJahr: 320000, status: "active", datenstand: "KW1–6" },
-    { flag: "&#127468;&#127463;", name: "UK", budgetQ1: 20000, istQ1: 27154, adSpend: 9334, roas: 2.31, orders: 2209, budgetJahr: 100000, status: "growth", datenstand: "KW1–6", note: "GBP→EUR" },
+    { flag: "&#127465;&#127466;", name: "Deutschland", budgetQ1: 60500, istQ1: 1150725, adSpend: 32232, roas: 14.22, orders: 79884, budgetJahr: 320000, status: "active", datenstand: "KW1–7" },
+    { flag: "&#127468;&#127463;", name: "UK", budgetQ1: 20000, istQ1: 27153, adSpend: 9334, roas: 2.20, orders: 2209, budgetJahr: 100000, status: "growth", datenstand: "KW1–6", note: "GBP→EUR" },
     { flag: "&#127466;&#127480;", name: "Spanien", budgetQ1: 9360, istQ1: 48565, adSpend: 3475, roas: null, orders: null, budgetJahr: 46800, status: "active", datenstand: "Jan '26" },
     { flag: "&#127467;&#127479;", name: "Frankreich", budgetQ1: 7600, istQ1: 44011, adSpend: 3215, roas: null, orders: null, budgetJahr: 39800, status: "active", datenstand: "Jan '26" },
     { flag: "&#127470;&#127481;", name: "Italien", budgetQ1: 10080, istQ1: 68985, adSpend: 5479, roas: null, orders: null, budgetJahr: 50400, status: "active", datenstand: "Feb '26" },
     { flag: "&#127475;&#127473;", name: "Niederlande", budgetQ1: 1200, istQ1: 11277, adSpend: 600, roas: null, orders: null, budgetJahr: 5000, status: "active", datenstand: "Jan '26" },
     { flag: "&#127480;&#127466;", name: "Schweden", budgetQ1: 14325, istQ1: 5094, adSpend: 637, roas: null, orders: null, budgetJahr: 57300, status: "new", datenstand: "Jan '26" },
-    { flag: "&#127482;&#127480;", name: "USA", budgetQ1: null, istQ1: 17508, adSpend: 10949, roas: 0.72, orders: 625, budgetJahr: null, status: "launch", datenstand: "KW1–5", note: "USD→EUR" }
+    { flag: "&#127482;&#127480;", name: "USA", budgetQ1: null, istQ1: 20259, adSpend: 12656, roas: 0.71, orders: 708, budgetJahr: null, status: "launch", datenstand: "KW1–7", note: "USD→EUR" }
 ];
 
 // --- Artikelgruppen (Platzhalter für Power BI Daten) ---
