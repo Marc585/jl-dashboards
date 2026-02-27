@@ -450,24 +450,19 @@ function aggregate(data, mode) {
     return { labels: keys.map(labelFn), data: keys.map(k => groups[k]) };
 }
 
-function aggMeta(mode) {
+function aggMeta(mode, data) {
+    const mData = data || metaRaw;
     const dateToKw = {};
     raw.forEach(d => dateToKw[d.datum] = d.kw);
-
-    if (mode === 'daily') return { labels: metaRaw.map(d => d.datum.slice(5)), data: metaRaw.map(d => [d]) };
-    if (mode === 'ytd') return { labels: ['YTD 2026'], data: [metaRaw] };
-    if (mode === 'last30') {
-        const last30 = metaRaw.slice(-30);
-        return { labels: last30.map(d => d.datum.slice(5)), data: last30.map(d => [d]) };
-    }
 
     let keyFn, labelFn;
     if (mode === 'weekly') { keyFn = d => dateToKw[d.datum] || 'Unbekannt'; labelFn = k => k; }
     if (mode === 'monthly') { keyFn = d => d.datum.slice(0,7); labelFn = k => monthNames[k] || k; }
     if (mode === 'quarterly') { keyFn = d => getQuarter(d.datum); labelFn = k => k + ' 2026'; }
     if (mode === 'yearly') { keyFn = d => d.datum.slice(0,4); labelFn = k => k; }
+    if (!keyFn) { keyFn = d => dateToKw[d.datum] || 'Unbekannt'; labelFn = k => k; } // fallback weekly
 
-    const groups = groupBy(metaRaw, keyFn);
+    const groups = groupBy(mData, keyFn);
     const keys = Object.keys(groups);
     return { labels: keys.map(labelFn), data: keys.map(k => groups[k]) };
 }
@@ -638,11 +633,14 @@ function getFocusData(mode) {
 
 function renderAll() {
     const activeRaw = getActiveRaw();
-    const agg = aggregate(activeRaw, currentMode === 'custom' ? 'ytd' : currentMode);
-    const magg = aggMeta(currentMode === 'custom' ? 'ytd' : currentMode);
-    const isTimeline = false; // Nur noch YTD/Quartal/Custom – kein Tages-Chart mehr
-    const isSingle = ['ytd','quarterly','custom'].includes(currentMode) && agg.data.length <= 1;
-    const pRadius = isTimeline ? 3 : isSingle ? 10 : 6;
+    // Charts immer wöchentlich – aussagekräftige Trendansicht statt einzelner Balken
+    const agg = aggregate(activeRaw, 'weekly');
+    const activeFrom = activeRaw[0].datum;
+    const activeTo = activeRaw[activeRaw.length-1].datum;
+    const filteredMeta = metaRaw.filter(d => d.datum >= activeFrom && d.datum <= activeTo);
+    const magg = aggMeta('weekly', filteredMeta);
+    const isSingle = false; // Niemals Single-Bar – immer wöchentliche Zeitreihe
+    const pRadius = 3;
 
     // ===== KPI Cards – zeigen aktuellste Periode =====
     const focus = getFocusData(currentMode);
@@ -691,16 +689,16 @@ function renderAll() {
         options: { responsive:true, maintainAspectRatio:false, scales:{y:{beginAtZero:true,ticks:{callback:v=>(v>=1000?(v/1000).toFixed(0)+'k':v)+'€'}},x:{grid:{display:false}}}, plugins:{legend:{display:false},tooltip:{callbacks:{label:c=>fmt2(c.parsed.y)+'€'}}} }
     });
 
-    // ===== AOV Chart =====
+    // ===== AOV Chart – Linie mit Zielmarkierung =====
     destroyChart('aov');
-    const aovData = agg.data.map(g => { const b = sum(g,'bestellungen'); return b > 0 ? sum(g,'umsatz')/b : null; });
+    const aovData = agg.data.map(g => { const b = sum(g,'bestellungen'); return b > 0 ? +(sum(g,'umsatz')/b).toFixed(2) : null; });
     charts.aov = new Chart(document.getElementById('aovChart'), {
-        type: isSingle ? 'bar' : 'line',
+        type: 'line',
         data: { labels: agg.labels, datasets: [
-            { label: 'AOV', data: aovData, borderColor: '#ba6a49', backgroundColor: isSingle ? 'rgba(186,106,73,0.5)' : 'rgba(186,106,73,0.1)', fill:!isSingle, tension:0.3, pointRadius: pRadius, pointBackgroundColor: aovData.map(v => v>=49.15?'#4a7c59':v>=45?'#ba6a49':'#e52427'), borderRadius: isSingle ? 6 : 0 },
-            { label: 'Ziel (49,15€)', data: aovData.map(()=>49.15), borderColor:'rgba(228,36,39,0.4)', borderDash:[6,4], pointRadius:0, fill:false, type:'line' }
+            { label: 'AOV', data: aovData, borderColor: '#ba6a49', backgroundColor: 'rgba(186,106,73,0.12)', fill: true, tension: 0.35, pointRadius: 4, pointBackgroundColor: aovData.map(v => v===null?'#ba6a49':v>=49.15?'#4a7c59':v>=45?'#ba6a49':'#e52427'), pointBorderColor:'#fff', pointBorderWidth:1.5 },
+            { label: 'Ziel (49,15€)', data: aovData.map(()=>49.15), borderColor:'rgba(228,36,39,0.5)', borderDash:[5,4], pointRadius:0, fill:false, borderWidth:1.5, type:'line' }
         ]},
-        options: { responsive:true, maintainAspectRatio:false, scales:{y:{min:35,max:55,ticks:{callback:v=>v+'€'}},x:{grid:{display:false}}}, plugins:{legend:{position:'top',labels:{usePointStyle:true,pointStyleWidth:12}}} }
+        options: { responsive:true, maintainAspectRatio:false, scales:{y:{min:35,max:56,ticks:{callback:v=>v+'€'},grid:{color:'rgba(0,0,0,0.05)'}},x:{grid:{display:false}}}, plugins:{legend:{position:'top',labels:{usePointStyle:true,pointStyleWidth:12}},tooltip:{callbacks:{label:c=>c.dataset.label+': '+fmt2(c.parsed.y)+'€'}}} }
     });
 
     // ===== Orders Chart =====
@@ -711,51 +709,40 @@ function renderAll() {
         options: { responsive:true, maintainAspectRatio:false, scales:{y:{beginAtZero:true},x:{grid:{display:false}}}, plugins:{legend:{display:false}} }
     });
 
-    // ===== CR Chart =====
+    // ===== CR Chart – Linie mit Zielmarkierung =====
     destroyChart('cr');
-    const crData = agg.data.map(g => { const gVis = g.filter(d => d.besucher > 0); const vis = sum(gVis,'besucher'); const ord = sum(gVis,'bestellungen'); return vis > 0 ? (ord/vis)*100 : null; });
-    const crLabels = agg.labels;
-    const crFiltered = []; const crLabelsF = [];
-    crData.forEach((v,i) => { if(v!==null) { crFiltered.push(v); crLabelsF.push(crLabels[i]); }});
+    const crData = agg.data.map(g => { const gVis = g.filter(d => d.besucher > 0); const vis = sum(gVis,'besucher'); const ord = sum(gVis,'bestellungen'); return vis > 0 ? +((ord/vis)*100).toFixed(2) : null; });
     charts.cr = new Chart(document.getElementById('crChart'), {
-        type: isSingle ? 'bar' : 'line',
-        data: { labels: crLabelsF, datasets: [
-            { label:'CR', data:crFiltered, borderColor:'#ba6a49', backgroundColor: isSingle ? 'rgba(186,106,73,0.5)' : 'rgba(186,106,73,0.1)', fill:!isSingle, tension:0.3, pointRadius: pRadius, borderRadius: isSingle ? 6 : 0 },
-            { label:'Ziel (2,81%)', data:crFiltered.map(()=>2.81), borderColor:'rgba(228,36,39,0.4)', borderDash:[6,4], pointRadius:0, type:'line' }
+        type: 'line',
+        data: { labels: agg.labels, datasets: [
+            { label:'CR', data:crData, borderColor:'#ba6a49', backgroundColor:'rgba(186,106,73,0.12)', fill:true, tension:0.35, pointRadius:4, pointBackgroundColor:crData.map(v=>v===null?'#ba6a49':v>=2.81?'#4a7c59':v>=2.5?'#ba6a49':'#e52427'), pointBorderColor:'#fff', pointBorderWidth:1.5 },
+            { label:'Ziel (2,81%)', data:crData.map(()=>2.81), borderColor:'rgba(228,36,39,0.5)', borderDash:[5,4], pointRadius:0, fill:false, borderWidth:1.5, type:'line' }
         ]},
-        options: { responsive:true, maintainAspectRatio:false, scales:{y:{ticks:{callback:v=>v+'%'}},x:{grid:{display:false}}}, plugins:{legend:{position:'top',labels:{usePointStyle:true,pointStyleWidth:12}}} }
+        options: { responsive:true, maintainAspectRatio:false, scales:{y:{min:1.5,max:5,ticks:{callback:v=>v.toFixed(1)+'%'},grid:{color:'rgba(0,0,0,0.05)'}},x:{grid:{display:false}}}, plugins:{legend:{position:'top',labels:{usePointStyle:true,pointStyleWidth:12}},tooltip:{callbacks:{label:c=>c.dataset.label+': '+fmt2(c.parsed.y)+'%'}}} }
     });
 
-    // ===== Revenue Breakdown =====
+    // ===== Revenue Breakdown – gestapelter Wochenbalken =====
     destroyChart('breakdown');
     charts.breakdown = new Chart(document.getElementById('revenueBreakdownChart'), {
-        type: isSingle ? 'doughnut' : 'bar',
-        data: { labels: isSingle ? ['Shopkunden','Händler','Werksverkauf'] : agg.labels, datasets: isSingle ? [{
-            data: [sum(activeRaw,'shopkunden'), sum(activeRaw,'haendler'), sum(activeRaw,'werksverkauf')],
-            backgroundColor: ['rgba(74,124,89,0.6)','rgba(63,90,63,0.6)','rgba(237,152,223,0.6)']
-        }] : [
-            { label:'Shopkunden', data: agg.data.map(g => sum(g,'shopkunden')), backgroundColor:'rgba(74,124,89,0.6)', borderRadius:2 },
-            { label:'Händler', data: agg.data.map(g => sum(g,'haendler')), backgroundColor:'rgba(63,90,63,0.6)', borderRadius:2 },
-            { label:'Werksverkauf', data: agg.data.map(g => sum(g,'werksverkauf')), backgroundColor:'rgba(237,152,223,0.6)', borderRadius:2 }
+        type: 'bar',
+        data: { labels: agg.labels, datasets: [
+            { label:'Shopkunden', data: agg.data.map(g => sum(g,'shopkunden')), backgroundColor:'rgba(74,124,89,0.7)', borderRadius:2 },
+            { label:'Händler', data: agg.data.map(g => sum(g,'haendler')), backgroundColor:'rgba(63,90,63,0.5)', borderRadius:2 },
+            { label:'Werksverkauf', data: agg.data.map(g => sum(g,'werksverkauf')), backgroundColor:'rgba(237,152,223,0.7)', borderRadius:2 }
         ]},
-        options: isSingle ? { responsive:true, maintainAspectRatio:false, plugins:{legend:{position:'right',labels:{usePointStyle:true,pointStyleWidth:12,color:'#221e1b'}},tooltip:{callbacks:{label:c=>c.label+': '+fmt(Math.round(c.parsed))+'€'}}} }
-        : { responsive:true, maintainAspectRatio:false, scales:{x:{stacked:true,grid:{display:false}},y:{stacked:true,ticks:{callback:v=>(v/1000).toFixed(0)+'k'}}}, plugins:{legend:{position:'top',labels:{usePointStyle:true,pointStyleWidth:12}}} }
+        options: { responsive:true, maintainAspectRatio:false, scales:{x:{stacked:true,grid:{display:false}},y:{stacked:true,ticks:{callback:v=>(v/1000).toFixed(0)+'k€'},grid:{color:'rgba(0,0,0,0.05)'}}}, plugins:{legend:{position:'top',labels:{usePointStyle:true,pointStyleWidth:12}},tooltip:{callbacks:{label:c=>c.dataset.label+': '+fmt(Math.round(c.parsed.y))+'€'}}} }
     });
 
-    // ===== Channel Revenue =====
+    // ===== Channel Revenue – gestapelter Wochenbalken =====
     destroyChart('chanrev');
     charts.chanrev = new Chart(document.getElementById('channelRevenueChart'), {
-        type: isSingle ? 'doughnut' : 'bar',
-        data: { labels: isSingle ? ['Meta','Google','Email'] : agg.labels, datasets: isSingle ? [{
-            data: [sum(activeRaw,'meta_umsatz'), sum(activeRaw,'google_umsatz'), sum(activeRaw,'email_umsatz')],
-            backgroundColor: ['rgba(63,90,63,0.6)','rgba(186,106,73,0.6)','rgba(237,152,223,0.6)']
-        }] : [
+        type: 'bar',
+        data: { labels: agg.labels, datasets: [
             { label:'Meta', data: agg.data.map(g => sum(g,'meta_umsatz')), backgroundColor:'rgba(63,90,63,0.6)', borderRadius:2 },
             { label:'Google', data: agg.data.map(g => sum(g,'google_umsatz')), backgroundColor:'rgba(186,106,73,0.6)', borderRadius:2 },
             { label:'Email', data: agg.data.map(g => sum(g,'email_umsatz')), backgroundColor:'rgba(237,152,223,0.6)', borderRadius:2 }
         ]},
-        options: isSingle ? { responsive:true, maintainAspectRatio:false, plugins:{legend:{position:'right',labels:{usePointStyle:true,pointStyleWidth:12,color:'#221e1b'}},tooltip:{callbacks:{label:c=>c.label+': '+fmt(Math.round(c.parsed))+'€'}}} }
-        : { responsive:true, maintainAspectRatio:false, scales:{x:{stacked:true,grid:{display:false}},y:{stacked:true,ticks:{callback:v=>(v/1000).toFixed(0)+'k'}}}, plugins:{legend:{position:'top',labels:{usePointStyle:true,pointStyleWidth:12}}} }
+        options: { responsive:true, maintainAspectRatio:false, scales:{x:{stacked:true,grid:{display:false}},y:{stacked:true,ticks:{callback:v=>(v/1000).toFixed(0)+'k€'},grid:{color:'rgba(0,0,0,0.05)'}}}, plugins:{legend:{position:'top',labels:{usePointStyle:true,pointStyleWidth:12}},tooltip:{callbacks:{label:c=>c.dataset.label+': '+fmt(Math.round(c.parsed.y))+'€'}}} }
     });
 
     // ===== Channel Cards – angepasst an Fokusperiode =====
@@ -784,39 +771,33 @@ function renderAll() {
         options: { responsive:true, maintainAspectRatio:false, scales:{y:{beginAtZero:true,ticks:{callback:v=>v+'€'}},y1:{position:'right',min:0,max:isSingle?5:7,ticks:{callback:v=>v.toFixed(1)+'x'},grid:{display:false}},x:{grid:{display:false}}}, plugins:{legend:{position:'top',labels:{usePointStyle:true,pointStyleWidth:12}}} }
     });
 
-    // ===== Meta Cost =====
+    // ===== Meta Cost – Linienchart CPC & CPM =====
     destroyChart('metacost');
-    const mCpc = magg.data.map(g => { const c=sum(g,'clicks'); return c>0?sum(g,'spend')/c:0; });
-    const mCpm = magg.data.map(g => { const i=sum(g,'impressions'); return i>0?(sum(g,'spend')/i)*1000:0; });
+    const mCpc = magg.data.map(g => { const c=sum(g,'clicks'); return c>0?+(sum(g,'spend')/c).toFixed(2):null; });
+    const mCpm = magg.data.map(g => { const i=sum(g,'impressions'); return i>0?+((sum(g,'spend')/i)*1000).toFixed(2):null; });
     charts.metacost = new Chart(document.getElementById('metaCostChart'), {
-        type: isSingle ? 'bar' : 'line',
+        type: 'line',
         data: { labels: magg.labels, datasets: [
-            { label:'CPC', data:mCpc, borderColor:'#ba6a49', backgroundColor: isSingle?'rgba(186,106,73,0.5)':undefined, tension:0.3, pointRadius: pRadius, yAxisID:'y', borderRadius: isSingle?6:0 },
-            { label:'CPM', data:mCpm, borderColor:'#ed98df', backgroundColor: isSingle?'rgba(237,152,223,0.5)':undefined, tension:0.3, pointRadius: pRadius, yAxisID:'y1', borderRadius: isSingle?6:0 }
+            { label:'CPC', data:mCpc, borderColor:'#ba6a49', backgroundColor:'rgba(186,106,73,0.08)', fill:true, tension:0.35, pointRadius:3, yAxisID:'y' },
+            { label:'CPM', data:mCpm, borderColor:'#ed98df', backgroundColor:'rgba(237,152,223,0.08)', fill:true, tension:0.35, pointRadius:3, yAxisID:'y1' }
         ]},
-        options: { responsive:true, maintainAspectRatio:false, scales:{y:{ticks:{callback:v=>v.toFixed(2)+'€'},title:{display:true,text:'CPC',color:'#ba6a49'}},y1:{position:'right',ticks:{callback:v=>v.toFixed(1)+'€'},grid:{display:false},title:{display:true,text:'CPM',color:'#ed98df'}},x:{grid:{display:false}}}, plugins:{legend:{position:'top',labels:{usePointStyle:true,pointStyleWidth:12}}} }
+        options: { responsive:true, maintainAspectRatio:false, scales:{y:{ticks:{callback:v=>v.toFixed(2)+'€'},title:{display:true,text:'CPC',color:'#ba6a49'},grid:{color:'rgba(0,0,0,0.05)'}},y1:{position:'right',ticks:{callback:v=>v.toFixed(1)+'€'},grid:{display:false},title:{display:true,text:'CPM',color:'#ed98df'}},x:{grid:{display:false}}}, plugins:{legend:{position:'top',labels:{usePointStyle:true,pointStyleWidth:12}}} }
     });
 
-    // ===== Spend Chart =====
+    // ===== Spend Chart – gestapelter Wochenbalken =====
     destroyChart('spend');
     charts.spend = new Chart(document.getElementById('spendChart'), {
-        type: isSingle ? 'doughnut' : 'bar',
-        data: { labels: isSingle ? ['Meta','Google','Bing'] : agg.labels, datasets: isSingle ? [{
-            data: [sum(activeRaw,'meta_spend'), sum(activeRaw,'google_spend'), sum(activeRaw,'bing_spend')],
-            backgroundColor: ['rgba(63,90,63,0.7)','rgba(186,106,73,0.7)','rgba(139,133,119,0.7)']
-        }] : [
+        type: 'bar',
+        data: { labels: agg.labels, datasets: [
             { label:'Meta', data: agg.data.map(g => sum(g,'meta_spend')), backgroundColor:'rgba(63,90,63,0.7)', borderRadius:2 },
             { label:'Google', data: agg.data.map(g => sum(g,'google_spend')), backgroundColor:'rgba(186,106,73,0.7)', borderRadius:2 },
             { label:'Bing', data: agg.data.map(g => sum(g,'bing_spend')), backgroundColor:'rgba(139,133,119,0.7)', borderRadius:2 }
         ]},
-        options: isSingle ? { responsive:true, maintainAspectRatio:false, plugins:{legend:{position:'right',labels:{usePointStyle:true,pointStyleWidth:12,color:'#221e1b'}},tooltip:{callbacks:{label:c=>c.label+': '+fmt(Math.round(c.parsed))+'€'}}} }
-        : { responsive:true, maintainAspectRatio:false, scales:{x:{stacked:true,grid:{display:false}},y:{stacked:true,ticks:{callback:v=>v+'€'}}}, plugins:{legend:{position:'top',labels:{usePointStyle:true,pointStyleWidth:12}}} }
+        options: { responsive:true, maintainAspectRatio:false, scales:{x:{stacked:true,grid:{display:false}},y:{stacked:true,ticks:{callback:v=>v+'€'},grid:{color:'rgba(0,0,0,0.05)'}}}, plugins:{legend:{position:'top',labels:{usePointStyle:true,pointStyleWidth:12}},tooltip:{callbacks:{label:c=>c.dataset.label+': '+fmt(Math.round(c.parsed.y))+'€'}}} }
     });
 
-    // ===== Detail-Tabelle =====
-    const modeNames = { daily:'Tages-Detail', weekly:'Wochen-Übersicht', last30:'Letzte 30 Tage – Detail', monthly:'Monats-Übersicht', quarterly:'Quartals-Übersicht', yearly:'Jahres-Übersicht', ytd:'Year-to-Date Übersicht' };
-    const colNames = { daily:'Datum', weekly:'KW', last30:'Datum', monthly:'Monat', quarterly:'Quartal', yearly:'Jahr', ytd:'Zeitraum' };
-    document.getElementById('tableTitle').textContent = modeNames[currentMode];
+    // ===== Detail-Tabelle – immer wöchentlich =====
+    document.getElementById('tableTitle').textContent = 'Wochen-Übersicht';
     const thead = document.getElementById('tableHead');
     const tbody = document.getElementById('tableBody');
     thead.innerHTML = '<tr><th>'+colNames[currentMode]+'</th><th class="num">Tage</th><th class="num">Umsatz</th><th class="num">Bestell.</th><th class="num">Ø AOV</th><th class="num">Ø CR</th><th class="num">Meta Spend</th><th class="num">Google Spend</th><th class="num">Email €</th><th class="num">Meta ROAS</th></tr>';
@@ -834,7 +815,7 @@ function renderAll() {
     });
 
     // Gesamtzeile nur wenn mehrere Perioden
-    if (agg.data.length > 1 && !isTimeline) {
+    if (agg.data.length > 1) {
         const totU = sum(activeRaw,'umsatz'), totB = sum(activeRaw,'bestellungen'), totA = totB > 0 ? totU/totB : null;
         const rawVis = activeRaw.filter(d => d.besucher > 0), totVis = sum(rawVis,'besucher'), totBVis = sum(rawVis,'bestellungen'), totCr = totVis > 0 ? (totBVis/totVis)*100 : null;
         const totMs = sum(activeRaw,'meta_spend'), totMu = sum(activeRaw,'meta_umsatz'), totGs = sum(activeRaw,'google_spend'), totEu = sum(activeRaw,'email_umsatz');
