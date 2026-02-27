@@ -599,7 +599,7 @@ function renderWarnings() {
     // AOV-Warnung
     if (ytdAov !== null && ytdAov < goalAov) {
         const diff = Math.round(((ytdAov - goalAov) / goalAov) * 100);
-        html += `<div class="warning alert-red"><div>⚠️</div><div><strong style="color:var(--red)">AOV ${Math.abs(diff)}% unter Ziel!</strong> Aktuell ${fmt2(ytdAov)}€ vs. Ziel ${goalAov}€ (YTD). AOV-Booster Plugin ist der kritische Hebel für Q1.</div></div>`;
+        html += `<div class="warning alert-red"><div>⚠️</div><div><strong style="color:var(--red)">AOV ${Math.abs(diff)}% unter Ziel!</strong> Aktuell ${fmt2(ytdAov)}€ vs. Ziel ${fmt2(goalAov)}€ (YTD).</div></div>`;
     }
 
     // Google Ads Warnung: letzten Tag mit google_spend > 0 prüfen
