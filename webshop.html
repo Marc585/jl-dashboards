@@ -131,51 +131,45 @@
 <!-- TOGGLE BUTTONS -->
 <div class="toggle-bar">
     <div class="toggle-group">
-        <button class="toggle-btn active" onclick="switchPeriod('daily',this)">Täglich</button>
-        <button class="toggle-btn" onclick="switchPeriod('weekly',this)">Wöchentlich</button>
-        <button class="toggle-btn" onclick="switchPeriod('last30',this)">Letzte 30 Tage</button>
-        <button class="toggle-btn" onclick="switchPeriod('monthly',this)">Monatlich</button>
-        <button class="toggle-btn" onclick="switchPeriod('quarterly',this)">Quartal</button>
-        <button class="toggle-btn" onclick="switchPeriod('yearly',this)">Jahr</button>
-        <button class="toggle-btn" onclick="switchPeriod('ytd',this)">YTD</button>
+        <button class="toggle-btn active" id="btnYtd" onclick="switchPeriod('ytd',this)">YTD</button>
+        <button class="toggle-btn" id="btnQuarterly" onclick="switchPeriod('quarterly',this)">Quartal</button>
+        <button class="toggle-btn" id="btnCustom" onclick="toggleCustomRange(this)">Eigener Zeitraum</button>
+    </div>
+    <div id="customRangeBar" style="display:none; align-items:center; gap:8px; margin-top:10px;">
+        <label style="font-size:12px;color:var(--muted)">Von:</label>
+        <input type="date" id="dateFrom" style="font-family:inherit;font-size:12px;padding:4px 8px;border:1px solid var(--border);border-radius:6px;background:var(--card);color:var(--text)">
+        <label style="font-size:12px;color:var(--muted)">Bis:</label>
+        <input type="date" id="dateTo" style="font-family:inherit;font-size:12px;padding:4px 8px;border:1px solid var(--border);border-radius:6px;background:var(--card);color:var(--text)">
+        <button onclick="applyCustomRange()" style="font-family:inherit;font-size:12px;padding:4px 12px;border:none;border-radius:6px;background:var(--accent);color:#fff;cursor:pointer;font-weight:600">Anwenden</button>
     </div>
 </div>
-<div class="period-label" id="periodLabel">Ansicht: Tägliche Daten</div>
+<div class="period-label" id="periodLabel">Ansicht: Year-to-Date</div>
 
-<!-- WARNINGS -->
-<div class="warning alert-red">
-    <div>&#9888;&#65039;</div>
-    <div><strong style="color: var(--red)">AOV 8% unter Ziel!</strong> Aktuell 45,28€ vs. Ziel 49,15€ (YTD). AOV-Booster Plugin ist der kritische Hebel für Q1.</div>
-</div>
-<div class="warning">
-    <div>&#9888;&#65039;</div>
-    <div><strong>Hinweis: Marketing-Daten KW09</strong> werden montags von Jessi nachgetragen (24.–26.02. noch ausstehend).</div>
+<!-- WARNINGS (dynamisch gerendert) -->
+<div id="warningsContainer"></div>
+
+<!-- DIESE WOCHE WICHTIG -->
+<div class="section-title">📌 Diese Woche wichtig</div>
+<div id="weeklyNotesContainer">
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:24px;">
+        <div class="card" style="border-left:4px solid var(--green)">
+            <div style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:1px;color:var(--accent);margin-bottom:10px;">🛒 Webshop</div>
+            <ul style="margin:0;padding-left:18px;font-size:13px;line-height:1.8;">
+                <li><strong>Adressvalidierung für ausländische Kunden</strong> — spart Problemfälle aus Prozess bis Buchhaltung (Prio: hoch)</li>
+            </ul>
+        </div>
+        <div class="card" style="border-left:4px solid var(--blue)">
+            <div style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:1px;color:var(--accent);margin-bottom:10px;">📦 Amazon</div>
+            <ul style="margin:0;padding-left:18px;font-size:13px;line-height:1.8;">
+                <li style="color:var(--muted);font-style:italic;">Keine offenen Punkte diese Woche</li>
+            </ul>
+        </div>
+    </div>
 </div>
 
 <!-- Q1 ZIELE -->
 <div class="section-title">Q1 Ziele – Fortschritt</div>
-<div class="card">
-    <div class="goal-row">
-        <div class="goal-label">AOV (Warenkorb)</div>
-        <div class="goal-bar-wrap"><div class="goal-bar"><div class="goal-fill" style="width: 92%; background: linear-gradient(90deg, var(--red), var(--orange));">92%</div></div></div>
-        <div class="goal-values"><strong>45,28 €</strong> / 49,15 €</div>
-    </div>
-    <div class="goal-row">
-        <div class="goal-label">Conversion Rate</div>
-        <div class="goal-bar-wrap"><div class="goal-bar"><div class="goal-fill" style="width: 97%; background: linear-gradient(90deg, var(--yellow), var(--green));">97%</div></div></div>
-        <div class="goal-values"><strong>2,74 %</strong> / 2,81 %</div>
-    </div>
-    <div class="goal-row">
-        <div class="goal-label">Home-Umsatzanteil</div>
-        <div class="goal-bar-wrap"><div class="goal-bar"><div class="goal-fill" style="width: 50%; background: var(--muted);">Tracking fehlt</div></div></div>
-        <div class="goal-values"><strong>?</strong> / 11 %</div>
-    </div>
-    <div class="goal-row">
-        <div class="goal-label">OOS-Quote</div>
-        <div class="goal-bar-wrap"><div class="goal-bar"><div class="goal-fill" style="width: 50%; background: var(--muted);">Tracking fehlt</div></div></div>
-        <div class="goal-values"><strong>?</strong> / < 4 %</div>
-    </div>
-</div>
+<div class="card" id="q1GoalsCard"></div>
 
 <!-- TOP KPIs -->
 <div class="section-title">Aktuelle KPIs</div>
@@ -487,72 +481,164 @@ Chart.defaults.borderColor = '#e6dcce';
 Chart.defaults.font.family = "'Poppins', -apple-system, BlinkMacSystemFont, system-ui, sans-serif";
 
 // ========== STATE ==========
-let currentMode = 'daily';
+let currentMode = 'ytd';
+let customRawData = null; // für eigenen Zeitraum
 const charts = {};
+const _fmtDate = s => s.slice(8)+'.'+s.slice(5,7)+'.'+s.slice(0,4);
+
+function getActiveRaw() {
+    if (currentMode === 'custom' && customRawData) return customRawData;
+    if (currentMode === 'quarterly') {
+        const curQ = getQuarter(raw[raw.length-1].datum);
+        return raw.filter(d => getQuarter(d.datum) === curQ);
+    }
+    return raw; // ytd + custom fallback
+}
 
 function switchPeriod(mode, btn) {
     currentMode = mode;
     document.querySelectorAll('.toggle-btn').forEach(b => b.classList.remove('active'));
-    btn.classList.add('active');
+    if (btn) btn.classList.add('active');
+    document.getElementById('customRangeBar').style.display = 'none';
 
-    const _fmtD = s => s.slice(8)+'.'+s.slice(5,7)+'.'+s.slice(0,4);
-    const _first = _fmtD(raw[0].datum);
-    const _last  = _fmtD(raw[raw.length-1].datum);
-    const _30ago = _fmtD(raw.slice(-30)[0].datum);
-    const _lastKW = raw[raw.length-1].kw; // z.B. "KW09"
+    const activeRaw = getActiveRaw();
+    const _last = _fmtDate(activeRaw[activeRaw.length-1].datum);
+    const _first = _fmtDate(activeRaw[0].datum);
     const modeLabels = {
-        daily: `Tägliche Daten (01.01. – ${_last})`,
-        weekly: `Wöchentliche Zusammenfassung (KW01 – ${_lastKW})`,
-        last30: `Letzte 30 Tage (${_30ago} – ${_last})`,
-        monthly: 'Monatliche Zusammenfassung (Januar & Februar)',
-        quarterly: 'Quartals-Übersicht (Q1 2026)',
-        yearly: 'Jahres-Übersicht (2026)',
-        ytd: `Year-to-Date (01.01. – ${_last})`
+        quarterly: `Quartal ${getQuarter(activeRaw[activeRaw.length-1].datum)} 2026 (${_first} – ${_last})`,
+        ytd: `Year-to-Date (01.01. – ${_last})`,
+        custom: `Eigener Zeitraum (${_first} – ${_last})`
     };
-    const badgeLabels = { daily:'Täglich', weekly:'Wöchentlich', last30:'30 Tage', monthly:'Monatlich', quarterly:'Quartal', yearly:'Jahr', ytd:'YTD' };
-    document.getElementById('periodLabel').textContent = 'Ansicht: ' + modeLabels[mode];
-    document.getElementById('revBadge').textContent = badgeLabels[mode];
-    document.getElementById('ordersBadge').textContent = badgeLabels[mode];
-    document.getElementById('breakdownBadge').textContent = badgeLabels[mode];
-    document.getElementById('metaBadge').textContent = badgeLabels[mode];
+    const badgeLabels = { quarterly:'Quartal', ytd:'YTD', custom:'Eigener Zeitraum' };
+    document.getElementById('periodLabel').textContent = 'Ansicht: ' + (modeLabels[mode] || '');
+    document.getElementById('revBadge').textContent = badgeLabels[mode] || mode;
+    document.getElementById('ordersBadge').textContent = badgeLabels[mode] || mode;
+    document.getElementById('breakdownBadge').textContent = badgeLabels[mode] || mode;
+    document.getElementById('metaBadge').textContent = badgeLabels[mode] || mode;
 
     renderAll();
 }
 
+function toggleCustomRange(btn) {
+    const bar = document.getElementById('customRangeBar');
+    const visible = bar.style.display !== 'none';
+    bar.style.display = visible ? 'none' : 'flex';
+    if (!visible) {
+        // Vorbelegen mit vollem Zeitraum
+        document.getElementById('dateFrom').value = raw[0].datum;
+        document.getElementById('dateTo').value = raw[raw.length-1].datum;
+        // Aktiven State setzen ohne renderAll
+        document.querySelectorAll('.toggle-btn').forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+    }
+}
+
+function applyCustomRange() {
+    const from = document.getElementById('dateFrom').value;
+    const to = document.getElementById('dateTo').value;
+    if (!from || !to) return;
+    customRawData = raw.filter(d => d.datum >= from && d.datum <= to);
+    if (customRawData.length === 0) { alert('Keine Daten im gewählten Zeitraum.'); return; }
+    currentMode = 'custom';
+    switchPeriod('custom', document.getElementById('btnCustom'));
+}
+
 function destroyChart(id) { if (charts[id]) { charts[id].destroy(); delete charts[id]; } }
 
+// ========== Q1 ZIELE DYNAMISCH ==========
+function renderGoals() {
+    const ytdRaw = raw; // Ziele immer YTD (unabhängig vom gewählten Modus)
+    const ytdUmsatz = sum(ytdRaw,'umsatz');
+    const ytdBest = sum(ytdRaw,'bestellungen');
+    const ytdAov = ytdBest > 0 ? ytdUmsatz / ytdBest : null;
+    const crRaw = ytdRaw.filter(d => d.besucher > 0);
+    const ytdCr = sum(crRaw,'besucher') > 0 ? (sum(crRaw,'bestellungen') / sum(crRaw,'besucher')) * 100 : null;
+
+    const goalAov = 49.15, goalCr = 2.81;
+    const pAov = ytdAov ? Math.min(Math.round((ytdAov / goalAov) * 100), 100) : 0;
+    const pCr  = ytdCr  ? Math.min(Math.round((ytdCr  / goalCr)  * 100), 100) : 0;
+
+    const barColor = (pct) => pct >= 100 ? 'var(--green)' : pct >= 90 ? 'linear-gradient(90deg,var(--yellow),var(--green))' : 'linear-gradient(90deg,var(--red),var(--orange))';
+
+    document.getElementById('q1GoalsCard').innerHTML = `
+        <div class="goal-row">
+            <div class="goal-label">AOV (Warenkorb)</div>
+            <div class="goal-bar-wrap"><div class="goal-bar"><div class="goal-fill" style="width:${pAov}%;background:${barColor(pAov)}">${pAov}%</div></div></div>
+            <div class="goal-values"><strong>${fmt2(ytdAov)}€</strong> / ${goalAov}€</div>
+        </div>
+        <div class="goal-row">
+            <div class="goal-label">Conversion Rate</div>
+            <div class="goal-bar-wrap"><div class="goal-bar"><div class="goal-fill" style="width:${pCr}%;background:${barColor(pCr)}">${pCr}%</div></div></div>
+            <div class="goal-values"><strong>${fmt2(ytdCr)}%</strong> / ${goalCr}%</div>
+        </div>
+        <div class="goal-row">
+            <div class="goal-label">Home-Umsatzanteil</div>
+            <div class="goal-bar-wrap"><div class="goal-bar"><div class="goal-fill" style="width:50%;background:var(--muted)">Tracking fehlt</div></div></div>
+            <div class="goal-values"><strong>?</strong> / 11%</div>
+        </div>
+        <div class="goal-row">
+            <div class="goal-label">OOS-Quote</div>
+            <div class="goal-bar-wrap"><div class="goal-bar"><div class="goal-fill" style="width:50%;background:var(--muted)">Tracking fehlt</div></div></div>
+            <div class="goal-values"><strong>?</strong> / &lt; 4%</div>
+        </div>`;
+}
+
+// ========== WARNUNGEN DYNAMISCH ==========
+function renderWarnings() {
+    const ytdRaw = raw;
+    const ytdUmsatz = sum(ytdRaw,'umsatz');
+    const ytdBest = sum(ytdRaw,'bestellungen');
+    const ytdAov = ytdBest > 0 ? ytdUmsatz / ytdBest : null;
+    const goalAov = 49.15;
+
+    let html = '';
+
+    // AOV-Warnung
+    if (ytdAov !== null && ytdAov < goalAov) {
+        const diff = Math.round(((ytdAov - goalAov) / goalAov) * 100);
+        html += `<div class="warning alert-red"><div>⚠️</div><div><strong style="color:var(--red)">AOV ${Math.abs(diff)}% unter Ziel!</strong> Aktuell ${fmt2(ytdAov)}€ vs. Ziel ${goalAov}€ (YTD). AOV-Booster Plugin ist der kritische Hebel für Q1.</div></div>`;
+    }
+
+    // Google Ads Warnung: letzten Tag mit google_spend > 0 prüfen
+    const lastGoogleDay = [...ytdRaw].reverse().find(d => d.google_spend > 0);
+    if (lastGoogleDay) {
+        const lastDate = new Date(lastGoogleDay.datum);
+        const todayStr = raw[raw.length-1].datum;
+        const today = new Date(todayStr);
+        const daysDiff = Math.round((today - lastDate) / (1000*60*60*24));
+        if (daysDiff > 10) {
+            // Mehr als 10 Tage kein Google Spend → echte Warnung
+            html += `<div class="warning alert-red"><div>⚠️</div><div><strong style="color:var(--red)">Google Ads auf 0€</strong> seit ${_fmtDate(lastGoogleDay.datum)} (${daysDiff} Tage). Klärung nötig: geplant oder Problem?</div></div>`;
+        } else if (daysDiff > 4) {
+            // 5-10 Tage: Hinweis (Jessi hat Montagsdaten noch nicht eingetragen)
+            const lastKW = raw[raw.length-1].kw;
+            html += `<div class="warning"><div>ℹ️</div><div><strong>Marketing-Daten ${lastKW}</strong> noch nicht eingetragen – Jessi trägt montags für die Vorwoche nach. Google Ads zuletzt aktiv: ${_fmtDate(lastGoogleDay.datum)}.</div></div>`;
+        }
+    }
+
+    document.getElementById('warningsContainer').innerHTML = html;
+}
+
 // ========== FOCUS PERIOD (für KPI-Karten) ==========
-// Bestimmt welche Daten die KPI-Karten zeigen: immer die aktuellste Periode
 function getFocusData(mode) {
-    if (mode === 'daily') {
-        // Letzter Tag
-        const d = raw[raw.length - 1];
-        const _fmt = s => s.slice(8)+'.'+s.slice(5,7)+'.'+s.slice(0,4);
-        return { data: [d], label: d.datum.slice(5), sublabel: _fmt(d.datum) };
-    }
-    if (mode === 'weekly' || mode === 'last30') {
-        // Letzte 7 Tage
-        const last7 = raw.slice(-7);
-        return { data: last7, label: 'Letzte 7 Tage', sublabel: last7[0].datum.slice(5) + ' – ' + last7[last7.length-1].datum.slice(5) };
-    }
-    if (mode === 'monthly') {
-        // Letzter voller Monat (Januar)
-        const jan = raw.filter(d => d.datum.startsWith('2026-01'));
-        return { data: jan, label: 'Januar 2026', sublabel: '31 Tage' };
-    }
+    const activeRaw = getActiveRaw();
     if (mode === 'quarterly') {
-        // Aktuelles Quartal
-        return { data: raw, label: 'Q1 2026', sublabel: raw.length + ' Tage (laufend)' };
+        const curQ = getQuarter(activeRaw[activeRaw.length-1].datum);
+        return { data: activeRaw, label: curQ + ' 2026', sublabel: activeRaw.length + ' Tage (laufend)' };
     }
-    // yearly, ytd
-    return { data: raw, label: 'YTD 2026', sublabel: raw.length + ' Tage' };
+    if (mode === 'custom') {
+        return { data: activeRaw, label: 'Eigener Zeitraum', sublabel: activeRaw.length + ' Tage' };
+    }
+    // ytd (default)
+    return { data: activeRaw, label: 'YTD 2026', sublabel: activeRaw.length + ' Tage' };
 }
 
 function renderAll() {
-    const agg = aggregate(raw, currentMode);
-    const magg = aggMeta(currentMode);
-    const isTimeline = ['daily','last30'].includes(currentMode);
-    const isSingle = ['ytd','yearly','quarterly'].includes(currentMode) && agg.data.length <= 1;
+    const activeRaw = getActiveRaw();
+    const agg = aggregate(activeRaw, currentMode === 'custom' ? 'ytd' : currentMode);
+    const magg = aggMeta(currentMode === 'custom' ? 'ytd' : currentMode);
+    const isTimeline = false; // Nur noch YTD/Quartal/Custom – kein Tages-Chart mehr
+    const isSingle = ['ytd','quarterly','custom'].includes(currentMode) && agg.data.length <= 1;
     const pRadius = isTimeline ? 3 : isSingle ? 10 : 6;
 
     // ===== KPI Cards – zeigen aktuellste Periode =====
@@ -581,25 +667,18 @@ function renderAll() {
     const aovColor = fAov >= 49.15 ? 'var(--green)' : fAov >= 45 ? 'var(--yellow)' : 'var(--red)';
     const crColor = fCr >= 2.81 ? 'var(--green)' : fCr >= 2.5 ? 'var(--yellow)' : 'var(--red)';
 
-    const kpiEl = document.getElementById('kpiCards');
+    // Ziele und Warnungen immer neu rendern (immer YTD-basiert)
+    renderGoals();
+    renderWarnings();
 
-    if (currentMode === 'daily') {
-        // Einzelner Tag: absolute Werte
-        kpiEl.innerHTML = `
-            <div class="card kpi"><div class="label">Tagesumsatz</div><div class="value" style="color:var(--green)">${fmt(Math.round(fUmsatz))}€</div><div class="target">${focus.sublabel}</div><div class="delta delta-green">Ø gesamt: ${fmt(Math.round(sum(raw,'umsatz')/raw.length))}€</div></div>
-            <div class="card kpi"><div class="label">Bestellungen</div><div class="value" style="color:var(--blue)">${fmt(fBest)}</div><div class="target">${focus.sublabel}</div><div class="delta delta-green">Ø gesamt: ${fmt(Math.round(sum(raw,'bestellungen')/raw.length))}</div></div>
-            <div class="card kpi"><div class="label">AOV</div><div class="value" style="color:${aovColor}">${fmt2(fAov)}€</div><div class="target">Ziel: 49,15€</div><div class="delta ${fAov>=49.15?'delta-green':'delta-red'}">${fAov>=49.15?'↑ über Ziel':'↓ -'+aovDelta+'% vom Ziel'}</div></div>
-            <div class="card kpi"><div class="label">Conversion Rate</div><div class="value" style="color:${crColor}">${fCr!=null?fmt2(fCr)+'%':'n/a'}</div><div class="target">Ziel: 2,81%</div><div class="delta ${fCr>=2.81?'delta-green':'delta-yellow'}">${fCr!=null?(fCr>=2.81?'↑ über Ziel':'↓ -'+crDelta+'%'):'keine Daten'}</div></div>
-            <div class="card kpi"><div class="label">Meta ROAS</div><div class="value" style="color:var(--cyan)">${fMetaSpend>0?fMetaRoas.toFixed(2):'–'}</div><div class="target">Spend: ${fmt(Math.round(fMetaSpend))}€</div><div class="delta ${fMetaRoas>=3?'delta-green':fMetaRoas>=2?'delta-yellow':'delta-red'}">${fMetaSpend>0?(fMetaRoas>=3?'↑ gut':'↓ ausbaubar'):'kein Spend'}</div></div>`;
-    } else {
-        // Perioden: Gesamtwert + Ø pro Tag
-        kpiEl.innerHTML = `
-            <div class="card kpi"><div class="label">Umsatz (${focus.label})</div><div class="value" style="color:var(--green)">${fmt(Math.round(fUmsatz))}€</div><div class="target">${focus.sublabel}</div><div class="delta delta-green">Ø ${fmt(Math.round(fAvgUmsatz))}€/Tag</div></div>
-            <div class="card kpi"><div class="label">Bestellungen (${focus.label})</div><div class="value" style="color:var(--blue)">${fmt(fBest)}</div><div class="target">${focus.sublabel}</div><div class="delta delta-green">Ø ${fmt(Math.round(fAvgBest))}/Tag</div></div>
-            <div class="card kpi"><div class="label">Ø AOV</div><div class="value" style="color:${aovColor}">${fmt2(fAov)}€</div><div class="target">Ziel: 49,15€</div><div class="delta ${fAov>=49.15?'delta-green':'delta-red'}">${fAov>=49.15?'↑ über Ziel':'↓ -'+aovDelta+'% vom Ziel'}</div></div>
-            <div class="card kpi"><div class="label">Ø Conversion Rate</div><div class="value" style="color:${crColor}">${fCr!=null?fmt2(fCr)+'%':'n/a'}</div><div class="target">Ziel: 2,81%</div><div class="delta ${fCr!=null&&fCr>=2.81?'delta-green':'delta-yellow'}">${fCr!=null?(fCr>=2.81?'↑ über Ziel':'↓ -'+crDelta+'%'):'keine Daten'}</div></div>
-            <div class="card kpi"><div class="label">Meta ROAS</div><div class="value" style="color:var(--cyan)">${fMetaSpend>0?fMetaRoas.toFixed(2):'–'}</div><div class="target">Spend: ${fmt(Math.round(fMetaSpend))}€</div><div class="delta ${fMetaRoas>=3?'delta-green':fMetaRoas>=2?'delta-yellow':'delta-red'}">${fMetaSpend>0?(fMetaRoas>=3?'↑ gut':'↓ ausbaubar'):'kein Spend'}</div></div>`;
-    }
+    const kpiEl = document.getElementById('kpiCards');
+    // Perioden: Gesamtwert + Ø pro Tag
+    kpiEl.innerHTML = `
+        <div class="card kpi"><div class="label">Umsatz (${focus.label})</div><div class="value" style="color:var(--green)">${fmt(Math.round(fUmsatz))}€</div><div class="target">${focus.sublabel}</div><div class="delta delta-green">Ø ${fmt(Math.round(fAvgUmsatz))}€/Tag</div></div>
+        <div class="card kpi"><div class="label">Bestellungen (${focus.label})</div><div class="value" style="color:var(--blue)">${fmt(fBest)}</div><div class="target">${focus.sublabel}</div><div class="delta delta-green">Ø ${fmt(Math.round(fAvgBest))}/Tag</div></div>
+        <div class="card kpi"><div class="label">Ø AOV</div><div class="value" style="color:${aovColor}">${fmt2(fAov)}€</div><div class="target">Ziel: 49,15€</div><div class="delta ${fAov>=49.15?'delta-green':'delta-red'}">${fAov>=49.15?'↑ über Ziel':'↓ -'+aovDelta+'% vom Ziel'}</div></div>
+        <div class="card kpi"><div class="label">Ø Conversion Rate</div><div class="value" style="color:${crColor}">${fCr!=null?fmt2(fCr)+'%':'n/a'}</div><div class="target">Ziel: 2,81%</div><div class="delta ${fCr!=null&&fCr>=2.81?'delta-green':'delta-yellow'}">${fCr!=null?(fCr>=2.81?'↑ über Ziel':'↓ -'+crDelta+'%'):'keine Daten'}</div></div>
+        <div class="card kpi"><div class="label">Meta ROAS</div><div class="value" style="color:var(--cyan)">${fMetaSpend>0?fMetaRoas.toFixed(2):'–'}</div><div class="target">Spend: ${fmt(Math.round(fMetaSpend))}€</div><div class="delta ${fMetaRoas>=3?'delta-green':fMetaRoas>=2?'delta-yellow':'delta-red'}">${fMetaSpend>0?(fMetaRoas>=3?'↑ gut':'↓ ausbaubar'):'kein Spend'}</div></div>`;
 
     // ===== Revenue Chart =====
     destroyChart('rev');
@@ -649,7 +728,7 @@ function renderAll() {
     charts.breakdown = new Chart(document.getElementById('revenueBreakdownChart'), {
         type: isSingle ? 'doughnut' : 'bar',
         data: { labels: isSingle ? ['Shopkunden','Händler','Werksverkauf'] : agg.labels, datasets: isSingle ? [{
-            data: [sum(raw,'shopkunden'), sum(raw,'haendler'), sum(raw,'werksverkauf')],
+            data: [sum(activeRaw,'shopkunden'), sum(activeRaw,'haendler'), sum(activeRaw,'werksverkauf')],
             backgroundColor: ['rgba(74,124,89,0.6)','rgba(63,90,63,0.6)','rgba(237,152,223,0.6)']
         }] : [
             { label:'Shopkunden', data: agg.data.map(g => sum(g,'shopkunden')), backgroundColor:'rgba(74,124,89,0.6)', borderRadius:2 },
@@ -665,7 +744,7 @@ function renderAll() {
     charts.chanrev = new Chart(document.getElementById('channelRevenueChart'), {
         type: isSingle ? 'doughnut' : 'bar',
         data: { labels: isSingle ? ['Meta','Google','Email'] : agg.labels, datasets: isSingle ? [{
-            data: [sum(raw,'meta_umsatz'), sum(raw,'google_umsatz'), sum(raw,'email_umsatz')],
+            data: [sum(activeRaw,'meta_umsatz'), sum(activeRaw,'google_umsatz'), sum(activeRaw,'email_umsatz')],
             backgroundColor: ['rgba(63,90,63,0.6)','rgba(186,106,73,0.6)','rgba(237,152,223,0.6)']
         }] : [
             { label:'Meta', data: agg.data.map(g => sum(g,'meta_umsatz')), backgroundColor:'rgba(63,90,63,0.6)', borderRadius:2 },
@@ -720,7 +799,7 @@ function renderAll() {
     charts.spend = new Chart(document.getElementById('spendChart'), {
         type: isSingle ? 'doughnut' : 'bar',
         data: { labels: isSingle ? ['Meta','Google','Bing'] : agg.labels, datasets: isSingle ? [{
-            data: [sum(raw,'meta_spend'), sum(raw,'google_spend'), sum(raw,'bing_spend')],
+            data: [sum(activeRaw,'meta_spend'), sum(activeRaw,'google_spend'), sum(activeRaw,'bing_spend')],
             backgroundColor: ['rgba(63,90,63,0.7)','rgba(186,106,73,0.7)','rgba(139,133,119,0.7)']
         }] : [
             { label:'Meta', data: agg.data.map(g => sum(g,'meta_spend')), backgroundColor:'rgba(63,90,63,0.7)', borderRadius:2 },
@@ -753,9 +832,9 @@ function renderAll() {
 
     // Gesamtzeile nur wenn mehrere Perioden
     if (agg.data.length > 1 && !isTimeline) {
-        const totU = sum(raw,'umsatz'), totB = sum(raw,'bestellungen'), totA = totB > 0 ? totU/totB : null;
-        const rawVis = raw.filter(d => d.besucher > 0), totVis = sum(rawVis,'besucher'), totBVis = sum(rawVis,'bestellungen'), totCr = totVis > 0 ? (totBVis/totVis)*100 : null;
-        const totMs = sum(raw,'meta_spend'), totMu = sum(raw,'meta_umsatz'), totGs = sum(raw,'google_spend'), totEu = sum(raw,'email_umsatz');
+        const totU = sum(activeRaw,'umsatz'), totB = sum(activeRaw,'bestellungen'), totA = totB > 0 ? totU/totB : null;
+        const rawVis = activeRaw.filter(d => d.besucher > 0), totVis = sum(rawVis,'besucher'), totBVis = sum(rawVis,'bestellungen'), totCr = totVis > 0 ? (totBVis/totVis)*100 : null;
+        const totMs = sum(activeRaw,'meta_spend'), totMu = sum(activeRaw,'meta_umsatz'), totGs = sum(activeRaw,'google_spend'), totEu = sum(activeRaw,'email_umsatz');
         const totMr = totMs>0?(totMu/totMs).toFixed(2):'–';
         const totTr = document.createElement('tr');
         totTr.style = 'font-weight:700;border-top:2px solid var(--accent)';
@@ -943,14 +1022,15 @@ const fcAbwPct = 41.6;
     renderFcTable();
 })();
 
-// Initial render
-renderAll();
-
-// Initialen periodLabel dynamisch setzen (kein hardcoded Datum)
+// Initial render: YTD als Default, YTD-Button als aktiv markieren
 (function() {
-    const _fmt = s => s.slice(8)+'.'+s.slice(5,7)+'.'+s.slice(0,4);
-    const _last = _fmt(raw[raw.length-1].datum);
-    document.getElementById('periodLabel').textContent = `Ansicht: Tägliche Daten (01.01. – ${_last})`;
+    currentMode = 'ytd';
+    document.getElementById('btnYtd').classList.add('active');
+    document.getElementById('dateFrom').value = raw[0].datum;
+    document.getElementById('dateTo').value = raw[raw.length-1].datum;
+    const _last = _fmtDate(raw[raw.length-1].datum);
+    document.getElementById('periodLabel').textContent = `Ansicht: Year-to-Date (01.01. – ${_last})`;
+    renderAll();
 })();
 </script>
 </body>
