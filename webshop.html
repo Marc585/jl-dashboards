@@ -535,13 +535,22 @@ function renderGoals() {
     const crRaw = ytdRaw.filter(d => d.besucher > 0);
     const ytdCr = sum(crRaw,'besucher') > 0 ? (sum(crRaw,'bestellungen') / sum(crRaw,'besucher')) * 100 : null;
 
-    const goalAov = 49.15, goalCr = 2.81;
+    const goalAov = 49.15, goalCr = 2.81, goalUmsatz = 836923.62, goalOos = 4.0;
     const pAov = ytdAov ? Math.min(Math.round((ytdAov / goalAov) * 100), 100) : 0;
     const pCr  = ytdCr  ? Math.min(Math.round((ytdCr  / goalCr)  * 100), 100) : 0;
+    const pUmsatz = Math.min(Math.round((ytdUmsatz / goalUmsatz) * 100), 100);
+    const oosIst = 3.24; // Quelle: rekla.jeanlen.de/inventory-dashboard/
+    const pOos = Math.min(Math.round(((goalOos - oosIst) / goalOos) * 100 + 50), 100); // invertiert: je niedriger desto besser
 
     const barColor = (pct) => pct >= 100 ? 'var(--green)' : pct >= 90 ? 'linear-gradient(90deg,var(--yellow),var(--green))' : 'linear-gradient(90deg,var(--red),var(--orange))';
+    const oosColor = oosIst <= goalOos ? 'var(--green)' : 'var(--red)';
 
     document.getElementById('q1GoalsCard').innerHTML = `
+        <div class="goal-row">
+            <div class="goal-label">Umsatz Q1</div>
+            <div class="goal-bar-wrap"><div class="goal-bar"><div class="goal-fill" style="width:${pUmsatz}%;background:${barColor(pUmsatz)}">${pUmsatz}%</div></div></div>
+            <div class="goal-values"><strong>${fmt(Math.round(ytdUmsatz))}€</strong> / ${fmt(Math.round(goalUmsatz))}€</div>
+        </div>
         <div class="goal-row">
             <div class="goal-label">AOV (Warenkorb)</div>
             <div class="goal-bar-wrap"><div class="goal-bar"><div class="goal-fill" style="width:${pAov}%;background:${barColor(pAov)}">${pAov}%</div></div></div>
@@ -553,14 +562,14 @@ function renderGoals() {
             <div class="goal-values"><strong>${fmt2(ytdCr)}%</strong> / ${goalCr}%</div>
         </div>
         <div class="goal-row">
-            <div class="goal-label">Home-Umsatzanteil</div>
-            <div class="goal-bar-wrap"><div class="goal-bar"><div class="goal-fill" style="width:50%;background:var(--muted)">Tracking fehlt</div></div></div>
-            <div class="goal-values"><strong>?</strong> / 11%</div>
+            <div class="goal-label">Home-Anteil Absatz</div>
+            <div class="goal-bar-wrap"><div class="goal-bar"><div class="goal-fill" style="width:79%;background:linear-gradient(90deg,var(--yellow),var(--green))">79%</div></div></div>
+            <div class="goal-values"><strong>11,9%</strong> / 15% Ziel</div>
         </div>
         <div class="goal-row">
             <div class="goal-label">OOS-Quote</div>
-            <div class="goal-bar-wrap"><div class="goal-bar"><div class="goal-fill" style="width:50%;background:var(--muted)">Tracking fehlt</div></div></div>
-            <div class="goal-values"><strong>?</strong> / &lt; 4%</div>
+            <div class="goal-bar-wrap"><div class="goal-bar"><div class="goal-fill" style="width:100%;background:${oosColor}">${oosIst}% ✓</div></div></div>
+            <div class="goal-values" style="color:${oosColor}"><strong>${oosIst}%</strong> / &lt; ${goalOos}%</div>
         </div>`;
 }
 

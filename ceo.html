@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>J&L CEO Dashboard – Q1 2026</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1"></script>
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
     <style>
         :root {
@@ -154,7 +155,7 @@
 <div class="header">
     <h1>E-Commerce CEO Dashboard</h1>
     <div class="sub">Q1 2026 | Marc Böhle, CDO</div>
-    <div class="meta" id="header-meta">Stand: 25.02.2026 | KW09 | Datenquellen: Jessis Reporting, Amazon Allocation, Power BI</div>
+    <div class="meta" id="header-meta">Stand: 26.02.2026 | KW09 | Datenquellen: Jessis Reporting, Amazon Allocation, Inventory Dashboard</div>
 </div>
 
 <!-- Datenstand-Leiste -->
@@ -183,7 +184,7 @@
 
 <!-- ===== SECTION 1: QUARTALSZIELE ===== -->
 <div class="section-title">Quartalsziele Q1 – Status</div>
-<div class="grid-3" id="kpiGrid"></div>
+<div style="display:grid;grid-template-columns:repeat(5,1fr);gap:16px;margin-bottom:24px;" id="kpiGrid"></div>
 
 <!-- ===== SECTION: UMSATZÜBERSICHT ===== -->
 <div class="section-title">Umsatzübersicht – Plan vs. Ist</div>
@@ -193,27 +194,31 @@
 <div class="section-title">Amazon J&L – Umsatz nach Land</div>
 <div class="card" style="padding: 16px 20px; overflow-x: auto;" id="countryCard"></div>
 
-<!-- ===== SECTION 2: ROCKS ===== -->
-<div class="section-title">Rocks – Accountability Tracker</div>
-<div class="steine-summary" id="steineSummary"></div>
-<div class="grid-3" id="steineGrid"></div>
+<!-- ===== SECTION 2: QUARTALSZIELE & ROCKS ===== -->
+<div class="section-title">Webshop – Quartalsziele Q1</div>
+<div class="steine-summary" id="steineSummaryWsQ1"></div>
+<div class="grid-3" id="steineGridWsQ1"></div>
+
+<div class="section-title">Amazon – Quartalsziele Q1</div>
+<div class="steine-summary" id="steineSummaryAmzQ1"></div>
+<div class="grid-3" id="steineGridAmzQ1"></div>
+
+<div class="section-title">Webshop – Rocks 2026 (Jahresprojekte)</div>
+<div class="grid-3" id="steineGridWsRocks"></div>
+
+<div class="section-title">Amazon – Rocks 2026 (Jahresprojekte)</div>
+<div class="grid-3" id="steineGridAmzRocks"></div>
 
 <!-- ===== SECTION 3: BLOCKADEN & FUCK-UPS ===== -->
 <div class="section-title">Aktuelle Blockaden & Fuck-ups</div>
 <div id="fuckupList"></div>
-
-<!-- ===== SECTION 4: MASSNAHMEN-ROADMAP ===== -->
-<div class="section-title">Maßnahmen-Roadmap Q1</div>
-<div class="card" style="padding: 16px 20px;">
-    <div id="roadmap"></div>
-</div>
 
 <!-- ===== SECTION 5: INNOVATION & AUTOMATISIERUNG ===== -->
 <div class="section-title">E-Commerce Innovation & Automatisierung</div>
 <div class="grid-2" id="innovationGrid"></div>
 
 <!-- ===== SECTION 6: ARTIKELGRUPPEN ===== -->
-<div class="section-title">Artikelgruppen – Umsatzentwicklung</div>
+<div class="section-title">Artikelgruppen – Absatzanteile YTD Jan–Feb 2026</div>
 <div class="card" style="padding: 20px;" id="kategorienCard"></div>
 
 <!-- ===== SECTION 7: QUICK LINKS ===== -->
@@ -250,11 +255,26 @@ const datenstand = {
 // --- Kern-KPIs ---
 const kpis = [
     {
+        name: "Webshop – YTD Umsatz",
+        ist: 604580, ziel: 836924, unit: "€",
+        trend: "up",
+        massnahme: "Q1-Ziel: 836.924€ | Jahresprognose: 5.042.156€ | Quelle: Jessis Reporting",
+        color: "--green"
+    },
+    {
         name: "Webshop AOV",
-        ist: 45.54, ziel: 49.15, unit: "€",
-        trend: "up", // up, down, stable
-        massnahme: "AOV-Booster Plugin (Rollout KW07)",
+        ist: 45.50, ziel: 49.15, unit: "€",
+        trend: "up",
+        massnahme: "Customer Journey Workshop + Bug-Fixes für höheren Warenkorb",
         color: "--orange"
+    },
+    {
+        name: "OOS-Quote",
+        ist: 3.24, ziel: 4.0, unit: "%",
+        trend: "down", // niedriger = besser
+        massnahme: "Quelle: rekla.jeanlen.de/inventory-dashboard/ – Ziel: unter 4%",
+        color: "--green",
+        invertiert: true // kleiner ist besser
     },
     {
         name: "Webshop CR",
@@ -269,29 +289,50 @@ const kpis = [
         trend: "up",
         massnahme: "DE/USA KW1–7, UK KW1–6. IT Feb, ES/FR/NL/SE Jan eingetragen.",
         color: "--accent",
-        linearPlan: 825769, // 2.147.000 * 5/13
+        linearPlan: 825769,
         dataWeeks: 7,
         totalWeeks: 13
     }
 ];
 
 // --- Rocks ---
-const steine = [
-    { nr: 1, name: "UK-Expansion", detail: "Ziel: 5.000 GBP/Woche (Break-even Pick & Pack)", owner: "Lena", status: "yellow", meilenstein: "5.000 GBP/Woche stabil erreichen", deadline: "Q1" },
-    { nr: 2, name: "AOV-Booster", detail: "Shopware Plugin", owner: "Marc", status: "green", meilenstein: "Rollout + A/B-Test", deadline: "Feb" },
-    { nr: 3, name: "Amazon USA", detail: "Launch 5 US Handseifen auf Amazon", owner: "Marc", status: "yellow", meilenstein: "Go-Live kurz bevor – Launch bis 01.03.", deadline: "01.03." },
-    { nr: 4, name: "OOS-Quote", detail: "Webshop aktuell ~2,1% (Ziel < 4%) – wird noch geprüft", owner: "Marc/Jessi", status: "green", meilenstein: "Quote unter 4% halten", deadline: "laufend" },
-    { nr: 5, name: "Amazon TOX", detail: "Hybrid-Projekt gestartet, ext. Berater an Bord", owner: "Marc", status: "yellow", meilenstein: "Projekt-Abschluss in 4 Monaten", deadline: "Jun" },
-    { nr: 6, name: "Vendor Chargebacks", detail: "Aktuell 0,73% → Ziel < 0,5%", owner: "Kevin", status: "yellow", meilenstein: "Chargeback-Quote unter 0,5% senken", deadline: "Q2" },
-    { nr: 7, name: "Home-Anteil", detail: "Webshop aktuell 11% → Ziel 15%", owner: "Marc/Jessi", status: "yellow", meilenstein: "Home-Anteil auf 15% steigern", deadline: "Q2" },
-    { nr: 8, name: "Amazon Profitabilität", detail: "DB5 aktuell 13,4% → Ziel 15%", owner: "Marc", status: "yellow", meilenstein: "DB5 auf 15% steigern", deadline: "Q2" },
-    { nr: 9, name: "Jahresgespräche Amazon", detail: "Kopfkonditionen: 23,5% → Ziel 20,5%", owner: "Marc", status: "red", meilenstein: "Konditionen auf 20,5% verhandeln", deadline: "Q1" }
+// Quartalsziele & Rocks – aufgeteilt in 4 Gruppen
+const steineWebshopQ1 = [
+    { name: "USA Website finalisieren", detail: "US-Website live aufgesetzt", owner: "Marcel", status: "green", meilenstein: "Abgeschlossen", deadline: "Q1" },
+    { name: "Webshop-Prozesse automatisieren", detail: "Bestandsmonitoring, Warenkorb-Geschenk nach Marketing-Peak, Cent-Differenzen-Fix, Gefahrengut-Prozess", owner: "Marc/Marcel", status: "green", meilenstein: "3 von 3 Maßnahmen live", deadline: "Q1" },
+    { name: "AOV auf 49,15€ steigern", detail: "Ist: 45,50€ | Ziel: 49,15€ — Aktionen & Bug-Fixes für höheren Warenkorb", owner: "Jessi", status: "yellow", meilenstein: "AOV auf Zielwert heben", deadline: "Q1" },
+    { name: "ROSI (KI-Bot) live schalten", detail: "Eigener KI-Bot für Beratung, Zendesk-Anbindung, DHL-Tracking im Chat", owner: "Valerian", status: "green", meilenstein: "Live, weitere Verbesserungen in Planung", deadline: "Q1" },
+    { name: "Staging Setup (Zero-Error-Testing)", detail: "Vollständiges End-to-End Testsystem aufgesetzt", owner: "Marcel", status: "green", meilenstein: "Live genommen", deadline: "Q1" },
+    { name: "OOS-Quote < 4% halten", detail: "Aktuell 3,24% (Quelle: rekla.jeanlen.de/inventory-dashboard/)", owner: "Marc/Jessi", status: "green", meilenstein: "Quote dauerhaft unter 4% halten", deadline: "laufend" },
+];
+
+const steineAmazonQ1 = [
+    { name: "Jahresgespräche Amazon", detail: "Kopfkonditionen: 23,5% → Ziel 20,5%", owner: "Marc", status: "red", meilenstein: "Konditionen auf 20,5% verhandeln", deadline: "Q1" },
+    { name: "UK Expansion", detail: "Ziel: 5.000 GBP/Woche (Break-even Pick & Pack) | Ist: ca. 4.500 GBP", owner: "Lena", status: "yellow", meilenstein: "5.000 GBP/Woche stabil erreichen", deadline: "Q1" },
+    { name: "Amazon USA – Handseifen Launch", detail: "5 US Handseifen live nehmen | Launch kurz bevor", owner: "Karina", status: "yellow", meilenstein: "Go-Live bis 01.03.", deadline: "01.03." },
+    { name: "Amazon TOX", detail: "Hybrid-Projekt gestartet, externer Berater an Bord", owner: "Marc", status: "yellow", meilenstein: "Projekt-Abschluss in 4 Monaten", deadline: "Jun" },
+    { name: "Amazon Profitabilität", detail: "DB5 aktuell 13,4% → Ziel 15%", owner: "Marc", status: "yellow", meilenstein: "DB5 auf 15% steigern", deadline: "Q2" },
+];
+
+const steineWebshopRocks = [
+    { name: "5 Mio € Webshop-Umsatz 2026", detail: "Brutto-Umsatz bei positivem DB | Jahresprognose: 5.042.156€", owner: "Marc/Jessi", status: "yellow", meilenstein: "Hochrechnung laufend prüfen", deadline: "Dez 2026" },
+    { name: "Home-Anteil auf 15%", detail: "Online Only + Home Produkte erreichen 15% des Webshop-Gesamtumsatzes | Aktuell: 11,9%", owner: "Marc/Jessi", status: "yellow", meilenstein: "Home-Anteil auf 15% steigern", deadline: "Q2 2026" },
+    { name: "Webshop als Einkaufserlebnis", detail: "Vom Produktregister zum Einkaufserlebnis umwandeln — bessere Customer Journey", owner: "Marc", status: "yellow", meilenstein: "Customer Journey Workshop → Umsetzung", deadline: "2026" },
+];
+
+const steineAmazonRocks = [
+    { name: "ROAS-Optimierung (Wachstumshebel)", detail: "ROAS-Anpassung nach neuer Mindest-ROAS-Kalkulation für Mehrumsatz", owner: "Jessi/Angela", status: "green", meilenstein: "ROAS für Mehrumsatz optimiert", deadline: "laufend" },
+    { name: "Amalyze Automatisierung", detail: "Alle 7 Länder von manuellen auf automatisierte Amalyze-Kampagnen umgestellt", owner: "Angela", status: "green", meilenstein: "7 von 7 Ländern umgestellt ✓", deadline: "done" },
+    { name: "Brandstores alle Märkte", detail: "Aktuell 4 von 7 Brandstores | USA, DE dann UK, weitere Länder", owner: "Sina", status: "yellow", meilenstein: "7 Brandstores aufgebaut", deadline: "2026" },
+    { name: "Chargebacks < 0,5%", detail: "Aktuell 0,73% vom Gesamtumsatz → Ziel: unter 0,5% bleiben", owner: "Kevin/Verena", status: "yellow", meilenstein: "Chargeback-Quote dauerhaft senken", deadline: "Q2" },
+    { name: "Multi Channel Foundation", detail: "Otto & Amazon Seller aufsetzen — logistisch und technisch", owner: "Marc", status: "yellow", meilenstein: "Foundation aufgebaut", deadline: "2026" },
+    { name: "Online Only Hero Produkte", detail: "Online Only Hero Produkte profitabel etablieren und skalieren", owner: "Marc", status: "yellow", meilenstein: "Produkte identifiziert und skaliert", deadline: "2026" },
+    { name: "PICS Programm Logistik", detail: "PICS Programm in Logistik einführen", owner: "Marc", status: "yellow", meilenstein: "Programm implementiert", deadline: "2026" },
 ];
 
 // --- Fuck-ups & Blockaden ---
 const fuckups = [
-    { problem: "Amazon Vendor DE (JEBG3) – Shipment Defects", impact: "Hohe Chargebacks, Vendor-Scoring gefährdet", massnahme: "Ursachenanalyse + Prozessfix mit Sherin", owner: "Marc/Sherin", deadline: "28.02.", status: "active" },
-    { problem: "Google Ads auf 0€ seit KW04", impact: "Wichtiger Traffic-Kanal komplett pausiert", massnahme: "Klärung mit Jessi – geplant oder Problem?", owner: "Marc/Jessi", deadline: "14.02.", status: "active" },
+    { problem: "Google Ads – Daten KW09 ausstehend", impact: "Jessi trägt Daten montags nach – KW09-Werte noch nicht im Reporting", massnahme: "Montag Datenstand prüfen, ggf. nachhaken", owner: "Marc/Jessi", deadline: "03.03.", status: "active" },
     { problem: "Beiersdorf OHNE GEDØNS – 46 Produkte", impact: "Produkte müssen umbenannt/ausgelistet werden", massnahme: "Liste mit Lynn finalisieren", owner: "Marc/Lynn", deadline: "17.02.", status: "active" },
     { problem: "USA Gründung – Steuer/Logistik Setup", impact: "Verzögert Amazon USA Launch", massnahme: "Priorisierung + ggf. Freelancer-Support", owner: "Marc", deadline: "Ende Feb", status: "active" }
 ];
@@ -324,10 +365,11 @@ const projekte = [
 const umsatz = {
     webshop: {
         label: "Webshop J&L",
-        ist: 604580, // YTD Summe aus 56 Tagen Jessis Reporting
-        plan: null,  // Kein explizites Umsatzziel für Webshop Q1 definiert
-        zeitraum: "YTD (01.01.–25.02.)",
-        detail: "56 Tage | Ø 10.796€/Tag | 13.275 Bestellungen",
+        ist: 604580,    // YTD Summe aus Jessis Reporting (bis 26.02.)
+        plan: 836924,   // Q1-Umsatzziel (836.923,62€)
+        planJahr: 5042156, // Jahresprognose 2026
+        zeitraum: "YTD (01.01.–26.02.)",
+        detail: "57 Tage | Ø 10.606€/Tag | 13.463 Bestellungen",
         color: "var(--green)"
     },
     amazon: {
@@ -360,15 +402,20 @@ const amazonLaender = [
 ];
 
 // --- Artikelgruppen (Platzhalter für Power BI Daten) ---
+// Kategorie-Daten: Basis ist YTD Ist-Absatz (Stück) aus Forecast-Tabelle (Jessi-Reporting)
+// Quelle: fcProds[].f (Produktfamilie) + fcProds[].yi (YTD Ist-Stück) im Webshop-Dashboard
+// Anteile = Stückanteil als Proxy für Umsatzanteil (Umsatz je Kategorie aus Power BI ausstehend)
 const kategorien = [
-    { name: "Haare", umsatz: null, anteil: 35, trend: "stable", color: "var(--blue)" },
-    { name: "Körper", umsatz: null, anteil: 22, trend: "stable", color: "var(--green)" },
-    { name: "Home", umsatz: null, anteil: 9, trend: "up", color: "var(--orange)", ziel: "11%" },
-    { name: "Hände", umsatz: null, anteil: 12, trend: "stable", color: "var(--cyan)" },
-    { name: "Gesichtspflege", umsatz: null, anteil: 8, trend: "up", color: "var(--pink)" },
-    { name: "Parfum", umsatz: null, anteil: 6, trend: "down", color: "var(--purple)" },
-    { name: "Männer", umsatz: null, anteil: 5, trend: "stable", color: "var(--yellow)" },
-    { name: "Sonstige", umsatz: null, anteil: 3, trend: "stable", color: "var(--muted)" }
+    { name: "Hand & Fuß",       absatz: 24878, anteil: 25.9, trend: "stable", color: "#4a7c59" },
+    { name: "Haarpflege",       absatz: 24010, anteil: 25.0, trend: "stable", color: "#3f5a3f" },
+    { name: "Körper",           absatz: 17921, anteil: 18.7, trend: "stable", color: "#647c64" },
+    { name: "Home",             absatz: 11460, anteil: 11.9, trend: "up",     color: "#e52427", ziel: "15%" },
+    { name: "Gesichtspflege",   absatz: 10683, anteil: 11.1, trend: "up",     color: "#ed98df" },
+    { name: "Düfte",            absatz: 3330,  anteil: 3.5,  trend: "stable", color: "#ba6a49" },
+    { name: "Sonne",            absatz: 1174,  anteil: 1.2,  trend: "up",     color: "#c09a2a" },
+    { name: "WPR",              absatz: 1072,  anteil: 1.1,  trend: "stable", color: "#8b8577" },
+    { name: "Sets",             absatz: 933,   anteil: 1.0,  trend: "stable", color: "#a3b89a" },
+    { name: "Sonstige",         absatz: 595,   anteil: 0.6,  trend: "stable", color: "#d4d0c8" },
 ];
 
 // ============================================================
@@ -426,6 +473,20 @@ function renderKPIs() {
             </div>`;
         }
 
+        // Invertierter Fall (OOS: kleiner ist besser)
+        if (k.invertiert) {
+            const ok = k.ist <= k.ziel;
+            const barW = Math.min(Math.round((k.ist / k.ziel) * 100), 100);
+            const barCol = ok ? 'var(--green)' : 'var(--red)';
+            return `<div class="card kpi-card" style="border-color:${ok ? 'rgba(74,124,89,0.3)' : 'rgba(229,36,39,0.3)'}">
+                <div class="kpi-header"><span class="kpi-name">${k.name}</span><span class="kpi-trend" style="color:${ok?'var(--green)':'var(--red)'}">&#${ok?'9989':'9888'};</span></div>
+                <div class="kpi-values"><span class="kpi-ist" style="color:${barCol}">${fmt2(k.ist)} ${k.unit}</span><span class="kpi-pct" style="color:${barCol}">${ok ? '✓ OK' : '⚠'}</span></div>
+                <div class="kpi-bar"><div class="kpi-fill" style="width:${barW}%;background:${barCol};"></div></div>
+                <div style="font-size:12px;color:var(--muted);margin-bottom:6px;">Ziel: &lt; ${fmt2(k.ziel)} ${k.unit}</div>
+                <div class="kpi-context">&#9432; ${k.massnahme}</div>
+            </div>`;
+        }
+
         // Standardfall: AOV, CR etc.
         const fillColor = pct >= 95 ? 'var(--green)' : pct >= 80 ? 'var(--yellow)' : 'var(--orange)';
         const istDisplay = k.ist >= 1000000 ? fmt2(k.ist / 1000000) + ' Mio ' + k.unit : fmt2(k.ist) + ' ' + k.unit;
@@ -453,6 +514,9 @@ function renderUmsatz() {
     // Webshop Card
     const ws = umsatz.webshop;
     const wsIstStr = fmt(Math.round(ws.ist)) + '€';
+    const wsPlanStr = ws.plan ? fmt(ws.plan) + '€' : null;
+    const wsPlanJahrStr = ws.planJahr ? fmt2(ws.planJahr/1000000) + ' Mio €' : null;
+    const wsPct = ws.plan ? Math.round(ws.ist/ws.plan*100) : null;
 
     // Amazon Card mit Plan-Vergleich
     const am = umsatz.amazon;
@@ -466,11 +530,14 @@ function renderUmsatz() {
     const amAheadOfPlan = amLinearDiff > 0;
 
     grid.innerHTML = `
-        <div class="card rev-card">
+        <div class="card rev-card" style="border-color: rgba(74,124,89,0.3);">
             <div class="rev-label">${ws.label}</div>
             <div class="rev-total" style="color:${ws.color}">${wsIstStr}</div>
-            <div class="rev-plan">Kein explizites Q1-Umsatzziel definiert</div>
-            <div class="rev-bar"><div class="rev-fill" style="width:50%; background:${ws.color};"></div></div>
+            <div style="display:flex;gap:16px;margin-bottom:10px;flex-wrap:wrap;">
+                <div style="font-size:12px;"><span style="color:var(--muted)">Q1-Ziel:</span> <strong>${fmt(ws.plan)}€</strong> <span class="pct-badge" style="background:rgba(34,28,22,0.06);color:var(--accent);margin-left:4px">${Math.round(ws.ist/ws.plan*100)}%</span></div>
+                <div style="font-size:12px;"><span style="color:var(--muted)">Jahresprognose:</span> <strong>${fmt2(ws.planJahr/1000000)} Mio €</strong></div>
+            </div>
+            <div class="rev-bar"><div class="rev-fill" style="width:${Math.min(Math.round(ws.ist/ws.plan*100),100)}%; background:${ws.ist>=ws.plan?'var(--green)':'var(--yellow)'};"></div></div>
             <div class="rev-detail">${ws.zeitraum} | ${ws.detail}</div>
         </div>
         <div class="card rev-card" style="border-color: ${amAheadOfPlan ? 'rgba(74,124,89,0.4)' : 'var(--border)'};">
@@ -558,16 +625,16 @@ function renderCountries() {
 }
 
 // --- Section 2: Rocks ---
-function renderSteine() {
-    const counts = { green: 0, yellow: 0, red: 0 };
-    steine.forEach(s => counts[s.status]++);
-
-    document.getElementById('steineSummary').innerHTML =
-        `<span class="sum-item" style="color:var(--green)">&#9679; ${counts.green} On Track</span>` +
-        `<span class="sum-item" style="color:var(--yellow)">&#9679; ${counts.yellow} At Risk</span>` +
-        `<span class="sum-item" style="color:var(--red)">&#9679; ${counts.red} Blocker</span>`;
-
-    document.getElementById('steineGrid').innerHTML = steine.map(s => {
+function renderSteineGroup(arr, gridId, summaryId) {
+    if (summaryId) {
+        const counts = { green: 0, yellow: 0, red: 0 };
+        arr.forEach(s => counts[s.status]++);
+        document.getElementById(summaryId).innerHTML =
+            `<span class="sum-item" style="color:var(--green)">&#9679; ${counts.green} On Track</span>` +
+            `<span class="sum-item" style="color:var(--yellow)">&#9679; ${counts.yellow} At Risk</span>` +
+            (counts.red > 0 ? `<span class="sum-item" style="color:var(--red)">&#9679; ${counts.red} Blocker</span>` : '');
+    }
+    document.getElementById(gridId).innerHTML = arr.map(s => {
         const statusEmoji = s.status === 'green' ? '&#9989;' : s.status === 'yellow' ? '&#9888;&#65039;' : '&#128308;';
         return `<div class="card stein-card ${s.status}">
             <div class="stein-name">${statusEmoji} ${s.name}</div>
@@ -575,6 +642,13 @@ function renderSteine() {
             <div class="stein-meilenstein">&#8594; ${s.meilenstein} <span style="color:var(--muted)">(${s.deadline})</span></div>
         </div>`;
     }).join('');
+}
+
+function renderSteine() {
+    renderSteineGroup(steineWebshopQ1, 'steineGridWsQ1', 'steineSummaryWsQ1');
+    renderSteineGroup(steineAmazonQ1, 'steineGridAmzQ1', 'steineSummaryAmzQ1');
+    renderSteineGroup(steineWebshopRocks, 'steineGridWsRocks', null);
+    renderSteineGroup(steineAmazonRocks, 'steineGridAmzRocks', null);
 }
 
 // --- Section 3: Fuck-ups ---
@@ -649,31 +723,61 @@ function renderInnovation() {
 }
 
 // --- Section 6: Kategorien ---
+let katChart = null;
 function renderKategorien() {
     const card = document.getElementById('kategorienCard');
-    const trendIcons = { up: '&#8599;', down: '&#8600;', stable: '&#8594;' };
-    const trendColors = { up: 'var(--green)', down: 'var(--red)', stable: 'var(--muted)' };
+    const total = kategorien.reduce((s,k) => s+k.absatz, 0);
 
-    let rows = kategorien.map(k => {
-        const barWidth = k.anteil || 0;
-        const umsatzStr = k.umsatz ? fmt(Math.round(k.umsatz)) + '€' : '<span style="color:var(--muted)">ausstehend</span>';
-        const zielTag = k.ziel ? ` <span class="badge badge-blue">Ziel: ${k.ziel}</span>` : '';
+    // Layout: Donut links, Legende rechts
+    card.innerHTML = `
+        <div style="display:grid;grid-template-columns:280px 1fr;gap:24px;align-items:center;">
+            <div style="position:relative;height:280px;"><canvas id="katDonutChart"></canvas></div>
+            <div id="katLegend" style="font-size:13px;"></div>
+        </div>
+        <div style="margin-top:12px;font-size:11px;color:var(--muted);">
+            &#9432; Basis: YTD Ist-Absatz (Stück) Jan–Feb 2026 aus Forecast-Tabelle (Jessis Reporting).
+            Stückanteil als Proxy für Umsatzanteil. Echte Umsatzanteile nach Power-BI-Export ergänzen.
+            Home-Ziel: 15% des Gesamtumsatzes.
+        </div>`;
 
-        return `<div class="kategorie-row">
-            <div class="kategorie-name">${k.name}${zielTag}</div>
-            <div class="kategorie-bar-wrap">
-                <div class="kategorie-fill" style="width:${barWidth}%; background:${k.color};">${barWidth}%</div>
-            </div>
-            <div class="kategorie-values">${umsatzStr}</div>
-            <div class="kategorie-trend" style="color:${trendColors[k.trend]}">${trendIcons[k.trend]}</div>
+    // Legende
+    document.getElementById('katLegend').innerHTML = kategorien.map(k => {
+        const trendIcon = k.trend === 'up' ? ' ↑' : k.trend === 'down' ? ' ↓' : '';
+        const trendColor = k.trend === 'up' ? 'var(--green)' : k.trend === 'down' ? 'var(--red)' : '';
+        const zielBadge = k.ziel ? ` <span style="background:rgba(229,36,39,0.12);color:#e52427;font-size:10px;font-weight:700;padding:1px 6px;border-radius:4px;margin-left:4px;">Ziel: ${k.ziel}</span>` : '';
+        const isHome = k.name === 'Home';
+        return `<div style="display:flex;align-items:center;gap:10px;padding:5px 0;${isHome?'font-weight:700':''}">
+            <div style="width:12px;height:12px;border-radius:50%;background:${k.color};flex-shrink:0;"></div>
+            <span style="flex:1;">${k.name}${zielBadge}</span>
+            <span style="color:var(--muted);font-size:11px;min-width:70px;text-align:right">${(k.absatz/1000).toFixed(1)}k Stk</span>
+            <span style="font-weight:600;min-width:40px;text-align:right;color:${isHome?'#e52427':'var(--text)'}">${k.anteil}%</span>
+            <span style="color:${trendColor};font-size:11px;min-width:14px">${trendIcon}</span>
         </div>`;
     }).join('');
 
-    const note = kategorien.some(k => k.umsatz === null)
-        ? `<div class="kategorie-note">&#9432; Umsatzdaten aus Power BI ausstehend. Anteile sind Schätzwerte. Nächstes Update nach Power BI Export.</div>`
-        : '';
-
-    card.innerHTML = rows + note;
+    // Donut Chart
+    if (katChart) { katChart.destroy(); }
+    katChart = new Chart(document.getElementById('katDonutChart'), {
+        type: 'doughnut',
+        data: {
+            labels: kategorien.map(k => k.name),
+            datasets: [{
+                data: kategorien.map(k => k.anteil),
+                backgroundColor: kategorien.map(k => k.color),
+                borderColor: '#fff',
+                borderWidth: 2,
+                hoverOffset: 8
+            }]
+        },
+        options: {
+            responsive: true, maintainAspectRatio: false,
+            cutout: '60%',
+            plugins: {
+                legend: { display: false },
+                tooltip: { callbacks: { label: c => `${c.label}: ${c.parsed.toFixed(1)}% (${(kategorien[c.dataIndex].absatz/1000).toFixed(1)}k Stk)` } }
+            }
+        }
+    });
 }
 
 // --- Datenstand-Banner ---
