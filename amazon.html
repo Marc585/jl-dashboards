@@ -833,6 +833,268 @@
         </div>
     </div>
 
+
+    <!-- UK ARTIKEL-PERFORMANCE -->
+    <div class="section-title" style="margin-top:32px;">🇬🇧 UK Top-Artikel 2026 – Umsatz auf Artikelbasis</div>
+    <div style="font-size:12px;color:var(--muted);margin:-8px 0 16px 16px;">Quelle: UK Budget Allocation 2026 · Wöchentlich aktualisiert · Stand: KW08 | Umsatz in £</div>
+
+    <!-- KPI Cards -->
+    <div class="grid grid-4" style="margin-bottom:20px">
+        <div class="card kpi" style="text-align:center;padding:20px">
+            <div style="font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:1px;font-weight:600">YTD Umsatz UK</div>
+            <div style="font-size:30px;font-weight:800;color:var(--accent);margin:6px 0" id="uk-art-ytd-total">–</div>
+            <div style="font-size:12px;color:var(--muted)">33 Artikel aktiv</div>
+        </div>
+        <div class="card kpi" style="text-align:center;padding:20px">
+            <div style="font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:1px;font-weight:600">Bestellte Einheiten YTD</div>
+            <div style="font-size:30px;font-weight:800;color:var(--blue);margin:6px 0" id="uk-art-units-total">–</div>
+            <div style="font-size:12px;color:var(--muted)" id="uk-art-avg-price">Ø Preis: –</div>
+        </div>
+        <div class="card kpi" style="text-align:center;padding:20px">
+            <div style="font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:1px;font-weight:600">#1 Artikel YTD</div>
+            <div style="font-size:15px;font-weight:700;color:var(--green);margin:6px 0;line-height:1.3" id="uk-art-top1-name">–</div>
+            <div style="font-size:12px;color:var(--muted)" id="uk-art-top1-val">–</div>
+        </div>
+        <div class="card kpi" style="text-align:center;padding:20px">
+            <div style="font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:1px;font-weight:600">KW08 Trend</div>
+            <div style="font-size:24px;font-weight:800;margin:6px 0" id="uk-art-kw8-total">–</div>
+            <div style="font-size:12px;color:var(--muted)" id="uk-art-kw8-vs-kw7">vs. KW07: –</div>
+        </div>
+    </div>
+
+    <!-- Charts: Top 10 Bar + Wöchentlicher Trend -->
+    <div class="grid grid-2" style="margin-bottom:20px">
+        <div class="card">
+            <div class="card-header">
+                <h3>Top 10 Artikel – YTD Umsatz (£)</h3>
+                <span class="badge badge-green">Jan + Feb MTD</span>
+            </div>
+            <div style="position:relative;height:380px;margin-top:8px">
+                <canvas id="ukArtTop10Chart"></canvas>
+            </div>
+        </div>
+        <div class="card">
+            <div class="card-header">
+                <h3>Wöchentlicher Trend – Top 5</h3>
+                <span class="badge badge-blue">KW06 → KW08</span>
+            </div>
+            <div style="position:relative;height:380px;margin-top:8px">
+                <canvas id="ukArtTrendChart"></canvas>
+            </div>
+        </div>
+    </div>
+
+    <!-- Jan vs Feb Vergleich -->
+    <div class="card" style="margin-bottom:20px">
+        <div class="card-header">
+            <h3>Januar vs. Februar MTD – Top 10</h3>
+            <span class="badge badge-yellow">Monatsvergleich</span>
+        </div>
+        <div style="position:relative;height:280px;margin-top:8px">
+            <canvas id="ukArtMonthChart"></canvas>
+        </div>
+    </div>
+
+    <!-- Vollständige Tabelle -->
+    <div class="card" style="margin-bottom:20px">
+        <div class="card-header">
+            <h3>Alle Artikel – Vollständige Übersicht</h3>
+            <span class="badge badge-blue" id="uk-art-table-count">33 Artikel</span>
+        </div>
+        <div style="display:flex;gap:10px;margin-bottom:14px;flex-wrap:wrap;align-items:center">
+            <input type="text" id="uk-art-search" placeholder="🔍 Artikel suchen…"
+                   onkeyup="renderUkArtTable()"
+                   style="padding:7px 12px;border:1px solid var(--border);border-radius:8px;font-family:inherit;font-size:13px;flex:1;min-width:180px;background:var(--bg);color:var(--text)">
+            <select id="uk-art-sort" onchange="renderUkArtTable()"
+                    style="padding:7px 12px;border:1px solid var(--border);border-radius:8px;font-family:inherit;font-size:13px;background:var(--bg);color:var(--text)">
+                <option value="ytd">Sortierung: YTD ↓</option>
+                <option value="feb">Sortierung: Feb MTD ↓</option>
+                <option value="kw8">Sortierung: KW08 ↓</option>
+                <option value="units">Sortierung: Einheiten ↓</option>
+                <option value="trend">Sortierung: Trend ↓</option>
+            </select>
+        </div>
+        <div style="overflow-x:auto">
+            <table style="width:100%;border-collapse:collapse;font-size:12px">
+                <thead>
+                    <tr style="font-size:10px;color:var(--muted);text-transform:uppercase;letter-spacing:0.5px;border-bottom:2px solid var(--border)">
+                        <th style="text-align:left;padding:8px 10px">#</th>
+                        <th style="text-align:left;padding:8px 10px">Artikel</th>
+                        <th style="text-align:right;padding:8px 10px">KW06</th>
+                        <th style="text-align:right;padding:8px 10px">KW07</th>
+                        <th style="text-align:right;padding:8px 10px">KW08</th>
+                        <th style="text-align:right;padding:8px 10px">Trend</th>
+                        <th style="text-align:right;padding:8px 10px">Jan</th>
+                        <th style="text-align:right;padding:8px 10px">Feb MTD</th>
+                        <th style="text-align:right;padding:8px 10px">YTD</th>
+                        <th style="text-align:right;padding:8px 10px">Units</th>
+                    </tr>
+                </thead>
+                <tbody id="uk-art-tbody"></tbody>
+            </table>
+        </div>
+    </div>
+
+    <script>
+    // ========== UK ARTIKEL DATA ==========
+    const ukArtData = [{"a":"B0DF7QFSZ8","n":"Hand & Body Balm Bergamot/Cedarwood 5\u2026","sku":"2800100532","kw6":957.58,"kw7":625.0,"kw8":532.92,"jan":2134.61,"feb":2556.56,"ytd":4691.17,"u":551},{"a":"B0CN19FVL5","n":"Hand & Body Cleanser Bergamot & Cedar\u2026","sku":"2800100339","kw6":799.04,"kw7":537.75,"kw8":407.89,"jan":1967.78,"feb":2323.31,"ytd":4291.09,"u":432},{"a":"B0DG9S89YW","n":"Hair Mask Rosemary & Ginger","sku":"2900101127","kw6":553.73,"kw7":251.6,"kw8":316.45,"jan":2048.73,"feb":1665.63,"ytd":3714.36,"u":444},{"a":"B0DG9LDPB9","n":"Shampoo Hydration Rosemary & Ginger","sku":"2900100122","kw6":442.41,"kw7":360.61,"kw8":497.01,"jan":1459.06,"feb":1715.98,"ytd":3175.04,"u":378},{"a":"B0DG9FM6T4","n":"Conditioner Hydration Rosemary & Ginger","sku":"2900100213","kw6":307.23,"kw7":149.46,"kw8":207.4,"jan":1541.28,"feb":895.42,"ytd":2436.7,"u":283},{"a":"B0CN3KWK9V","n":"Hand & Body Balm Peony/Lychee 500ml INT","sku":"2800100519","kw6":384.86,"kw7":174.07,"kw8":153.93,"jan":909.51,"feb":1040.08,"ytd":1949.59,"u":168},{"a":"B0CN18PFK1","n":"Hand & Body Cleanser Rosemary & Ginger","sku":"2800101040","kw6":339.85,"kw7":130.01,"kw8":112.88,"jan":889.75,"feb":794.93,"ytd":1684.68,"u":159},{"a":"B0DG9Y688Q","n":"Conditioner Rosemary/Ginger Refill","sku":"2900100212","kw6":334.06,"kw7":162.51,"kw8":124.44,"jan":781.25,"feb":774.47,"ytd":1555.71,"u":146},{"a":"B0DG9RGYZQ","n":"Shampoo Moisture Rosemary & Ginger","sku":"2900100113","kw6":281.62,"kw7":123.93,"kw8":148.43,"jan":707.02,"feb":707.37,"ytd":1414.4,"u":119},{"a":"B0CN3LSMJ3","n":"Hand & Body Balm Cardamom/Tonka 500ml\u2026","sku":"2800100518","kw6":187.44,"kw7":143.22,"kw8":98.34,"jan":596.53,"feb":774.51,"ytd":1371.04,"u":121},{"a":"B0F9KYNP5G","n":"Silky and Rich Hand Treatment Bergamo\u2026","sku":"2800101043","kw6":126.47,"kw7":99.16,"kw8":96.26,"jan":647.55,"feb":505.65,"ytd":1153.2,"u":133},{"a":"B0CNH7Y3MH","n":"Caring Shower Gel to Mousse Peony & L\u2026","sku":"2800100326","kw6":163.74,"kw7":64.83,"kw8":59.55,"jan":721.13,"feb":401.88,"ytd":1123.0,"u":136},{"a":"B0CNH6T29Y","n":"Regenerating Shower Gel to Mousse Car\u2026","sku":"2800100325","kw6":68.19,"kw7":124.33,"kw8":44.96,"jan":744.48,"feb":281.24,"ytd":1025.72,"u":120},{"a":"B0CN17WPW3","n":"Hand & Body Cleanser Cardamom & Tonka","sku":"2800101035","kw6":107.33,"kw7":73.35,"kw8":104.72,"jan":565.04,"feb":383.92,"ytd":948.96,"u":87},{"a":"B0CNH86WTH","n":"Vitalizing Shower Gel to Mousse Rosem\u2026","sku":"2800100327","kw6":123.16,"kw7":126.59,"kw8":137.44,"jan":424.63,"feb":498.79,"ytd":923.42,"u":107},{"a":"B0F9KZKSL4","n":"Hand and Body Cleanser Pink Pepper an\u2026","sku":"2902101046","kw6":165.62,"kw7":94.4,"kw8":159.41,"jan":344.24,"feb":518.23,"ytd":862.47,"u":98},{"a":"B0CN3KMJ77","n":"Hand Treatment Cardamom/Tonka 500 ml INT","sku":"2800101044","kw6":87.93,"kw7":147.21,"kw8":156.92,"jan":348.02,"feb":506.12,"ytd":854.14,"u":104},{"a":"B0FFBH2MXN","n":"Energizing Shower Gel To Mousse Berga\u2026","sku":"2800100328","kw6":165.49,"kw7":78.8,"kw8":86.68,"jan":370.61,"feb":409.78,"ytd":780.39,"u":99},{"a":"B0CN191Q3K","n":"Hand & Body Cleanser Peony & Lychee","sku":"2800101036","kw6":74.04,"kw7":63.09,"kw8":70.92,"jan":334.95,"feb":313.66,"ytd":648.61,"u":59},{"a":"B0CN3KV3X2","n":"Hand & Body Balm Rosemary/Ginger 500 \u2026","sku":"2800100520","kw6":59.27,"kw7":37.52,"kw8":91.74,"jan":308.73,"feb":321.97,"ytd":630.7,"u":60},{"a":"B0F9KZMZCP","n":"Hand and Body Cleanser Arabica and Musk","sku":"2902101043","kw6":88.94,"kw7":51.9,"kw8":29.07,"jan":324.56,"feb":269.76,"ytd":594.32,"u":68},{"a":"B0CN3LNTJF","n":"Hand Treatment Rosemary/Ginger 500 mlINT","sku":"2800101042","kw6":63.21,"kw7":31.78,"kw8":157.91,"jan":91.35,"feb":344.54,"ytd":435.89,"u":67},{"a":"B0F9L178RJ","n":"Eau de Toilette Rosemary and Ginger F\u2026","sku":"2900101617","kw6":43.48,"kw7":8.24,"kw8":23.24,"jan":122.51,"feb":138.03,"ytd":260.54,"u":31},{"a":"B0F9L1FBBN","n":"Hand and Body Cleanser Lemon Verbena \u2026","sku":"2902101044","kw6":28.03,"kw7":9.34,"kw8":0.0,"jan":190.28,"feb":68.28,"ytd":258.55,"u":26},{"a":"B0F9L2RBK4","n":"Eau de Toilette Cardamom and Tonka Fr\u2026","sku":"2900101613","kw6":31.81,"kw7":14.94,"kw8":21.54,"jan":127.8,"feb":75.81,"ytd":203.61,"u":27},{"a":"B0F9KXYRDG","n":"Hand and Body Cleanser Marrakech Garden","sku":"2902101045","kw6":0.0,"kw7":18.42,"kw8":9.37,"jan":107.71,"feb":57.66,"ytd":165.38,"u":17},{"a":"B0F9L1PZPL","n":"Eau de Toilette Peony and Lychee Frag\u2026","sku":"2900101615","kw6":29.78,"kw7":21.66,"kw8":7.24,"jan":79.55,"feb":73.9,"ytd":153.45,"u":20},{"a":"B0F9L1BB7R","n":"Eau de Toilette Lily of the Valley","sku":"2900101619","kw6":22.75,"kw7":15.01,"kw8":6.93,"jan":61.25,"feb":59.39,"ytd":120.65,"u":15},{"a":"B0G34XTCTK","n":"Conditioner Mango/Avocado INT","sku":"2925000015","kw6":20.99,"kw7":7.0,"kw8":20.99,"jan":34.99,"feb":62.98,"ytd":97.97,"u":14},{"a":"B0G34YFM93","n":"Shampoo Mango/Avocado INT","sku":"2925000014","kw6":0.0,"kw7":7.0,"kw8":27.99,"jan":55.8,"feb":41.99,"ytd":97.79,"u":13},{"a":"B0FZKFYCC8","n":"Rebuild Shampoo Almond/Keratin INT","sku":"2925000031","kw6":7.0,"kw7":7.0,"kw8":7.0,"jan":48.99,"feb":27.99,"ytd":76.98,"u":11},{"a":"B0FZKNTTC8","n":"Rebuild Conditioner Almond/Keratin INT","sku":"2925000032","kw6":14.0,"kw7":7.0,"kw8":7.0,"jan":41.99,"feb":34.99,"ytd":76.98,"u":11},{"a":"B0GJF3NZVP","n":"2in1 Mask Professional Advanced Repai\u2026","sku":"2925000044","kw6":9.63,"kw7":0.0,"kw8":0.0,"jan":0.0,"feb":0.0,"ytd":19.27,"u":2}];
+
+    // ========== UK ARTIKEL INIT ==========
+    (function initUkArt() {
+        const fmt = v => v.toLocaleString('de-DE', {minimumFractionDigits:2, maximumFractionDigits:2});
+        const fmtInt = v => Math.round(v).toLocaleString('de-DE');
+        const top10 = ukArtData.slice(0,10);
+        const top5  = ukArtData.slice(0,5);
+        const totalYtd   = ukArtData.reduce((s,p) => s+p.ytd, 0);
+        const totalUnits = ukArtData.reduce((s,p) => s+p.u, 0);
+        const totalKw8   = ukArtData.reduce((s,p) => s+p.kw8, 0);
+        const totalKw7   = ukArtData.reduce((s,p) => s+p.kw7, 0);
+        const trendPct   = totalKw7 > 0 ? ((totalKw8 - totalKw7) / totalKw7 * 100).toFixed(1) : 0;
+        const trendUp    = totalKw8 >= totalKw7;
+
+        // KPI Cards befüllen
+        document.getElementById('uk-art-ytd-total').textContent = fmtInt(totalYtd) + ' £';
+        document.getElementById('uk-art-units-total').textContent = fmtInt(totalUnits);
+        document.getElementById('uk-art-avg-price').textContent = 'Ø Preis: ' + fmt(totalYtd / totalUnits) + ' £';
+        document.getElementById('uk-art-top1-name').textContent = ukArtData[0].n;
+        document.getElementById('uk-art-top1-val').textContent = fmtInt(ukArtData[0].ytd) + ' £ YTD · ' + ukArtData[0].u + ' Units';
+        document.getElementById('uk-art-kw8-total').textContent = fmtInt(totalKw8) + ' £';
+        const kw8VsEl = document.getElementById('uk-art-kw8-vs-kw7');
+        kw8VsEl.textContent = 'vs. KW07: ' + (trendUp ? '▲' : '▼') + ' ' + Math.abs(trendPct) + '%';
+        kw8VsEl.style.color = trendUp ? 'var(--green)' : 'var(--red)';
+
+        // Farb-Palette für Top 5
+        const palette = ['#3f5a3f','#647c64','#ba6a49','#ed98df','#8b8577'];
+
+        // Chart 1: Top 10 Horizontal Bar YTD
+        new Chart(document.getElementById('ukArtTop10Chart'), {
+            type: 'bar',
+            data: {
+                labels: top10.map(p => p.n),
+                datasets: [{
+                    label: 'YTD (£)',
+                    data: top10.map(p => p.ytd),
+                    backgroundColor: top10.map((_,i) => i < 3 ? 'rgba(63,90,63,0.85)' : 'rgba(63,90,63,0.45)'),
+                    borderRadius: 4
+                }]
+            },
+            options: {
+                indexAxis: 'y',
+                responsive: true, maintainAspectRatio: false,
+                scales: {
+                    x: { beginAtZero: true, ticks: { callback: v => v >= 1000 ? (v/1000).toFixed(1)+'k £' : v+'£' }, grid: { color: 'rgba(0,0,0,0.05)' } },
+                    y: { ticks: { font: { size: 11 } }, grid: { display: false } }
+                },
+                plugins: { legend: { display: false }, tooltip: { callbacks: { label: c => fmt(c.parsed.x) + ' £' } } }
+            }
+        });
+
+        // Chart 2: Wöchentlicher Trend Top 5
+        new Chart(document.getElementById('ukArtTrendChart'), {
+            type: 'line',
+            data: {
+                labels: ['KW06', 'KW07', 'KW08'],
+                datasets: top5.map((p, i) => ({
+                    label: p.n,
+                    data: [p.kw6, p.kw7, p.kw8],
+                    borderColor: palette[i],
+                    backgroundColor: palette[i] + '22',
+                    pointBackgroundColor: palette[i],
+                    pointRadius: 5,
+                    pointBorderColor: '#fff',
+                    pointBorderWidth: 2,
+                    tension: 0.35,
+                    fill: false
+                }))
+            },
+            options: {
+                responsive: true, maintainAspectRatio: false,
+                scales: {
+                    y: { beginAtZero: true, ticks: { callback: v => v+'£' }, grid: { color: 'rgba(0,0,0,0.05)' } },
+                    x: { grid: { display: false } }
+                },
+                plugins: {
+                    legend: { position: 'bottom', labels: { usePointStyle: true, pointStyleWidth: 10, font: { size: 11 }, boxWidth: 10 } },
+                    tooltip: { callbacks: { label: c => c.dataset.label + ': ' + fmt(c.parsed.y) + ' £' } }
+                }
+            }
+        });
+
+        // Chart 3: Jan vs Feb Top 10
+        new Chart(document.getElementById('ukArtMonthChart'), {
+            type: 'bar',
+            data: {
+                labels: top10.map(p => p.n),
+                datasets: [
+                    { label: 'Januar', data: top10.map(p => p.jan), backgroundColor: 'rgba(63,90,63,0.5)', borderRadius: 3 },
+                    { label: 'Feb MTD', data: top10.map(p => p.feb), backgroundColor: 'rgba(186,106,73,0.6)', borderRadius: 3 }
+                ]
+            },
+            options: {
+                responsive: true, maintainAspectRatio: false,
+                scales: {
+                    x: { grid: { display: false }, ticks: { font: { size: 10 }, maxRotation: 30 } },
+                    y: { beginAtZero: true, ticks: { callback: v => v+'£' }, grid: { color: 'rgba(0,0,0,0.05)' } }
+                },
+                plugins: {
+                    legend: { position: 'top', labels: { usePointStyle: true, pointStyleWidth: 10 } },
+                    tooltip: { callbacks: { label: c => c.dataset.label + ': ' + fmt(c.parsed.y) + ' £' } }
+                }
+            }
+        });
+
+        // Tabelle initial rendern
+        renderUkArtTable();
+    })();
+
+    function renderUkArtTable() {
+        const fmt = v => v > 0 ? v.toLocaleString('de-DE', {minimumFractionDigits:2, maximumFractionDigits:2}) : '<span style="color:var(--muted)">–</span>';
+        const search = (document.getElementById('uk-art-search').value || '').toLowerCase();
+        const sortBy = document.getElementById('uk-art-sort').value;
+
+        let data = ukArtData.filter(p => !search || p.n.toLowerCase().includes(search) || p.sku.includes(search) || p.a.toLowerCase().includes(search));
+
+        data = [...data].sort((a, b) => {
+            if (sortBy === 'feb')   return b.feb - a.feb;
+            if (sortBy === 'kw8')   return b.kw8 - a.kw8;
+            if (sortBy === 'units') return b.u - a.u;
+            if (sortBy === 'trend') {
+                const ta = a.kw7 > 0 ? (a.kw8 - a.kw7) / a.kw7 : 0;
+                const tb = b.kw7 > 0 ? (b.kw8 - b.kw7) / b.kw7 : 0;
+                return tb - ta;
+            }
+            return b.ytd - a.ytd;
+        });
+
+        document.getElementById('uk-art-table-count').textContent = data.length + ' Artikel';
+
+        const tbody = document.getElementById('uk-art-tbody');
+        tbody.innerHTML = data.map((p, i) => {
+            const trendPct = p.kw7 > 0 ? ((p.kw8 - p.kw7) / p.kw7 * 100).toFixed(0) : null;
+            const trendStr = trendPct === null ? '<span style="color:var(--muted)">–</span>'
+                           : trendPct >= 0 ? `<span style="color:var(--green);font-weight:600">▲${trendPct}%</span>`
+                                           : `<span style="color:var(--red);font-weight:600">▼${Math.abs(trendPct)}%</span>`;
+            const rank = i < 3 ? `<strong style="color:var(--accent)">#${i+1}</strong>` : `<span style="color:var(--muted)">#${i+1}</span>`;
+            return `<tr style="border-bottom:1px solid var(--border)">
+                <td style="padding:8px 10px">${rank}</td>
+                <td style="padding:8px 10px;max-width:220px">
+                    <div style="font-weight:600;font-size:12px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis" title="${p.n}">${p.n}</div>
+                    <div style="font-size:10px;color:var(--muted);font-family:monospace">ASIN: ${p.a}</div>
+                </td>
+                <td style="text-align:right;padding:8px 10px;font-size:12px">${fmt(p.kw6)}</td>
+                <td style="text-align:right;padding:8px 10px;font-size:12px">${fmt(p.kw7)}</td>
+                <td style="text-align:right;padding:8px 10px;font-size:12px;font-weight:600">${fmt(p.kw8)}</td>
+                <td style="text-align:right;padding:8px 10px">${trendStr}</td>
+                <td style="text-align:right;padding:8px 10px;font-size:12px;color:var(--muted)">${fmt(p.jan)}</td>
+                <td style="text-align:right;padding:8px 10px;font-size:12px">${fmt(p.feb)}</td>
+                <td style="text-align:right;padding:8px 10px;font-size:13px;font-weight:700;color:var(--accent)">${fmt(p.ytd)}</td>
+                <td style="text-align:right;padding:8px 10px;font-size:12px">${p.u}</td>
+            </tr>`;
+        }).join('');
+    }
+    </script>
+
+
     <!-- EU MÄRKTE -->
     <div class="section-title">EU-Märkte - Performance 2025 &amp; Budget 2026</div>
 
