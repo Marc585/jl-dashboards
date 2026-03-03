@@ -927,7 +927,7 @@ const fcAbwPct = 41.6;
     const FC_PAGE = 20;
     let fcShowAll = false;
 
-    function rowHtml(p) {
+    function rowHtmlFull(p) {
         const noFc = !p.hf;
         const pct = p.ap;
         const statusIcon = noFc ? '⬜' : pct > 10 ? '🟢' : pct < -10 ? '🔴' : '🟡';
@@ -971,7 +971,7 @@ const fcAbwPct = 41.6;
         const remaining = filtered.length - FC_PAGE;
 
         const tbody = document.getElementById('fc-main-table');
-        tbody.innerHTML = visible.map(rowHtml).join('');
+        tbody.innerHTML = visible.map(rowHtmlFull).join('');
 
         // "Mehr anzeigen"-Button
         let moreRow = document.getElementById('fc-more-row');
