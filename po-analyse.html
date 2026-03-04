@@ -296,7 +296,12 @@ function sb(k){
 }
 
 function render(){
+  // Überschreiter (dev>0) immer oben, absteigend nach Abweichung
+  // Rest darunter, sortierbar per Spaltenklick
   rows.sort((a,b)=>{
+    const aOver=a.dev>0, bOver=b.dev>0;
+    if(aOver!==bOver) return aOver?-1:1;
+    if(aOver&&bOver) return b.dev-a.dev;
     const av=a[sortK],bv=b[sortK];
     if(typeof av==='string')return sortD*av.localeCompare(bv);
     return sortD*((bv||0)-(av||0));
