@@ -1115,11 +1115,11 @@
 
 
     <!-- EU MÄRKTE -->
-    <div class="section-title">EU-Märkte - Performance 2025 &amp; Budget 2026</div>
+    <div class="section-title">EU-Märkte &ndash; Paid Sales nach Jahr &amp; Budget 2026</div>
 
     <div class="card">
         <div class="card-header">
-            <h3>Paid Sales 2025 (nach Land) &ndash; Amazon Extern</h3>
+            <h3 id="eu-sales-title">Paid Sales 2026 (nach Land) &ndash; Amazon Extern</h3>
             <span class="badge badge-blue">Umsatz</span>
         </div>
         <div style="padding:0 0 12px; color:var(--muted); font-size:0.8rem; line-height:1.6; border-bottom:1px solid var(--border); margin-bottom:14px;">
@@ -1154,7 +1154,7 @@
     <!-- DETAIL TABELLE ALLE LÄNDER -->
     <div class="card" style="margin-top: 20px;">
         <div class="card-header">
-            <h3>Alle Märkte &ndash; Spend &amp; Paid Sales 2025 vs. Budget 2026</h3>
+            <h3>Alle Märkte &ndash; Spend &amp; Paid Sales 2025 vs. Budget 2026 (Referenz)</h3>
         </div>
         <p style="font-size:0.8rem; color:var(--muted); padding-bottom:12px; border-bottom:1px solid var(--border); margin-bottom:14px;">
             Paid Sales = Amazon externe Einnahmen &uuml;ber Advertising. EU-M&auml;rkte in &euro;, USA separat in USD. Quelle: jeweilige L&auml;nder-Budget-Allocation (Gesamt-Spalte).<br>
@@ -1675,6 +1675,12 @@
         let currentYear = 2026;
         function setYear(yr) {
             currentYear = yr;
+            // Titel aktualisieren
+            const titleEl = document.getElementById('eu-sales-title');
+            if (titleEl) {
+                const label = yr === 'alle' ? 'Alle Jahre' : yr;
+                titleEl.innerHTML = `Paid Sales ${label} (nach Land) &ndash; Amazon Extern`;
+            }
             // Update button styles
             [2023, 2024, 2025, 2026, 'alle'].forEach(y => {
                 const btn = document.getElementById('year-btn-' + y);
