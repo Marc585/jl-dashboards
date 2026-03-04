@@ -90,6 +90,8 @@
   <div class="strip-item"><span class="strip-label">Letzte PO</span><span class="strip-val empty" id="s-last">—</span></div>
   <div class="strip-item"><span class="strip-label">Importe MTD</span><span class="strip-val" id="s-cnt">0</span></div>
   <div class="strip-item"><span class="strip-label">Gesamt bestellt</span><span class="strip-val" id="s-tot">0 Stück</span></div>
+  <div class="strip-item"><span class="strip-label">Abweichung zum Forecast</span><span class="strip-val" id="s-dev">—</span></div>
+  <div class="strip-item"><span class="strip-label">Artikel über Forecast</span><span class="strip-val" id="s-over">—</span></div>
 </div>
 
 <div class="wrap">
@@ -235,10 +237,31 @@ function analyse(){
   const over=rows.filter(r=>r.dev>0).length;
   const totFc=rows.reduce((x,r)=>x+r.forecast,0);
   const totAct=rows.reduce((x,r)=>x+r.actual,0);
+  const totDev=totAct-totFc;
+  const totPct=totFc>0?(totDev/totFc*100):null;
+
   const b=document.getElementById('r-badge');
   b.className=over>0?'badge badge-warn':'badge badge-ok';
   b.textContent=over>0?'⚠ '+over+' über Forecast':'✓ Alles im Plan';
   document.getElementById('r-meta').textContent='Forecast: '+fmt(totFc)+' · Bestellt MTD: '+fmt(totAct)+' · '+rows.length+' Artikel';
+
+  // Strip: Abweichung & Artikel über Forecast
+  const devEl=document.getElementById('s-dev');
+  const overEl=document.getElementById('s-over');
+  if(totDev>0){
+    devEl.className='strip-val';
+    devEl.style.color='#bf2600';
+    devEl.textContent='+'+fmt(totDev)+' Stück'+(totPct!==null?' ('+totPct.toFixed(1)+'%)':'');
+  } else if(totDev<0){
+    devEl.className='strip-val';
+    devEl.style.color='#006644';
+    devEl.textContent=fmt(totDev)+' Stück'+(totPct!==null?' ('+totPct.toFixed(1)+'%)':'');
+  } else {
+    devEl.className='strip-val';devEl.style.color='';devEl.textContent='0 Stück (0%)';
+  }
+  overEl.className='strip-val';
+  overEl.style.color=over>0?'#bf2600':'#006644';
+  overEl.textContent=over>0?over+' Artikel':'Alle im Plan';
   document.getElementById('res').style.display='block';
   render();
 }
