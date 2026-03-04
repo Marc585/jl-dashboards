@@ -62,8 +62,13 @@
     .n{text-align:right;font-variant-numeric:tabular-nums}
     .mono{font-family:monospace;font-size:12px;font-weight:700;color:#0052cc}
     .tc{max-width:250px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
-    .dv{text-align:right;font-weight:700;color:#bf2600;font-variant-numeric:tabular-nums}
+    .dv{text-align:right;font-weight:700;font-variant-numeric:tabular-nums}
+    .dv.over{color:#bf2600}
+    .dv.under{color:#6b778c;font-weight:400}
+    .dv.zero{color:#97a0af;font-weight:400}
     .dp{font-size:11px;color:#97a0af;font-weight:400;margin-left:3px}
+    tr.row-over td{background:#fff8f2}
+    tr.row-over:hover td{background:#fff0e0}
     .bg{height:5px;background:#f0f1f3;border-radius:3px;min-width:50px}
     .br{height:100%;border-radius:3px;background:#e67e22}
     .br.cr{background:#bf2600}
@@ -118,10 +123,8 @@
         </div>
       </div>
       <div class="frow">
-        <label>Min. Abweichung:</label>
-        <input type="number" id="f-dev" value="1" min="0" style="width:65px" oninput="render()">
         <label>Suche:</label>
-        <input type="text" id="f-q" placeholder="ASIN oder Artikel…" style="width:200px" oninput="render()">
+        <input type="text" id="f-q" placeholder="ASIN oder Artikel…" style="width:220px" oninput="render()">
       </div>
       <div style="overflow-x:auto">
         <table>
@@ -298,41 +301,47 @@ function render(){
     if(typeof av==='string')return sortD*av.localeCompare(bv);
     return sortD*((bv||0)-(av||0));
   });
-  const minD=parseFloat(document.getElementById('f-dev').value)||0;
   const q=(document.getElementById('f-q').value||'').toUpperCase().trim();
-  let data=rows.filter(r=>r.dev>minD);
+  let data=rows.slice(); // alle Zeilen
   if(q) data=data.filter(r=>r.asin.includes(q)||r.title.toUpperCase().includes(q));
 
   const tb=document.getElementById('tb'),tf=document.getElementById('tf');
   const em=document.getElementById('empty');
+  const overCount=data.filter(r=>r.dev>0).length;
   const b=document.getElementById('r-badge');
-  b.className=data.length>0?'badge badge-warn':'badge badge-ok';
-  b.textContent=data.length>0?'⚠ '+data.length+' über Forecast':'✓ Alles im Plan';
+  b.className=overCount>0?'badge badge-warn':'badge badge-ok';
+  b.textContent=overCount>0?'⚠ '+overCount+' über Forecast':'✓ Alles im Plan';
 
   if(!data.length){tb.innerHTML='';tf.innerHTML='';em.style.display='block';return}
   em.style.display='none';
-  const mx=Math.max(...data.map(r=>r.dev),1);
+  const mx=Math.max(...data.filter(r=>r.dev>0).map(r=>r.dev),1);
   tb.innerHTML=data.map((r,i)=>{
-    const bw=Math.min(100,(r.dev/mx)*100).toFixed(1);
+    const isOver=r.dev>0;
+    const bw=isOver?Math.min(100,(r.dev/mx)*100).toFixed(1):0;
     const cr=r.pct!==null&&r.pct>130;
-    return`<tr>
+    const dvCls=isOver?'dv over':(r.dev<0?'dv under':'dv zero');
+    const devTxt=isOver
+      ?`+${fmt(r.dev)}${r.pct!==null?`<span class="dp">(${r.pct.toFixed(0)}%)</span>`:''}`
+      :(r.dev<0?fmt(r.dev):'—');
+    return`<tr class="${isOver?'row-over':''}">
       <td style="color:#97a0af;font-size:11px">${i+1}</td>
       <td class="mono">${esc(r.asin)}</td>
       <td class="tc" title="${esc(r.title)}">${esc(r.title)||'–'}</td>
       <td class="n">${fmt(r.forecast)}</td>
       <td class="n">${fmt(r.actual)}</td>
-      <td class="dv">+${fmt(r.dev)}${r.pct!==null?`<span class="dp">(${r.pct.toFixed(0)}%)</span>`:''}</td>
+      <td class="${dvCls}">${devTxt}</td>
       <td><div class="bg"><div class="br${cr?' cr':''}" style="width:${bw}%"></div></div></td>
     </tr>`;
   }).join('');
   const tF=data.reduce((x,r)=>x+r.forecast,0),tA=data.reduce((x,r)=>x+r.actual,0),tD=data.reduce((x,r)=>x+r.dev,0);
-  tf.innerHTML=`<tr><td></td><td colspan="2"><strong>Gesamt (${data.length})</strong></td><td class="n">${fmt(tF)}</td><td class="n">${fmt(tA)}</td><td class="dv">+${fmt(tD)}</td><td></td></tr>`;
+  const tDCls=tD>0?'dv over':(tD<0?'dv under':'dv zero');
+  const tDTxt=tD>0?'+'+fmt(tD):(tD<0?fmt(tD):'—');
+  tf.innerHTML=`<tr><td></td><td colspan="2"><strong>Gesamt (${data.length})</strong></td><td class="n">${fmt(tF)}</td><td class="n">${fmt(tA)}</td><td class="${tDCls}">${tDTxt}</td><td></td></tr>`;
 }
 
 // ── CSV / Reset ───────────────────────────────────────────────────────────────
 function exportCSV(){
-  const minD=parseFloat(document.getElementById('f-dev').value)||0;
-  const d=rows.filter(r=>r.dev>minD);
+  const d=rows.slice();
   if(!d.length){toast('Keine Daten');return}
   const blob=new Blob(['\uFEFF'+'ASIN;Artikel;Forecast März;Bestellt MTD;Abweichung;%\n'
     +d.map(r=>[r.asin,'"'+r.title.replace(/"/g,'')+'"',r.forecast,r.actual,r.dev,r.pct!=null?r.pct.toFixed(1):''].join(';')).join('\n')],
