@@ -12,7 +12,7 @@ window.JL_DATA = {
   stand: {
     amazon_weekly:  "KW8 (15.02 - 21.02)",   // DE/UK/USA KW8 – wöchentlich
     amazon_monthly: "ES/FR/IT/NL/SE: Januar 2026",  // monatlich
-    webshop:        "08.03.2026",
+    webshop:        "03.03.2026",
     dashboard:      "04.03.2026"
   },
 
@@ -61,6 +61,6 @@ window.JL_DATA = {
     aov_ziel:       49.15,
     cr:              2.76,   // Conversion Rate %
     cr_ziel:         2.81,
-    tages_schnitt:  10013    // Ø Umsatz/Tag
+    tages_schnitt:  10820    // Ø Umsatz/Tag
   }
 };
