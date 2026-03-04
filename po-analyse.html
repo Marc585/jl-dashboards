@@ -240,9 +240,6 @@ function analyse(){
   const totDev=totAct-totFc;
   const totPct=totFc>0?(totDev/totFc*100):null;
 
-  const b=document.getElementById('r-badge');
-  b.className=over>0?'badge badge-warn':'badge badge-ok';
-  b.textContent=over>0?'⚠ '+over+' über Forecast':'✓ Alles im Plan';
   document.getElementById('r-meta').textContent='Forecast: '+fmt(totFc)+' · Bestellt MTD: '+fmt(totAct)+' · '+rows.length+' Artikel';
 
   // Strip: Abweichung & Artikel über Forecast
@@ -308,6 +305,10 @@ function render(){
 
   const tb=document.getElementById('tb'),tf=document.getElementById('tf');
   const em=document.getElementById('empty');
+  const b=document.getElementById('r-badge');
+  b.className=data.length>0?'badge badge-warn':'badge badge-ok';
+  b.textContent=data.length>0?'⚠ '+data.length+' über Forecast':'✓ Alles im Plan';
+
   if(!data.length){tb.innerHTML='';tf.innerHTML='';em.style.display='block';return}
   em.style.display='none';
   const mx=Math.max(...data.map(r=>r.dev),1);
