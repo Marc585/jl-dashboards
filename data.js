@@ -12,7 +12,7 @@ window.JL_DATA = {
   stand: {
     amazon_weekly:  "KW8 (15.02 - 21.02)",   // DE/UK/USA KW8 – wöchentlich
     amazon_monthly: "ES/FR/IT/NL/SE: Januar 2026",  // monatlich
-    webshop:        "?",
+    webshop:        "08.03.2026",
     dashboard:      "04.03.2026"
   },
 
@@ -30,9 +30,9 @@ window.JL_DATA = {
 
     // Einzelne Märkte – Amazon Außenumsatz (Paid + Organic)
     laender: {
-      DE:  { ytd: 1272967, spend: 34798, orders: 87577, paid_roas: null, label: "KW1–KW8 YTD '26",           budget_jahr: 320000 },
-      UK:  { ytd: 34839, spend: 12436, orders: 2858, paid_roas: null, label: "KW1–KW8 YTD '26",           budget_jahr: 100000 },
-      USA: { ytd: 22541, spend: 13783, orders: 799, paid_roas: null, label: "KW1–KW8 YTD '26 (USD→EUR)", budget_jahr: null   },
+      DE:  { ytd: 1272967, spend: 34798, orders: 87577, paid_roas: 14.46, label: "KW1–KW8 YTD '26",           budget_jahr: 320000 },
+      UK:  { ytd: 34839, spend: 12436, orders: 2858, paid_roas: 2.11, label: "KW1–KW8 YTD '26",           budget_jahr: 100000 },
+      USA: { ytd: 22541, spend: 13783, orders: 799, paid_roas: 0.71, label: "KW1–KW8 YTD '26 (USD→EUR)", budget_jahr: null   },
       IT:  { ytd: 68985, spend:  5479, orders:  null, paid_roas:  null, label: "Jan '26",                 budget_jahr:  50400 },
       ES:  { ytd: 48565, spend:  3475, orders:  null, paid_roas:  null, label: "Jan '26",                 budget_jahr:  46800 },
       FR:  { ytd: 44011, spend:  3215, orders:  null, paid_roas:  null, label: "Jan '26",                 budget_jahr:  39800 },
@@ -61,6 +61,6 @@ window.JL_DATA = {
     aov_ziel:       49.15,
     cr:              2.76,   // Conversion Rate %
     cr_ziel:         2.81,
-    tages_schnitt:  11980    // Ø Umsatz/Tag
+    tages_schnitt:  10013    // Ø Umsatz/Tag
   }
 };
