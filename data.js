@@ -20,7 +20,7 @@ window.JL_DATA = {
   amazon: {
     ytd_gesamt:       1509157,   // Amazon Außenumsatz YTD alle 8 Märkte (€)
     ytd_gesamt_label: "Amazon Außenumsatz YTD 2026 – alle 8 Märkte",
-    ads_budget_jahr:   619300,   // Ads Jahresbudget 2026 (alle Märkte)
+    ads_budget_jahr:   567200,   // Ads Jahresbudget 2026 (alle Märkte, SE in EUR konvertiert)
     q1_plan:          2147000,   // Q1 Umsatzziel
     jahresprognose:  11300000,   // Jahresprognose Umsatz
     data_weeks:             8,   // Wochen mit Daten (DE/UK/USA KW1–8)
@@ -37,7 +37,7 @@ window.JL_DATA = {
       ES:  { ytd:   48565, spend:  3475, orders:  null, paid_roas:  null, label: "Jan '26",                 budget_jahr:  46800 },
       FR:  { ytd:   44011, spend:  3215, orders:  null, paid_roas:  null, label: "Jan '26",                 budget_jahr:  39800 },
       NL:  { ytd:   11277, spend:   600, orders:  null, paid_roas:  null, label: "Jan '26",                 budget_jahr:   5000 },
-      SE:  { ytd:    5094, spend:   637, orders:  null, paid_roas:  null, label: "Jan '26",                 budget_jahr:  57300 }
+      SE:  { ytd:    5094, spend:   637, orders:  null, paid_roas:  null, label: "Jan '26",                 budget_jahr:   5200 }  // 57.300 SEK ≈ 5.200€
     },
 
     // 2025 Gesamtjahr (Amazon Außenumsatz)
