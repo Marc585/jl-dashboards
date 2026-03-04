@@ -11,7 +11,7 @@ window.JL_DATA = {
   // ─── DATENSTAND ───────────────────────────────────────────────
   stand: {
     amazon_weekly:  "KW8 (21.02.2026)",   // DE/UK/USA KW8 – wöchentlich
-    amazon_monthly: "IT: Feb 2026 | ES/FR/NL/SE: Jan 2026",  // monatlich
+    amazon_monthly: "ES/FR/IT/NL/SE: Jan 2026",  // monatlich
     webshop:        "25.02.2026",          // Jessis Reporting Excel
     dashboard:      "04.03.2026"
   },
@@ -33,7 +33,7 @@ window.JL_DATA = {
       DE:  { ytd: 1272967, spend: 34798, orders: 87577, paid_roas: 14.46, label: "KW1–8 YTD '26",           budget_jahr: 320000 },
       UK:  { ytd:   34839, spend: 12436, orders:  2858, paid_roas:  2.11, label: "KW1–8 YTD '26",           budget_jahr: 100000 },
       USA: { ytd:   23419, spend: 14320, orders:   799, paid_roas:  0.71, label: "KW1–8 YTD '26 (USD→EUR)", budget_jahr: null   },
-      IT:  { ytd:   68985, spend:  5479, orders:  null, paid_roas:  null, label: "Feb '26",                 budget_jahr:  50400 },
+      IT:  { ytd:   68985, spend:  5479, orders:  null, paid_roas:  null, label: "Jan '26",                 budget_jahr:  50400 },
       ES:  { ytd:   48565, spend:  3475, orders:  null, paid_roas:  null, label: "Jan '26",                 budget_jahr:  46800 },
       FR:  { ytd:   44011, spend:  3215, orders:  null, paid_roas:  null, label: "Jan '26",                 budget_jahr:  39800 },
       NL:  { ytd:   11277, spend:   600, orders:  null, paid_roas:  null, label: "Jan '26",                 budget_jahr:   5000 },
