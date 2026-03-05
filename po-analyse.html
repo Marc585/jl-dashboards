@@ -1,145 +1,225 @@
 <!DOCTYPE html>
 <html lang="de">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>PO Analyse – Jean &amp; Len</title>
-  <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
-  <style>
-    *{box-sizing:border-box;margin:0;padding:0}
-    body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;background:#f4f5f7;color:#172b4d;min-height:100vh}
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>PO Analyse – Jean &amp; Len</title>
+<script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;background:#f4f5f7;color:#172b4d;min-height:100vh}
 
-    header{background:#fff;border-bottom:1px solid #e1e4e8;padding:12px 24px;display:flex;align-items:center;justify-content:space-between}
-    .logo{font-size:16px;font-weight:700}.logo em{color:#e67e22;font-style:normal}
-    .btn-reset{background:none;border:none;color:#97a0af;font-size:12px;cursor:pointer;padding:4px 8px;border-radius:4px}
-    .btn-reset:hover{color:#bf2600;background:#fff3f0}
+/* Header */
+header{background:#fff;border-bottom:1px solid #e1e4e8;padding:10px 20px;display:flex;align-items:center;gap:12px}
+.logo{font-size:15px;font-weight:700;white-space:nowrap}.logo em{color:#e67e22;font-style:normal}
+.sync-dot{width:8px;height:8px;border-radius:50%;background:#c1c7d0;flex-shrink:0}
+.sync-dot.ok{background:#36b37e}.sync-dot.err{background:#bf2600}.sync-dot.spin{background:#e67e22;animation:pulse 1s infinite}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:.3}}
+.sync-label{font-size:11px;color:#6b778c;white-space:nowrap}
+.hbtn{background:none;border:1px solid #dfe1e6;color:#172b4d;padding:5px 10px;border-radius:5px;font-size:12px;cursor:pointer}
+.hbtn:hover{background:#f4f5f7}
+.hbtn.danger{color:#bf2600;border-color:#ffbdad}.hbtn.danger:hover{background:#fff3f0}
+header .spacer{flex:1}
 
-    .strip{background:#fff;border-bottom:1px solid #e1e4e8;padding:8px 24px;display:flex;align-items:center;gap:0;flex-wrap:wrap}
-    .si{padding:5px 16px;border-right:1px solid #e1e4e8;display:flex;flex-direction:column;gap:1px}
-    .si:first-child{padding-left:0}.si:last-child{border-right:none}
-    .sl{font-size:10px;text-transform:uppercase;letter-spacing:.4px;color:#97a0af}
-    .sv{font-size:13px;font-weight:600;color:#172b4d}
-    .sv.none{color:#c1c7d0;font-weight:400;font-style:italic}
-    .sv.red{color:#bf2600}.sv.grn{color:#006644}
-    .sbadge{background:#e67e22;color:#fff;font-weight:700;font-size:11px;padding:2px 8px;border-radius:10px;align-self:center}
+/* Phase Tabs */
+.phase-bar{background:#fff;border-bottom:1px solid #e1e4e8;padding:0 20px;display:flex;align-items:center;gap:0}
+.ptab{padding:10px 18px;font-size:13px;font-weight:600;color:#6b778c;cursor:pointer;border-bottom:2px solid transparent;transition:all .15s}
+.ptab:hover{color:#172b4d}
+.ptab.active{color:#e67e22;border-bottom-color:#e67e22}
+.ptab .ptag{font-size:10px;font-weight:700;padding:1px 6px;border-radius:8px;margin-left:6px;vertical-align:middle}
+.ptab .ptag.has{background:#e3fcef;color:#006644}
+.ptab .ptag.no{background:#f4f5f7;color:#97a0af}
 
-    .wrap{padding:20px 24px 48px;max-width:1200px;margin:0 auto}
+/* Status Strip */
+.strip{background:#fff;border-bottom:1px solid #e1e4e8;padding:6px 20px;display:flex;align-items:center;gap:0;flex-wrap:wrap;overflow-x:auto}
+.si{padding:4px 14px;border-right:1px solid #e1e4e8;display:flex;flex-direction:column;gap:1px;white-space:nowrap}
+.si:first-child{padding-left:0}.si:last-child{border-right:none}
+.sl{font-size:10px;text-transform:uppercase;letter-spacing:.4px;color:#97a0af}
+.sv{font-size:13px;font-weight:600;color:#172b4d}
+.sv.none{color:#c1c7d0;font-weight:400;font-style:italic}
+.sv.red{color:#bf2600}.sv.grn{color:#006644}
+.sbadge{background:#e67e22;color:#fff;font-weight:700;font-size:11px;padding:2px 8px;border-radius:10px;align-self:center}
 
-    .upload-grid{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:20px}
-    @media(max-width:700px){.upload-grid{grid-template-columns:1fr}}
+/* Wrap */
+.wrap{padding:16px 20px 48px;max-width:1260px;margin:0 auto}
 
-    .drop{border:2px dashed #c1c7d0;border-radius:10px;background:#fff;padding:28px 20px;text-align:center;cursor:pointer;transition:all .15s}
-    .drop:hover,.drop.over{border-color:#e67e22;background:#fff8f2}
-    .drop input{display:none}
-    .drop-icon{font-size:30px;margin-bottom:8px}
-    .drop-title{font-size:14px;font-weight:600;color:#172b4d}
-    .drop-hint{font-size:11px;color:#97a0af;margin-top:4px}
-    .drop.ok{border-color:#36b37e;background:#f3fdf8;pointer-events:none}
-    .drop.ok .drop-title{color:#006644}
-    .drop-label{font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.5px;color:#97a0af;margin-bottom:8px}
-    .drop.bc-drop{border-color:#dfe1e6}
-    .drop.bc-drop:hover,.drop.bc-drop.over{border-color:#0052cc;background:#e6f0ff}
-    .drop.bc-loaded{border-color:#0052cc;background:#e6f0ff;pointer-events:none}
-    .drop.bc-loaded .drop-title{color:#0052cc}
+/* Upload Grid */
+.ugrid{display:grid;grid-template-columns:1fr 1fr 1fr;gap:14px;margin-bottom:16px}
+@media(max-width:800px){.ugrid{grid-template-columns:1fr}}
+.ulabel{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.5px;color:#97a0af;margin-bottom:6px}
+.drop{border:2px dashed #c1c7d0;border-radius:8px;background:#fff;padding:20px 16px;text-align:center;cursor:pointer;transition:all .15s;min-height:100px;display:flex;flex-direction:column;align-items:center;justify-content:center}
+.drop:hover,.drop.over{border-color:#e67e22;background:#fff8f2}
+.drop input{display:none}
+.drop-icon{font-size:24px;margin-bottom:6px}
+.drop-title{font-size:13px;font-weight:600;color:#172b4d}
+.drop-hint{font-size:11px;color:#97a0af;margin-top:3px}
+.drop.ok{border-color:#36b37e;background:#f3fdf8;pointer-events:none}
+.drop.ok .drop-title{color:#006644}
+.drop.bc{border-style:dashed;border-color:#c1c7d0}
+.drop.bc:hover,.drop.bc.over{border-color:#0052cc;background:#e6f0ff}
+.drop.bc.loaded{border-color:#0052cc;background:#e6f0ff;pointer-events:auto}
+.drop.bc.loaded .drop-title{color:#0052cc}
 
-    .card{background:#fff;border-radius:8px;border:1px solid #e1e4e8;overflow:hidden}
-    .card-head{padding:14px 20px;border-bottom:1px solid #e1e4e8;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:8px}
-    .card-title{font-size:15px;font-weight:700}
-    .card-sub{font-size:12px;color:#6b778c;margin-top:2px}
-    .badge{display:inline-flex;align-items:center;padding:3px 10px;border-radius:10px;font-size:12px;font-weight:700;white-space:nowrap}
-    .badge-warn{background:#fff3e0;color:#e67e22}
-    .badge-ok{background:#e3fcef;color:#006644}
-    .btn-csv{background:#0052cc;color:#fff;border:none;padding:6px 12px;border-radius:5px;font-size:12px;font-weight:700;cursor:pointer}
-    .btn-csv:hover{background:#0041a8}
+/* Col picker */
+.col-picker{margin-top:8px;background:#e6f0ff;border-radius:6px;padding:8px 10px;font-size:11px}
+.col-picker strong{display:block;margin-bottom:4px;color:#0052cc}
+.col-picker label{display:inline-flex;align-items:center;gap:4px;margin-right:8px;margin-bottom:2px;cursor:pointer;color:#172b4d}
+.col-picker input[type=checkbox]{width:12px;height:12px}
 
-    .frow{padding:8px 18px;border-bottom:1px solid #f0f1f3;background:#fafbfc;display:flex;align-items:center;gap:12px;flex-wrap:wrap}
-    .frow label{font-size:12px;color:#6b778c}
-    .frow input{padding:4px 8px;border:1px solid #dfe1e6;border-radius:4px;font-size:12px;outline:none}
-    .frow input:focus{border-color:#e67e22}
+/* Phase selector in PO drop */
+.phase-sel{display:flex;gap:4px;margin-top:8px;flex-wrap:wrap;justify-content:center}
+.pselbtn{font-size:11px;font-weight:600;padding:3px 10px;border-radius:4px;border:1px solid #dfe1e6;background:#fff;color:#6b778c;cursor:pointer}
+.pselbtn.active{background:#e67e22;color:#fff;border-color:#e67e22}
 
-    table{width:100%;border-collapse:collapse;font-size:13px}
-    thead tr{background:#f8f9fa}
-    th{padding:9px 12px;text-align:left;font-size:11px;font-weight:700;color:#6b778c;text-transform:uppercase;letter-spacing:.4px;border-bottom:1px solid #e1e4e8;cursor:pointer;white-space:nowrap;user-select:none}
-    th:hover{background:#f0f1f3}
-    th.sa{color:#e67e22}
-    td{padding:8px 12px;border-bottom:1px solid #f4f5f7;vertical-align:middle}
-    tr:last-child td{border-bottom:none}
-    tr:hover td{background:#fafbfc}
-    .n{text-align:right;font-variant-numeric:tabular-nums}
-    .mono{font-family:monospace;font-size:12px;font-weight:700;color:#0052cc}
-    .tc{max-width:220px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
-    .dv{text-align:right;font-weight:700;font-variant-numeric:tabular-nums}
-    .dv.over{color:#bf2600}.dv.under{color:#6b778c;font-weight:400}.dv.zero{color:#97a0af;font-weight:400}
-    .dp{font-size:11px;color:#97a0af;font-weight:400;margin-left:3px}
-    .bg{height:5px;background:#f0f1f3;border-radius:3px;min-width:40px}
-    .br{height:100%;border-radius:3px;background:#e67e22}
-    .br.cr{background:#bf2600}
-    .pfd-cell{text-align:right;font-variant-numeric:tabular-nums}
-    .pfd-ok{color:#006644;font-weight:600}
-    .pfd-low{color:#bf2600;font-weight:600}
-    .pfd-none{color:#c1c7d0;font-size:12px}
-    tr.row-over td{background:#fff8f2}
-    tr.row-over:hover td{background:#fff0e0}
-    tfoot tr td{background:#fff8f2;font-weight:700;border-top:2px solid #e67e22}
+/* Results */
+.card{background:#fff;border-radius:8px;border:1px solid #e1e4e8;overflow:hidden}
+.card-head{padding:12px 18px;border-bottom:1px solid #e1e4e8;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:8px}
+.card-title{font-size:14px;font-weight:700}
+.card-sub{font-size:11px;color:#6b778c;margin-top:2px}
+.badge{display:inline-flex;align-items:center;padding:3px 10px;border-radius:10px;font-size:12px;font-weight:700;white-space:nowrap}
+.badge-warn{background:#fff3e0;color:#e67e22}.badge-ok{background:#e3fcef;color:#006644}
+.btn-csv{background:#0052cc;color:#fff;border:none;padding:5px 12px;border-radius:5px;font-size:12px;font-weight:700;cursor:pointer}
+.btn-csv:hover{background:#0041a8}
 
-    .empty{padding:56px 24px;text-align:center;color:#97a0af}
-    .empty-icon{font-size:44px;margin-bottom:12px}
+.frow{padding:7px 16px;border-bottom:1px solid #f0f1f3;background:#fafbfc;display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+.frow label{font-size:12px;color:#6b778c}
+.frow input{padding:4px 8px;border:1px solid #dfe1e6;border-radius:4px;font-size:12px;outline:none}
+.frow input:focus{border-color:#e67e22}
 
-    .toast{position:fixed;bottom:18px;right:18px;background:#172b4d;color:#fff;padding:10px 16px;border-radius:6px;font-size:13px;font-weight:500;box-shadow:0 4px 12px rgba(0,0,0,.2);opacity:0;transform:translateY(6px);transition:all .2s;z-index:100;max-width:340px}
-    .toast.show{opacity:1;transform:translateY(0)}
-    .toast.ok{background:#006644}
-  </style>
+table{width:100%;border-collapse:collapse;font-size:12px}
+thead tr{background:#f8f9fa}
+th{padding:8px 11px;text-align:left;font-size:10px;font-weight:700;color:#6b778c;text-transform:uppercase;letter-spacing:.4px;border-bottom:1px solid #e1e4e8;cursor:pointer;white-space:nowrap;user-select:none}
+th:hover{background:#f0f1f3}
+th.sa{color:#e67e22}
+td{padding:7px 11px;border-bottom:1px solid #f4f5f7;vertical-align:middle}
+tr:last-child td{border-bottom:none}
+tr:hover td{background:#fafbfc}
+.n{text-align:right;font-variant-numeric:tabular-nums}
+.mono{font-family:monospace;font-size:11px;font-weight:700;color:#0052cc}
+.tc{max-width:200px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.dv{text-align:right;font-weight:700;font-variant-numeric:tabular-nums}
+.dv.over{color:#bf2600}.dv.under{color:#6b778c;font-weight:400}.dv.zero{color:#97a0af;font-weight:400}
+.dp{font-size:10px;color:#97a0af;font-weight:400;margin-left:3px}
+.bg{height:4px;background:#f0f1f3;border-radius:2px;min-width:40px}
+.br{height:100%;border-radius:2px;background:#e67e22}
+.br.cr{background:#bf2600}
+.lager-cell{text-align:right;font-variant-numeric:tabular-nums;font-size:12px}
+.lager-ok{color:#006644;font-weight:600}
+.lager-warn{color:#bf2600;font-weight:600}
+.lager-none{color:#c1c7d0}
+tr.row-over td{background:#fff8f2}
+tr.row-over:hover td{background:#fff0e0}
+tfoot tr td{background:#fff8f2;font-weight:700;border-top:2px solid #e67e22}
+
+.empty{padding:48px 20px;text-align:center;color:#97a0af}
+.empty-icon{font-size:40px;margin-bottom:10px}
+
+/* Modal */
+.modal{position:fixed;inset:0;background:rgba(0,0,0,.5);display:flex;align-items:center;justify-content:center;z-index:200}
+.mbox{background:#fff;border-radius:10px;padding:28px;width:480px;max-width:95vw}
+.mbox h3{font-size:16px;font-weight:700;margin-bottom:8px}
+.mbox p{font-size:13px;color:#6b778c;margin-bottom:16px;line-height:1.6}
+.mbox input{width:100%;padding:9px 12px;border:1px solid #dfe1e6;border-radius:6px;font-size:13px;margin-bottom:12px;outline:none}
+.mbox input:focus{border-color:#e67e22}
+.mbox .mbtns{display:flex;gap:8px;justify-content:flex-end}
+.mbtn{padding:8px 16px;border-radius:6px;font-size:13px;font-weight:600;cursor:pointer;border:none}
+.mbtn.primary{background:#e67e22;color:#fff}.mbtn.primary:hover{background:#d35400}
+.mbtn.sec{background:#fff;color:#172b4d;border:1px solid #dfe1e6}.mbtn.sec:hover{background:#f4f5f7}
+.mbox code{background:#f4f5f7;padding:2px 6px;border-radius:3px;font-size:12px}
+.info-box{background:#e6f0ff;border:1px solid #b3d0ff;border-radius:6px;padding:10px 12px;font-size:12px;color:#0052cc;margin-bottom:12px;line-height:1.5}
+
+.toast{position:fixed;bottom:16px;right:16px;background:#172b4d;color:#fff;padding:9px 15px;border-radius:6px;font-size:13px;font-weight:500;box-shadow:0 4px 12px rgba(0,0,0,.2);opacity:0;transform:translateY(6px);transition:all .2s;z-index:300;max-width:340px}
+.toast.show{opacity:1;transform:translateY(0)}.toast.ok{background:#006644}.toast.err{background:#bf2600}
+</style>
 </head>
 <body>
 
 <header>
-  <div><span class="logo">Jean <em>&</em> Len</span>&nbsp;<span style="color:#97a0af;font-size:12px">· PO Analyse · MTD Soll/Ist</span></div>
-  <button class="btn-reset" onclick="doReset()">🗑 Monat zurücksetzen</button>
+  <span class="logo">Jean <em>&</em> Len</span>
+  <span style="color:#97a0af;font-size:12px">· PO Analyse · Soll/Ist MTD</span>
+  <span class="spacer"></span>
+  <span class="sync-dot" id="sync-dot"></span>
+  <span class="sync-label" id="sync-label">Nicht verbunden</span>
+  <button class="hbtn" onclick="openSettings()" style="margin-left:8px">⚙ Sync</button>
+  <button class="hbtn danger" onclick="doReset()">🗑 Monat reset</button>
 </header>
 
+<!-- Phase Tabs -->
+<div class="phase-bar">
+  <div class="ptab active" id="ptab-a" onclick="setPhase('a')">Angefordert <span class="ptag no" id="ptag-a">0</span></div>
+  <div class="ptab" id="ptab-k" onclick="setPhase('k')">Akzeptiert <span class="ptag no" id="ptag-k">0</span></div>
+  <div class="ptab" id="ptab-v" onclick="setPhase('v')">Versandt <span class="ptag no" id="ptag-v">0</span></div>
+</div>
+
+<!-- Status Strip -->
 <div class="strip">
   <div class="si"><span class="sl">Monat</span><span class="sbadge">März 2026</span></div>
   <div class="si"><span class="sl">Letzte PO</span><span class="sv none" id="s-last">—</span></div>
-  <div class="si"><span class="sl">Importe MTD</span><span class="sv" id="s-cnt">0</span></div>
-  <div class="si"><span class="sl">Gesamt bestellt</span><span class="sv" id="s-tot">0 Stück</span></div>
-  <div class="si"><span class="sl">Abweichung Forecast</span><span class="sv" id="s-dev">—</span></div>
+  <div class="si"><span class="sl">PO-Importe MTD</span><span class="sv" id="s-cnt">0</span></div>
+  <div class="si"><span class="sl">Angefordert MTD</span><span class="sv" id="s-ta">0</span></div>
+  <div class="si"><span class="sl">Akzeptiert MTD</span><span class="sv" id="s-tk">0</span></div>
+  <div class="si"><span class="sl">Versandt MTD</span><span class="sv" id="s-tv">0</span></div>
+  <div class="si"><span class="sl">Abweichung (akt. Phase)</span><span class="sv" id="s-dev">—</span></div>
   <div class="si"><span class="sl">Artikel über Forecast</span><span class="sv" id="s-over">—</span></div>
-  <div class="si"><span class="sl">PFD Gesamt</span><span class="sv" id="s-pfd">—</span></div>
+  <div class="si"><span class="sl">Lagerbestand gesamt</span><span class="sv" id="s-lager">— (kein BC)</span></div>
 </div>
 
 <div class="wrap">
-  <div class="upload-grid">
+  <div class="ugrid">
 
     <!-- PO Upload -->
     <div>
-      <div class="drop-label">① Amazon PO Export</div>
+      <div class="ulabel">① Amazon PO Export (Vendor Central)</div>
       <div class="drop" id="dz-po">
         <input type="file" id="fi-po" accept=".xlsx,.xls">
         <div class="drop-icon">📦</div>
         <div class="drop-title">POItemExport hier ablegen</div>
-        <div class="drop-hint">Sheet „Einzelposten" · ASIN + Angeforderte Menge · wird addiert</div>
+        <div class="drop-hint">Sheet „Einzelposten" wird automatisch gelesen</div>
+        <div class="phase-sel">
+          <button class="pselbtn active" id="ps-a" onclick="selectPhase(event,'a')">Angefordert</button>
+          <button class="pselbtn" id="ps-k" onclick="selectPhase(event,'k')">Akzeptiert</button>
+          <button class="pselbtn" id="ps-v" onclick="selectPhase(event,'v')">Versandt</button>
+        </div>
       </div>
     </div>
 
     <!-- BC Upload -->
     <div>
-      <div class="drop-label">② Business Central Lagerbestand</div>
-      <div class="drop bc-drop" id="dz-bc">
+      <div class="ulabel">② Business Central Lagerbestand</div>
+      <div class="drop bc" id="dz-bc">
         <input type="file" id="fi-bc" accept=".xlsx,.xls">
         <div class="drop-icon">🏭</div>
         <div class="drop-title">BC Lagermatrix hier ablegen</div>
-        <div class="drop-hint">„Artikel nach Lagerort – Matrix" · Lagerort PFD · optional</div>
+        <div class="drop-hint">„Artikel nach Lagerort – Matrix" · Lagerspalten wählbar</div>
+      </div>
+      <div id="col-picker" style="display:none" class="col-picker">
+        <strong>Lagerspalten wählen (werden summiert):</strong>
+        <div id="col-checkboxes"></div>
+        <button onclick="applyBCCols()" style="margin-top:6px;font-size:11px;padding:3px 10px;background:#0052cc;color:#fff;border:none;border-radius:4px;cursor:pointer">Übernehmen</button>
+      </div>
+    </div>
+
+    <!-- Info -->
+    <div>
+      <div class="ulabel">ℹ Matching-Basis</div>
+      <div style="background:#fff;border:1px solid #e1e4e8;border-radius:8px;padding:16px;font-size:12px;color:#6b778c;line-height:1.7">
+        <strong style="color:#172b4d;display:block;margin-bottom:6px">Wie werden Artikel verknüpft?</strong>
+        <b>PO Export</b> → enthält ASINs<br>
+        <b>BC Matrix</b> → enthält Artikelnummern (Nr.)<br>
+        <b>Brücke</b> → Forecast-Datei mit ASIN + Artikelnr<br><br>
+        <strong style="color:#172b4d">„Kein Forecast" bedeutet:</strong><br>
+        Diese ASIN steht im PO Export, aber nicht in der Forecast-Datei. → Neue Artikel, Nachfolger oder Sonderprodukte ohne Planung.
       </div>
     </div>
 
   </div>
 
-  <!-- Ergebnisse -->
+  <!-- Results -->
   <div id="res" style="display:none">
     <div class="card">
       <div class="card-head">
         <div>
-          <div class="card-title">Artikel über Forecast – März 2026</div>
+          <div class="card-title" id="r-title">Artikel – März 2026</div>
           <div class="card-sub" id="r-meta"></div>
         </div>
         <div style="display:flex;gap:8px;align-items:center">
@@ -166,196 +246,393 @@
   </div>
 </div>
 
+<!-- Settings Modal -->
+<div class="modal" id="modal" style="display:none" onclick="if(event.target===this)closeModal()">
+  <div class="mbox">
+    <h3>⚙ GitHub Sync einrichten</h3>
+    <div class="info-box">
+      Damit alle im Team denselben Stand sehen, wird der Status in GitHub gespeichert.<br>
+      <strong>Einmalig nötig:</strong> <a href="https://github.com/settings/tokens/new?scopes=public_repo&description=JL+PO+Tool" target="_blank">GitHub Token erstellen</a> mit Berechtigung <code>public_repo</code>.
+    </div>
+    <input type="password" id="pat-inp" placeholder="ghp_xxxxxxxxxxxx" autocomplete="off">
+    <div class="mbtns">
+      <button class="mbtn sec" onclick="closeModal()">Abbrechen</button>
+      <button class="mbtn primary" onclick="savePAT()">Verbinden</button>
+    </div>
+  </div>
+</div>
+
 <div class="toast" id="toast"></div>
 
 <script>
 const FC={"B0B1J27BXY":{"title":"Jean & Len Sensitiv Sonnenspray 50 LSF wasserfest, für empfindliche Haut geeignet, ohne Silikone, Oc","monthly":{"Januar":378,"Februar":508,"März":1065,"April":1465,"Mai":2238,"Juni":3326,"Juli":4187,"August":1899,"September":981,"Oktober":793,"November":776,"Dezember":982}},"B092V6BVLJ":{"title":"Jean & Len Sensitiv Sonnencreme 50+ LSF wasserfest, Sofortschutz für empfindliche Haut, Sonnenschutz","monthly":{"Januar":330,"Februar":420,"März":780,"April":1273,"Mai":1680,"Juni":2082,"Juli":1322,"August":700,"September":488,"Oktober":520,"November":576,"Dezember":755}},"B0FP31DWZK":{"title":"Jean & Len Deospray Sensitiv Cotton Care, schenkt bis zu 48h zuverlässigen Deo-Schutz, sensitive Pfl","monthly":{"Januar":199,"Februar":203,"März":295,"April":261,"Mai":282,"Juni":347,"Juli":342,"August":276,"September":344,"Oktober":275,"November":275,"Dezember":343}},"B092V77QWL":{"title":"Jean & Len Après Sun Aloe Vera Gel, Unterstützende Pflege bei Sonnenbrand, beruhigt & kühlt die Haut","monthly":{"Januar":203,"Februar":228,"März":320,"April":390,"Mai":607,"Juni":940,"Juli":1047,"August":531,"September":436,"Oktober":374,"November":405,"Dezember":454}},"B0FP2TWSZM":{"title":"Jean & Len Deospray Fresh Waterlily, schenkt bis zu 48h zuverlässigen Deo-Schutz, mit Wasserlilien-E","monthly":{"Januar":190,"Februar":196,"März":287,"April":253,"Mai":268,"Juni":333,"Juli":336,"August":269,"September":325,"Oktober":259,"November":259,"Dezember":323}},"B0DSGBF4R6":{"title":"Jean & Len Deospray Soft Rose Touch, schenkt bis zu 48h zuverlässigen Deo-Schutz, floraler Duft, wir","monthly":{"Januar":489,"Februar":490,"März":643,"April":306,"Mai":278,"Juni":428,"Juli":249,"August":225,"September":275,"Oktober":203,"November":204,"Dezember":255}},"B0BMVZDWNZ":{"title":"Jean & Len Raumduft Rosemary & Ginger, im stylischen und nachfüllbaren Glasbehälter, würzig-frischer","monthly":{"Januar":144,"Februar":144,"März":180,"April":144,"Mai":144,"Juni":180,"Juli":56,"August":56,"September":74,"Oktober":214,"November":253,"Dezember":264}},"B099S2XX23":{"title":"JeJean & Len Shampoo Nutri Care Mango & Avocado, für langes und geschädigtes Haar, regeneriert bis i","monthly":{"Januar":0,"Februar":0,"März":0,"April":0,"Mai":0,"Juni":0,"Juli":0,"August":0,"September":0,"Oktober":0,"November":0,"Dezember":0}},"B0G34YFM93":{"title":"Shampoo Mango/Avocado INT, 300 ml","monthly":{"Januar":400,"Februar":400,"März":600,"April":600,"Mai":800,"Juni":800,"Juli":1000,"August":1000,"September":1000,"Oktober":1000,"November":1000,"Dezember":1000}},"B0D1RJT6N4":{"title":"Universalwaschmittel Wasserlilie/Hibiskus, 1 L","monthly":{"Januar":880,"Februar":802,"März":1055,"April":872,"Mai":908,"Juni":1207,"Juli":1560,"August":995,"September":1215,"Oktober":2903,"November":4076,"Dezember":4594}},"B0CNRQT3Q7":{"title":"Jean & Len Antioxidant Sugar Scrub Cardamom & Tonka, für ein duftendes Reinigungserlebnis, mit reich","monthly":{"Januar":114,"Februar":125,"März":147,"April":79,"Mai":71,"Juni":94,"Juli":108,"August":91,"September":120,"Oktober":398,"November":713,"Dezember":1008}},"B0BSG1Y9WX":{"title":"Jean & Len Rosemary & Ginger Eau de Parfum, würzig-frischer Duft nach Rosmarin & Ingwer, hergestellt","monthly":{"Januar":109,"Februar":99,"März":118,"April":96,"Mai":110,"Juni":142,"Juli":102,"August":69,"September":88,"Oktober":181,"November":458,"Dezember":446}},"B0DG9S89YW":{"title":"Jean & Len Feuchtigkeit Haarkur Rosemary & Ginger, für stark strapaziertes, trockenes & glanzloses H","monthly":{"Januar":872,"Februar":876,"März":1091,"April":660,"Mai":611,"Juni":786,"Juli":800,"August":800,"September":800,"Oktober":1505,"November":1746,"Dezember":2129}},"B09YD99FMJ":{"title":"Jean & Len Shampoo Colorglanz Arganöl & Feige, für coloriertes & strapaziertes Haar, verleiht Farbin","monthly":{"Januar":535,"Februar":571,"März":714,"April":481,"Mai":423,"Juni":491,"Juli":550,"August":526,"September":658,"Oktober":875,"November":1007,"Dezember":1183}},"B085ZCQ7Q2":{"title":"Jean & Len Sehr geile Handcreme Rosemary & Ginger, mit Urea, Handpflege für trockene und rissige Hän","monthly":{"Januar":6000,"Februar":5500,"März":6500,"April":5500,"Mai":5000,"Juni":5500,"Juli":6000,"August":5500,"September":6500,"Oktober":7507,"November":0,"Dezember":0}},"B0CV5FN53K":{"title":"Jean & Len Silbershampoo Silberweide & Cassis, vegane Pflegeformel, für graues, blondes, blondiertes","monthly":{"Januar":556,"Februar":620,"März":758,"April":446,"Mai":404,"Juni":512,"Juli":603,"August":563,"September":721,"Oktober":1028,"November":1109,"Dezember":1324}},"B0BSFYZJBM":{"title":"Jean & Len Rosemary & Ginger Eau de Parfum, würzig-frischer Duft nach Rosmarin & Ingwer, hergestellt","monthly":{"Januar":32,"Februar":30,"März":35,"April":33,"Mai":33,"Juni":36,"Juli":22,"August":13,"September":16,"Oktober":72,"November":181,"Dezember":320}},"B0CR4DGW4L":{"title":"Jean & Len Duschgel Grüner Tee & Thymian, pH-hautideal, wohltuend-würziges Duscherlebnis, angereiche","monthly":{"Januar":554,"Februar":574,"März":714,"April":435,"Mai":397,"Juni":515,"Juli":799,"August":737,"September":903,"Oktober":1523,"November":2546,"Dezember":2839}},"B0BMW1C2XC":{"title":"Jean & Len Raumspray Rosemary & Ginger, in einer schlichten Glasflasche, für einen würzig-frischen D","monthly":{"Januar":48,"Februar":48,"März":60,"April":48,"Mai":48,"Juni":60,"Juli":73,"August":68,"September":88,"Oktober":179,"November":268,"Dezember":337}},"B0CXF1Y936":{"title":"Jean & Len Trockenshampoo Frische & Geschmeidigkeit, kein fettiger Ansatz, keine weißen Rückstände, ","monthly":{"Januar":0,"Februar":0,"März":0,"April":0,"Mai":0,"Juni":0,"Juli":0,"August":0,"September":0,"Oktober":0,"November":0,"Dezember":0}},"B0FNMGSDG6":{"title":"Trockenshampoo fresh mango mood, 200 ml (Blümchen)","monthly":{"Januar":457,"Februar":508,"März":674,"April":406,"Mai":351,"Juni":410,"Juli":431,"August":410,"September":510,"Oktober":1973,"November":2151,"Dezember":2531}},"B0FMS8B1RZ":{"title":"Jean & Len Body Lotion Niacinamide, mit 10 % Niacinamide & Vitamin E, verfeinert das Hautbild, stärk","monthly":{"Januar":187,"Februar":166,"März":220,"April":186,"Mai":217,"Juni":289,"Juli":271,"August":197,"September":244,"Oktober":196,"November":196,"Dezember":245}},"B0C7LM49HS":{"title":"Sensitive Sonnencreme Baby & Kids LSF 50+, 150 ml","monthly":{"Januar":303,"Februar":402,"März":914,"April":999,"Mai":1248,"Juni":1832,"Juli":1322,"August":700,"September":488,"Oktober":34,"November":33,"Dezember":42}},"B0BMGM2DN9":{"title":"Jean & Len Feuchtigkeit Dusche Rosemary & Ginger, Duschgel für normale bis trockene Haut, reinigt un","monthly":{"Januar":1080,"Februar":1080,"März":1080,"April":1080,"Mai":1080,"Juni":1080,"Juli":1080,"August":1080,"September":1080,"Oktober":2190,"November":2772,"Dezember":3240}},"B0DLH4ZWKW":{"title":"Jean & Len Glow Booster Serum, ideal für jeden Hauttyp, schenkt matter Haut den Glow, Gesichtsserum ","monthly":{"Januar":35,"Februar":40,"März":50,"April":28,"Mai":26,"Juni":32,"Juli":60,"August":46,"September":62,"Oktober":0,"November":0,"Dezember":0}},"B08L9THW3B":{"title":"Jean & Len Conditioner Aufbau Mandel & Keratin, für strukturgeschädigtes Haar, bändigt Frizz und ver","monthly":{"Januar":0,"Februar":0,"März":0,"April":0,"Mai":0,"Juni":0,"Juli":0,"August":0,"September":0,"Oktober":0,"November":0,"Dezember":0}},"B0FMS6YRCW":{"title":"Jean & Len Body Lotion Vitamin C, mit Superox C™ AF aus Kakadu-Pflaume & Vitamin E, sorgt für strahl","monthly":{"Januar":184,"Februar":160,"März":207,"April":175,"Mai":202,"Juni":271,"Juli":261,"August":191,"September":241,"Oktober":194,"November":194,"Dezember":243}},"B0FGJWQP11":{"title":"Jean & Len Day Handcreme Hydrate & Care, für trockene und rissige Hände, mit Niacinamiden, Aloe Vera","monthly":{"Januar":116,"Februar":116,"März":151,"April":121,"Mai":131,"Juni":163,"Juli":144,"August":142,"September":180,"Oktober":142,"November":143,"Dezember":179}},"B0DFCRMMB4":{"title":"Jean & Len Nährendes Haaröl Dattel & Vanille, mit Anti-Frizz-Effekt, für trockenes & brüchiges Haar,","monthly":{"Januar":138,"Februar":140,"März":184,"April":107,"Mai":98,"Juni":132,"Juli":425,"August":398,"September":507,"Oktober":848,"November":1044,"Dezember":1311}},"B0BMW2MXPX":{"title":"Jean & Len Refill Raumduft Rosemary & Ginger, minimalistischer Glasbehälter, würzig-frischer Unisex-","monthly":{"Januar":96,"Februar":83,"März":101,"April":53,"Mai":65,"Juni":92,"Juli":114,"August":126,"September":175,"Oktober":9,"November":20,"Dezember":16}},"B0CN3BL5RT":{"title":"Jean & Len Melting Moisture Body Treatment Rosemary & Ginger, für ein duftendes Pflegeergebnis, für ","monthly":{"Januar":100,"Februar":115,"März":143,"April":86,"Mai":79,"Juni":100,"Juli":94,"August":75,"September":100,"Oktober":243,"November":482,"Dezember":571}},"B0CN3MM661":{"title":"Jean & Len Silky & Rich Treatment Peony & Lychee, 100% recyclebare Alutube (ohne Deckel), reichhalti","monthly":{"Januar":144,"Februar":144,"März":178,"April":111,"Mai":93,"Juni":110,"Juli":89,"August":82,"September":110,"Oktober":339,"November":566,"Dezember":735}},"B0DSGB9XMH":{"title":"AMZ only - Deospray Sensitiv Cotton Care, schenkt bis zu 48h zuverlässigen Deo-Schutz, sensitive Pfl","monthly":{"Januar":426,"Februar":457,"März":588,"April":333,"Mai":292,"Juni":385,"Juli":473,"August":441,"September":556,"Oktober":437,"November":436,"Dezember":541}},"B0BN86W2ML":{"title":"Jean & Len Kerze Premium Rosemary & Ginger, für gemütliche Abende Zuhause, Handgemachte Duftkerze mi","monthly":{"Januar":32,"Februar":32,"März":40,"April":32,"Mai":32,"Juni":40,"Juli":19,"August":20,"September":30,"Oktober":107,"November":200,"Dezember":227}},"B0FGJVPHQ9":{"title":"Jean & Len Night Handcreme Relax & Restore, für trockene und strapazierte Hände, mit Peptid & pflanz","monthly":{"Januar":228,"Februar":232,"März":0,"April":0,"Mai":0,"Juni":0,"Juli":0,"August":0,"September":0,"Oktober":0,"November":0,"Dezember":0}},"B0FMSB8P1F":{"title":"Jean & Len Body Lotion Retinol, mit reinem Retinol, Sheabutter & Bisabolol, glättet Falten, regeneri","monthly":{"Januar":371,"Februar":321,"März":426,"April":350,"Mai":402,"Juni":546,"Juli":583,"August":390,"September":489,"Oktober":395,"November":395,"Dezember":494}},"B0DSG9C9KP":{"title":"Jean & Len Deospray Fresh Lily Breeze, schenkt bis zu 48h zuverlässigen Deo-Schutz, mit Wasserlilien","monthly":{"Januar":257,"Februar":243,"März":299,"April":147,"Mai":131,"Juni":208,"Juli":486,"August":455,"September":574,"Oktober":451,"November":451,"Dezember":564}},"B0CN3DS5ZQ":{"title":"Jean & Len Melting Moisture Body Treatment Cardamom & Tonka, für ein duftendes Pflegeergebnis, für n","monthly":{"Januar":123,"Februar":125,"März":158,"April":100,"Mai":94,"Juni":114,"Juli":107,"August":94,"September":122,"Oktober":288,"November":501,"Dezember":672}},"B0CNRRSSFW":{"title":"Jean & Len Antioxidant Sugar Scrub Peony & Lychee, für ein duftendes Reinigungserlebnis, mit reichha","monthly":{"Januar":143,"Februar":145,"März":180,"April":126,"Mai":124,"Juni":153,"Juli":114,"August":107,"September":143,"Oktober":301,"November":490,"Dezember":724}},"B0FMS6M12G":{"title":"Jean & Len Body Lotion Hyaluron, spendet tiefenwirksame Feuchtigkeit, sorgt für ein glattes und pral","monthly":{"Januar":321,"Februar":286,"März":369,"April":306,"Mai":347,"Juni":464,"Juli":486,"August":340,"September":423,"Oktober":342,"November":342,"Dezember":427}},"B07ZTDXQQK":{"title":"Jean&Len Conditioner Nutri Care Mango & Avocado, für langes & geschädigtes Haar, wirkt Haarbruch ent","monthly":{"Januar":0,"Februar":0,"März":0,"April":0,"Mai":0,"Juni":0,"Juli":0,"August":0,"September":0,"Oktober":0,"November":0,"Dezember":0}},"B0G34XTCTK":{"title":"Jean&Len Conditioner Nutri Care Mango & Avocado, für langes & geschädigtes Haar, wirkt Haarbruch ent","monthly":{"Januar":419,"Februar":436,"März":572,"April":464,"Mai":464,"Juni":579,"Juli":480,"August":468,"September":586,"Oktober":814,"November":838,"Dezember":1003}},"B0CN191Q3K":{"title":"Jean & Len Hand & Body Cleanser Peony & Lychee, für ein duftendes Reinigungserlebnis, Körper- & Hand","monthly":{"Januar":106,"Februar":113,"März":138,"April":86,"Mai":81,"Juni":102,"Juli":180,"August":162,"September":208,"Oktober":338,"November":473,"Dezember":567}},"B0FR4XYYMD":{"title":"Jean & Len Hand Balm Pfingstrose & Litschi, mit Bio-Arganöl, feuchtigkeitsspendender Sheabutter & Vi","monthly":{"Januar":93,"Februar":105,"März":145,"April":121,"Mai":146,"Juni":200,"Juli":195,"August":169,"September":237,"Oktober":200,"November":200,"Dezember":250}},"B092V7KGMQ":{"title":"Jean & Len Hand & Body Wash Rosemary und Ginger im Kanister, reinigt und pflegt die Haut, würzig-fri","monthly":{"Januar":526,"Februar":550,"März":710,"April":513,"Mai":513,"Juni":665,"Juli":511,"August":492,"September":636,"Oktober":800,"November":877,"Dezember":1047}},"B0CN3C26LF":{"title":"Jean & Len Melting Moisture Body Treatment Peony & Lychee, für ein duftendes Pflegeergebnis, für nor","monthly":{"Januar":130,"Februar":143,"März":183,"April":116,"Mai":112,"Juni":141,"Juli":102,"August":86,"September":111,"Oktober":273,"November":430,"Dezember":529}},"B0F5BVFRC1":{"title":"Handcreme so matcha , 75 ml","monthly":{"Januar":300,"Februar":300,"März":500,"April":500,"Mai":500,"Juni":500,"Juli":737,"August":658,"September":839,"Oktober":2591,"November":4947,"Dezember":5562}},"B0CN3KWK9V":{"title":"Jean & Len Heavenly Hand- & Body Balm Peony & Lychee, für ein duftendes Pflegeerlebnis, mit Bio-Arga","monthly":{"Januar":275,"Februar":283,"März":358,"April":246,"Mai":231,"Juni":285,"Juli":204,"August":197,"September":264,"Oktober":659,"November":815,"Dezember":1061}},"B095CF7X57":{"title":"Jean & Len Frische Shampoo Grüner Tee & Limette, für normales bis schnell fettendes Haar, schützt vo","monthly":{"Januar":900,"Februar":900,"März":1200,"April":850,"Mai":800,"Juni":900,"Juli":900,"August":900,"September":1200,"Oktober":988,"November":1035,"Dezember":1147}},"B0CNRRX5Q5":{"title":"Jean & Len Antioxidant Sugar Scrub Rosemary & Ginger, für ein duftendes Reinigungserlebnis, mit reic","monthly":{"Januar":131,"Februar":129,"März":162,"April":115,"Mai":109,"Juni":132,"Juli":215,"August":185,"September":241,"Oktober":560,"November":968,"Dezember":1018}},"B095CGLKZX":{"title":"Jean & Len Conditioner Frische Grüner Tee & Limette, für normales Haar, sorgt für ein schwereloses H","monthly":{"Januar":30,"Februar":27,"März":35,"April":20,"Mai":23,"Juni":40,"Juli":94,"August":91,"September":114,"Oktober":157,"November":165,"Dezember":172}},"B0FMS7CZHV":{"title":"Jean & Len Body Serum AHA & PHA, sanftes Peeling mit 8 % AHA & 5 % PHA, verfeinert das Hautbild, klä","monthly":{"Januar":224,"Februar":200,"März":261,"April":218,"Mai":250,"Juni":333,"Juli":330,"August":232,"September":289,"Oktober":233,"November":233,"Dezember":291}},"B0F9KZMZCP":{"title":"Jean & Len Hand & Body Cleanser Arabica & Musk, für ein duftendes Reinigungserlebnis, Körper- & Hand","monthly":{"Januar":100,"Februar":100,"März":100,"April":100,"Mai":100,"Juni":100,"Juli":289,"August":231,"September":324,"Oktober":227,"November":226,"Dezember":281}},"B0CN3KMJ77":{"title":"Jean & Len Silky & Rich Treatment Cardamom & Tonka, 100% recyclebare Alutube (ohne Deckel), reichhal","monthly":{"Januar":151,"Februar":144,"März":174,"April":109,"Mai":91,"Juni":107,"Juli":66,"August":66,"September":91,"Oktober":319,"November":354,"Dezember":467}},"B0CWL9Q9PS":{"title":"Jean & Len Body Lotion Cranberry & Vanille, leichte Textur, zieht schnell ein, für alle Hauttypen ge","monthly":{"Januar":386,"Februar":419,"März":591,"April":334,"Mai":296,"Juni":364,"Juli":372,"August":355,"September":458,"Oktober":731,"November":1054,"Dezember":1469}},"B0CG9X4D83":{"title":"Feinwaschmittel Wolle & Feines Veilchen/Jasmin, 1 L","monthly":{"Januar":782,"Februar":864,"März":1082,"April":690,"Mai":630,"Juni":781,"Juli":649,"August":610,"September":827,"Oktober":1705,"November":1798,"Dezember":2158}},"B085ZKWF2T":{"title":"Jean & Len Reichhaltige Bodymilk mit Sheabutter, pflegt trockene Haut intensiv & ist hautverträglich","monthly":{"Januar":511,"Februar":529,"März":651,"April":513,"Mai":484,"Juni":587,"Juli":586,"August":546,"September":726,"Oktober":864,"November":1034,"Dezember":1149}},"B0C5RXYHJ3":{"title":"Lip Balm Shea/Mandelöl, 4,7 g","monthly":{"Januar":0,"Februar":0,"März":1100,"April":897,"Mai":1017,"Juni":1270,"Juli":1017,"August":1017,"September":1271,"Oktober":1503,"November":1765,"Dezember":2387}},"B0CN1HQCD3":{"title":"Jean & Len Scent Experience Cedarwood & Bergamot, Eau de Toilette mit Bergamotte & Zedernholz Duft, ","monthly":{"Januar":255,"Februar":224,"März":285,"April":198,"Mai":190,"Juni":223,"Juli":219,"August":192,"September":242,"Oktober":502,"November":937,"Dezember":1085}},"B0CN18PFK1":{"title":"Jean & Len Hand & Body Cleanser Rosemary & Ginger, für ein duftendes Reinigungserlebnis, Körper- & H","monthly":{"Januar":410,"Februar":390,"März":480,"April":302,"Mai":286,"Juni":356,"Juli":683,"August":621,"September":802,"Oktober":1436,"November":1810,"Dezember":2242}},"B0FP2XTFVB":{"title":"Jean & Len Deo-Zerstäuber Rosenwasser, schenkt auf natürliche Weise bis zu 24h Schutz, hautzarte Pfl","monthly":{"Januar":377,"Februar":363,"März":492,"April":424,"Mai":483,"Juni":607,"Juli":637,"August":526,"September":681,"Oktober":547,"November":547,"Dezember":684}},"B0BCQ4HBW4":{"title":"Jean & Len Bodylotion Rosemary & Ginger im Pumpspender, für normale bis trockene Haut, spendet 24h F","monthly":{"Januar":288,"Februar":314,"März":405,"April":294,"Mai":294,"Juni":380,"Juli":287,"August":254,"September":314,"Oktober":251,"November":251,"Dezember":314}},"B0CP62LPJW":{"title":"Jean & Len Body Ceremony Peony & Lychee, mit Hand & Body Cleanser und Hand & Body Balm, hochwertige ","monthly":{"Januar":68,"Februar":55,"März":68,"April":49,"Mai":47,"Juni":56,"Juli":59,"August":56,"September":76,"Oktober":181,"November":492,"Dezember":771}},"B0984DSNHN":{"title":"Jean & Len Shampoo Sensitiv Hafermilch & Baumwolle, reinigt sanft und schützt vor Haarbruch, für tro","monthly":{"Januar":747,"Februar":765,"März":999,"April":758,"Mai":745,"Juni":938,"Juli":847,"August":784,"September":991,"Oktober":1147,"November":1375,"Dezember":1591}},"B0CR4DYNJB":{"title":"Jean & Len Duschgel Mango & Maracuja, pH-hautideal, belebendes Duscherlebnis, angereichert mit Mango","monthly":{"Januar":1230,"Februar":1217,"März":1571,"April":1047,"Mai":983,"Juni":1244,"Juli":1161,"August":1039,"September":1222,"Oktober":1682,"November":1870,"Dezember":2364}},"B0G52NXY85":{"title":"Jean & Len Pflege Shampoo Jojoba & Apfel, pflegt langes und brüchiges Haar, für gesünder & stärker a","monthly":{"Januar":449,"Februar":458,"März":570,"April":481,"Mai":472,"Juni":587,"Juli":440,"August":403,"September":502,"Oktober":525,"November":624,"Dezember":724}},"B092V5JF1V":{"title":"Jean & Len Shampoo Aufbau Mandel & Keratin, für strukturgeschädigtes Haar, schützt vor Haarbruch und","monthly":{"Januar":0,"Februar":0,"März":0,"April":0,"Mai":0,"Juni":0,"Juli":0,"August":0,"September":0,"Oktober":0,"November":0,"Dezember":0}},"B0DG9RGYZQ":{"title":"Jean & Len Shampoo Feuchtigkeit Rosemary & Ginger, Nachfüllbeutel, für trockenes & sprödes Haar, rei","monthly":{"Januar":750,"Februar":739,"März":920,"April":566,"Mai":560,"Juni":754,"Juli":756,"August":720,"September":955,"Oktober":1463,"November":1563,"Dezember":1836}},"B0DG9Y688Q":{"title":"Jean & Len Conditioner Feuchtigkeit Rosemary & Ginger im Nachfüllbeutel, für trockenes Haar, pflegt ","monthly":{"Januar":322,"Februar":358,"März":476,"April":291,"Mai":268,"Juni":337,"Juli":377,"August":345,"September":446,"Oktober":1096,"November":1275,"Dezember":1411}},"B0CP639JXS":{"title":"Jean & Len Body Ceremony Rosemary & Ginger, mit Hand & Body Cleanser und Hand & Body Balm, hochwerti","monthly":{"Januar":113,"Februar":93,"März":227,"April":221,"Mai":220,"Juni":285,"Juli":260,"August":260,"September":325,"Oktober":287,"November":879,"Dezember":1566}},"B0DM6LKJHW":{"title":"Jean & Len Peeling Gel Cleanser, ideal für jeden Hauttyp, befreit die Haut sanft von abgestorbenen H","monthly":{"Januar":219,"Februar":235,"März":304,"April":172,"Mai":156,"Juni":195,"Juli":197,"August":185,"September":232,"Oktober":484,"November":538,"Dezember":679}},"B0DMFJ5JTV":{"title":"Jean & Len Handseife Cardamom & Tonka, reinigt beanspruchte Hände, für die tägliche Anwendung geeign","monthly":{"Januar":714,"Februar":715,"März":945,"April":559,"Mai":511,"Juni":643,"Juli":1129,"August":1112,"September":1459,"Oktober":2631,"November":3270,"Dezember":3876}},"B0DMFQSS8T":{"title":"Jean & Len Handseife Marrakech Garden, reinigt beanspruchte Hände, für die tägliche Anwendung geeign","monthly":{"Januar":804,"Februar":812,"März":1071,"April":671,"Mai":611,"Juni":760,"Juli":1013,"August":990,"September":1299,"Oktober":2051,"November":2248,"Dezember":2859}},"B0DMFQRWLP":{"title":"Jean & Len Handseife Pink Pepper & Dark Rose, reinigt beanspruchte Hände, für die tägliche Anwendung","monthly":{"Januar":559,"Februar":545,"März":714,"April":419,"Mai":382,"Juni":483,"Juli":1034,"August":1014,"September":1319,"Oktober":2642,"November":3053,"Dezember":3616}},"B0DMFM92B6":{"title":"Jean & Len Handseife Bergamot & Cedarwood, reinigt beanspruchte Hände, für die tägliche Anwendung ge","monthly":{"Januar":1696,"Februar":1614,"März":2018,"April":1103,"Mai":994,"Juni":1309,"Juli":3531,"August":3465,"September":4498,"Oktober":6555,"November":8023,"Dezember":9865}},"B0DMFN6D7J":{"title":"Jean & Len Handseife Lemonverbena & Mint, reinigt beanspruchte Hände, für die tägliche Anwendung gee","monthly":{"Januar":800,"Februar":833,"März":1099,"April":661,"Mai":604,"Juni":757,"Juli":1604,"August":1558,"September":1968,"Oktober":2446,"November":2661,"Dezember":3209}},"B0DLH3W14T":{"title":"Jean & Len Calming Booster Serum, ideal für jeden Hauttyp, spendet wohltuende Feuchtigkeit, sorgt fü","monthly":{"Januar":38,"Februar":47,"März":61,"April":35,"Mai":33,"Juni":40,"Juli":81,"August":61,"September":81,"Oktober":199,"November":261,"Dezember":276}},"B0DLH4Y3JJ":{"title":"Renewing Booster Serum 30ml","monthly":{"Januar":95,"Februar":104,"März":132,"April":81,"Mai":75,"Juni":87,"Juli":136,"August":84,"September":111,"Oktober":233,"November":401,"Dezember":359}},"B0DLH5XMY7":{"title":"Jean & Len Hydrating Booster Serum, ideal für jeden Hauttyp, tiefenwirksame 24h-Feuchtigkeit, parfüm","monthly":{"Januar":134,"Februar":139,"März":171,"April":97,"Mai":85,"Juni":110,"Juli":262,"August":211,"September":263,"Oktober":610,"November":915,"Dezember":947}},"B0CWLPF6FK":{"title":"Jean & Len Travel Set Rosemary & Ginger, ideales kleines Geschenk oder Mitbringsel, Produkte für Kör","monthly":{"Januar":35,"Februar":36,"März":0,"April":0,"Mai":0,"Juni":0,"Juli":0,"August":0,"September":0,"Oktober":0,"November":0,"Dezember":0}},"B0DLH3LWR7":{"title":"Jean & Len Barrier Booster Serum, ideal für jeden Hauttyp, unterstützt das Mikrobiom der Haut, sicht","monthly":{"Januar":86,"Februar":86,"März":99,"April":58,"Mai":54,"Juni":70,"Juli":214,"August":169,"September":228,"Oktober":451,"November":670,"Dezember":695}},"B0DL5NBSZQ":{"title":"Jean & Len Essential Day Cream, ideal für jeden Hauttyp geeignet, optimiert die Hautfestigkeit, mit ","monthly":{"Januar":290,"Februar":304,"März":392,"April":260,"Mai":219,"Juni":266,"Juli":452,"August":346,"September":449,"Oktober":1040,"November":1494,"Dezember":1615}},"B0DL5KYFR1":{"title":"Jean & Len Ultimate Glow Cream, ideal für jeden Hauttyp geeignet, sorgt für ein strahlendes Hautbild","monthly":{"Januar":218,"Februar":225,"März":285,"April":178,"Mai":165,"Juni":203,"Juli":454,"August":356,"September":474,"Oktober":1345,"November":1983,"Dezember":2077}},"B01DSTM0ZW":{"title":"Jean & Len Sensitiv Sonnenspray, 30 LSF, 250 ml","monthly":{"Januar":0,"Februar":0,"März":0,"April":0,"Mai":0,"Juni":0,"Juli":0,"August":0,"September":0,"Oktober":0,"November":0,"Dezember":0}},"B0FZKFYCC8":{"title":"Rebuild Shampoo Almond/Keratin INT, 300 ml","monthly":{"Januar":508,"Februar":522,"März":660,"April":510,"Mai":502,"Juni":621,"Juli":729,"August":684,"September":891,"Oktober":1061,"November":1225,"Dezember":1419}},"B0CN1HRJVJ":{"title":"Jean & Len Scent Experience Peony & Lychee, Eau de Toilette mit Pfingstrose & Litschi Duft, praktisc","monthly":{"Januar":0,"Februar":0,"März":0,"April":0,"Mai":0,"Juni":0,"Juli":0,"August":0,"September":0,"Oktober":0,"November":0,"Dezember":0}},"B0F9L1PZPL":{"title":"Jean & Len Eau de Toilette Peony & Lychee, Eau de Toilette mit Pfingstrose & Litschi Duft, praktisch","monthly":{"Januar":421,"Februar":360,"März":479,"April":380,"Mai":365,"Juni":443,"Juli":402,"August":336,"September":420,"Oktober":671,"November":1341,"Dezember":1547}},"B0CN1JSP4B":{"title":"Jean & Len Scent Experience Cardamom & Tonka, Eau de Toilette mit Kardamom & Tonka Duft, praktisches","monthly":{"Januar":0,"Februar":0,"März":0,"April":0,"Mai":0,"Juni":0,"Juli":0,"August":0,"September":0,"Oktober":0,"November":0,"Dezember":0}},"B0F9L2RBK4":{"title":"Jean & Len Eau de Toilette Cardamom & Tonka, Eau de Toilette mit Kardamom & Tonka Duft, praktisches ","monthly":{"Januar":284,"Februar":237,"März":310,"April":245,"Mai":236,"Juni":286,"Juli":257,"August":231,"September":286,"Oktober":574,"November":1096,"Dezember":1294}},"B092V7KD9W":{"title":"Jean & Len Leave-In Aufbauspray, pflegt geschädigtes Haar, mit Phyto-Keratin Bausteinen & pflanzlich","monthly":{"Januar":0,"Februar":0,"März":1513,"April":0,"Mai":0,"Juni":0,"Juli":0,"August":0,"September":0,"Oktober":0,"November":0,"Dezember":0}},"B0CN17WPW3":{"title":"Jean & Len Hand & Body Cleanser Cardamom & Tonka, für ein duftendes Reinigungserlebnis, Körper- & Ha","monthly":{"Januar":234,"Februar":241,"März":297,"April":202,"Mai":196,"Juni":243,"Juli":395,"August":361,"September":465,"Oktober":936,"November":1400,"Dezember":1671}},"B0CN3LSMJ3":{"title":"Jean & Len Heavenly Hand- & Body Balm Cardamom & Tonka, für ein duftendes Pflegeerlebnis, mit Bio-Ar","monthly":{"Januar":380,"Februar":408,"März":507,"April":263,"Mai":248,"Juni":315,"Juli":388,"August":367,"September":486,"Oktober":1243,"November":1559,"Dezember":1945}},"B0CN3LNTJF":{"title":"Jean & Len Silky & Rich Treatment Rosemary & Ginger, 100% recyclebare Alutube (ohne Deckel), reichha","monthly":{"Januar":117,"Februar":112,"März":141,"April":81,"Mai":68,"Juni":79,"Juli":68,"August":67,"September":95,"Oktober":286,"November":393,"Dezember":532}},"B08FC3HPVG":{"title":"Jean & Len Fußcreme Sheabutter & Calendula, für trockene & beanspruchte Haut, pflegt intensiv & verl","monthly":{"Januar":418,"Februar":460,"März":616,"April":354,"Mai":290,"Juni":356,"Juli":644,"August":636,"September":725,"Oktober":1454,"November":2512,"Dezember":3113}},"B08L9STCYC":{"title":"Jean & Len Verwöhnende Creme-Öl Dusche Arganöl & Feige, geeignet für die tägliche Pflege, Duschgel m","monthly":{"Januar":730,"Februar":743,"März":891,"April":652,"Mai":635,"Juni":753,"Juli":1131,"August":1126,"September":1568,"Oktober":1894,"November":2357,"Dezember":2704}},"B092V646HS":{"title":"Jean & Len Hautstraffende Body Lotion Aprikosenkernöl & Q10, für trockene & reife Haut, verleiht bei","monthly":{"Januar":438,"Februar":454,"März":582,"April":469,"Mai":460,"Juni":577,"Juli":590,"August":532,"September":689,"Oktober":1211,"November":1092,"Dezember":1119}},"B0CWLD9QLD":{"title":"Jean & Len Travel Set Cardamom & Tonka, ideales kleines Geschenk oder Mitbringsel, Produkte für Körp","monthly":{"Januar":39,"Februar":39,"März":52,"April":31,"Mai":32,"Juni":40,"Juli":22,"August":22,"September":28,"Oktober":23,"November":23,"Dezember":28}},"B092V6F1FY":{"title":"Jean & Len Conditioner Pflege Jojoba & Apfel, pflegt lange und brüchige Haarspitzen, entwirrt Knoten","monthly":{"Januar":345,"Februar":376,"März":485,"April":325,"Mai":306,"Juni":373,"Juli":369,"August":351,"September":436,"Oktober":708,"November":819,"Dezember":955}},"B09YDBB2ZJ":{"title":"Jean & Len Conditioner Colorglanz Arganöl & Feige, für coloriertes und strapaziertes Haar, Intensive","monthly":{"Januar":573,"Februar":631,"März":814,"April":517,"Mai":481,"Juni":603,"Juli":387,"August":369,"September":470,"Oktober":596,"November":624,"Dezember":750}},"B07ZTDLTJV":{"title":"Jean & Len Shampoo Volumen Bambus & Lilie, für dünnes und feines Haar, verleiht Fülle und Glanz, Blü","monthly":{"Januar":582,"Februar":587,"März":766,"April":625,"Mai":620,"Juni":758,"Juli":361,"August":338,"September":420,"Oktober":980,"November":1183,"Dezember":0}},"B0CXF59BS8":{"title":"Aufbau Haarkur Mandel/Keratin, 250ml","monthly":{"Januar":323,"Februar":332,"März":417,"April":294,"Mai":280,"Juni":357,"Juli":608,"August":555,"September":708,"Oktober":1387,"November":1595,"Dezember":2024}},"B07ZTDLTJJ":{"title":"Jean & Len Conditioner Sensitiv Hafermilch & Baumwolle, für trockenes Haar und empfindliche Kopfhaut","monthly":{"Januar":524,"Februar":573,"März":740,"April":513,"Mai":477,"Juni":582,"Juli":433,"August":416,"September":540,"Oktober":586,"November":614,"Dezember":753}},"B0CWLFXF5X":{"title":"Jean & Len Body Butter Cranberry & Vanille, versorgt die Haut ausreichend mit Feuchtigkeit, zartschm","monthly":{"Januar":1092,"Februar":1126,"März":1469,"April":920,"Mai":849,"Juni":1045,"Juli":926,"August":863,"September":1132,"Oktober":1959,"November":2394,"Dezember":3323}},"B0CN19FVL5":{"title":"Jean & Len Hand & Body Cleanser Bergamot & Cedarwood, für ein duftendes Reinigungserlebnis, Körper- ","monthly":{"Januar":580,"Februar":583,"März":716,"April":498,"Mai":484,"Juni":622,"Juli":632,"August":578,"September":757,"Oktober":1401,"November":1843,"Dezember":2133}},"B0GGZXQ3QW":{"title":"Leichtkämmspray detangle & care, 100 ml","monthly":{"Januar":650,"Februar":700,"März":900,"April":550,"Mai":500,"Juni":650,"Juli":650,"August":700,"September":900,"Oktober":1500,"November":2000,"Dezember":1500}},"B0DPL3BV7L":{"title":"Jean & Len Body Balm Mandel & Baumwolle, Beruhigende Pflege für sensible Haut, mit zartem Duft, crem","monthly":{"Januar":0,"Februar":0,"März":0,"April":0,"Mai":0,"Juni":0,"Juli":0,"August":0,"September":0,"Oktober":0,"November":0,"Dezember":0}},"B092V71TDJ":{"title":"Jean & Len Volumen Shampoo Holunder & Jasmin, für kraftloses und feines Haar, verleiht Volumen, fruc","monthly":{"Januar":900,"Februar":900,"März":1200,"April":900,"Mai":900,"Juni":900,"Juli":0,"August":0,"September":0,"Oktober":0,"November":0,"Dezember":0}},"B0C7LMWQBG":{"title":"After Sun Lotion, 200 ml (Hydro)","monthly":{"Januar":142,"Februar":219,"März":409,"April":408,"Mai":661,"Juni":1326,"Juli":1269,"August":714,"September":536,"Oktober":471,"November":362,"Dezember":399}},"B09YHZ8B3Z":{"title":"Jean & Len Boost Moisture Leave In Pflegespray, für trockenes Haar, mit Anti-Stroh-Effekt, Leave In ","monthly":{"Januar":905,"Februar":939,"März":1210,"April":926,"Mai":952,"Juni":1252,"Juli":0,"August":0,"September":0,"Oktober":0,"November":0,"Dezember":0}},"B07ZTDSPKD":{"title":"Jean & Len Conditioner Repair Kokos & Macadamia, für geschädigtes und kraftloses Haar, repariert Haa","monthly":{"Januar":700,"Februar":750,"März":900,"April":700,"Mai":700,"Juni":900,"Juli":700,"August":750,"September":900,"Oktober":1404,"November":1513,"Dezember":1673}},"B0BJQD8SNL":{"title":"Hand Soap Pfingstrose/Litschi 1,5 L (braun)","monthly":{"Januar":927,"Februar":946,"März":1200,"April":836,"Mai":810,"Juni":1010,"Juli":876,"August":804,"September":1005,"Oktober":1533,"November":2030,"Dezember":2429}},"B08L9SW3DF":{"title":"Jean & Len Exotisches Duschgel Mango & Avocado, vitalisierende Formulierung für ein spürbar geschmei","monthly":{"Januar":700,"Februar":704,"März":894,"April":799,"Mai":789,"Juni":991,"Juli":1101,"August":1091,"September":1529,"Oktober":1840,"November":2108,"Dezember":2473}},"B07XCLTNB7":{"title":"Jean & Len Hand & Body Wash Rosemary und Ginger, reinigt und pflegt die Haut, Würzig-frischer Duft, ","monthly":{"Januar":1036,"Februar":983,"März":1233,"April":914,"Mai":881,"Juni":1077,"Juli":2091,"August":1710,"September":2250,"Oktober":3164,"November":5799,"Dezember":6257}},"B0FG7WGDXH":{"title":"Curling Cream Reiswasser/Acaibeere, 100 ml","monthly":{"Januar":1000,"Februar":1000,"März":1000,"April":1000,"Mai":1000,"Juni":1000,"Juli":1610,"August":1404,"September":1845,"Oktober":3869,"November":4425,"Dezember":5349}},"B092V77QWG":{"title":"Jean & Len Repair Shampoo Keratin & Mandel, für strukturgeschädigtes und widerspenstiges Haar, bändi","monthly":{"Januar":370,"Februar":396,"März":511,"April":324,"Mai":307,"Juni":388,"Juli":359,"August":343,"September":435,"Oktober":0,"November":0,"Dezember":0}},"B0CW928RF3":{"title":"Jean & Len Spa Ceremony Giftbox Cardamom & Tonka, hochwertige Geschenkbox mit 3 hochwertigen Produkt","monthly":{"Januar":18,"Februar":15,"März":20,"April":17,"Mai":12,"Juni":17,"Juli":20,"August":19,"September":26,"Oktober":0,"November":0,"Dezember":0}},"B08FCHHBRV":{"title":"Jean & Len – Handbalsam Baumwolle & Sheabutter, Handpflege für trockene bis sehr trockene Hände, pfl","monthly":{"Januar":963,"Februar":932,"März":1175,"April":801,"Mai":697,"Juni":736,"Juli":542,"August":542,"September":777,"Oktober":1832,"November":3146,"Dezember":3587}},"B0FNX57TT2":{"title":"Jean & Len Home Perfume Peony & Lychee, Raumduft mit zart-blumiger Duftnote, erfrischt mit nur einem","monthly":{"Januar":134,"Februar":133,"März":224,"April":200,"Mai":223,"Juni":270,"Juli":264,"August":200,"September":280,"Oktober":791,"November":0,"Dezember":0}},"B0FZKNTTC8":{"title":"Rebuild Conditioner Almond/Keratin INT, 300 ml","monthly":{"Januar":751,"Februar":809,"März":1038,"April":683,"Mai":644,"Juni":798,"Juli":785,"August":747,"September":1004,"Oktober":1171,"November":1362,"Dezember":1623}},"B0CN3KV3X2":{"title":"Jean & Len Heavenly Hand- & Body Balm Rosemary & Ginger, für ein duftendes Pflegeerlebnis, mit Bio-A","monthly":{"Januar":970,"Februar":934,"März":1144,"April":798,"Mai":767,"Juni":899,"Juli":689,"August":648,"September":860,"Oktober":1367,"November":1884,"Dezember":2410}},"B09DD441WK":{"title":"Jean & Len Shampoo Repair Kokosöl & Macadamia, für geschädigtes & kraftloses Haar, beugt Feuchtigkei","monthly":{"Januar":704,"Februar":734,"März":958,"April":632,"Mai":616,"Juni":799,"Juli":664,"August":616,"September":786,"Oktober":975,"November":1050,"Dezember":1207}},"B0CQM22PGN":{"title":"Jean & Len Verwöhnender Traumschaum Arganöl & Feige, Gel-to-Mousse Technologie, mit Vitamin E und pf","monthly":{"Januar":1031,"Februar":882,"März":1088,"April":715,"Mai":677,"Juni":835,"Juli":630,"August":595,"September":748,"Oktober":1091,"November":1724,"Dezember":2664}},"B0BJQF4MTH":{"title":"Hand  Body Wash Blutorange Vetiver Refill INT 1,5 L","monthly":{"Januar":777,"Februar":783,"März":946,"April":620,"Mai":582,"Juni":720,"Juli":429,"August":410,"September":539,"Oktober":910,"November":1060,"Dezember":1381}},"B092V56CZ8":{"title":"Jean & Len Conditioner Repair Keratin & Mandel, für strukturgeschädigtes Haar, bändigt Frizz und ver","monthly":{"Januar":309,"Februar":339,"März":436,"April":277,"Mai":260,"Juni":324,"Juli":466,"August":429,"September":0,"Oktober":0,"November":0,"Dezember":0}},"B0C8BJQL2J":{"title":"Jean & Len 2in1 Duschgel & Shampoo für Sensibelchen, besonders sanfte Reinigung für Kinderhaut & -ha","monthly":{"Januar":0,"Februar":0,"März":0,"April":0,"Mai":0,"Juni":0,"Juli":0,"August":0,"September":0,"Oktober":0,"November":0,"Dezember":0}},"B0CQM4DMDH":{"title":"Jean & Len Reichhaltiger Traumschaum Kokos & Hafermilch, Gel-to-Mousse Technologie, mit Vitamin E un","monthly":{"Januar":1074,"Februar":1101,"März":1440,"April":943,"Mai":869,"Juni":1072,"Juli":1194,"August":1114,"September":1386,"Oktober":2076,"November":3016,"Dezember":4029}},"B07ZTFFKSF":{"title":"Repair Haarkur Kokosöl/Macadamia, 250 ml","monthly":{"Januar":436,"Februar":442,"März":550,"April":445,"Mai":438,"Juni":553,"Juli":228,"August":217,"September":300,"Oktober":690,"November":769,"Dezember":927}},"B0DG9FM6T4":{"title":"Jean & Len Conditioner Feuchtigkeit Rosemary &Ginger,für stumpfes und glanzloses Haar, pflegt intens","monthly":{"Januar":1274,"Februar":1309,"März":1681,"April":1045,"Mai":963,"Juni":1220,"Juli":1200,"August":1200,"September":1200,"Oktober":969,"November":1021,"Dezember":1125}},"B0BTDVS3WG":{"title":"Jean & Len Traumlocken Conditioner Reiswasser & Açaibeere, für lockiges & welliges Haar, bekämpft Fr","monthly":{"Januar":1243,"Februar":1314,"März":1656,"April":1121,"Mai":1079,"Juni":1379,"Juli":1416,"August":1361,"September":1764,"Oktober":2326,"November":2566,"Dezember":3097}},"B07R6J3WXF":{"title":"Jean & Len Handcreme Pflege für trockene Hände die vegane Pflegeformel verwöhnt Ihre Hände, neutral,","monthly":{"Januar":883,"Februar":824,"März":976,"April":710,"Mai":605,"Juni":618,"Juli":323,"August":308,"September":470,"Oktober":1732,"November":3410,"Dezember":3212}},"B092V68849":{"title":"Jean & Len – Handbalsam Baumwolle & Sheabutter, Handpflege für trockene bis sehr trockene Hände, pfl","monthly":{"Januar":5000,"Februar":3000,"März":3000,"April":2000,"Mai":2000,"Juni":2000,"Juli":2000,"August":2000,"September":2500,"Oktober":8946,"November":19954,"Dezember":17160}},"B0DFCJYQGK":{"title":"Jean & Len Lip Balm Calendula & Jojobaöl, bewahrt die Lippen vor dem Austrocknen, für geschmeidig we","monthly":{"Januar":0,"Februar":0,"März":0,"April":0,"Mai":0,"Juni":0,"Juli":0,"August":0,"September":0,"Oktober":0,"November":0,"Dezember":0}},"B0CQTH9RG9":{"title":"Jean & Len Handseife Rosemary & Ginger, reinigt beanspruchte Hände, für die tägliche Anwendung, Flüs","monthly":{"Januar":2357,"Februar":3191,"März":4031,"April":3198,"Mai":3209,"Juni":4054,"Juli":3715,"August":3371,"September":4459,"Oktober":8053,"November":15154,"Dezember":12266}},"B0CN1G8V9Q":{"title":"Jean & Len Scent Experience Rosemary & Ginger, Eau de Toilette mit Rosmarin & Ingwer Duft, praktisch","monthly":{"Januar":0,"Februar":0,"März":0,"April":0,"Mai":0,"Juni":0,"Juli":0,"August":0,"September":0,"Oktober":0,"November":0,"Dezember":0}},"B0F9L178RJ":{"title":"Eau de Toilette Rosemary/Ginger INT, 10 ml","monthly":{"Januar":794,"Februar":648,"März":795,"April":649,"Mai":810,"Juni":1250,"Juli":1000,"August":1000,"September":1250,"Oktober":1258,"November":2457,"Dezember":3053}},"B0CKT8L144":{"title":"Jean & Len Vitalisierendes Duschgel Zitronenverbene & Minze, sanftes Reinigungserlebnis, für ein spü","monthly":{"Januar":1000,"Februar":1000,"März":1300,"April":1000,"Mai":1000,"Juni":1200,"Juli":1000,"August":1000,"September":1300,"Oktober":1026,"November":1183,"Dezember":1465}},"B0CV42KNY6":{"title":"Jean & Len Haartonikum Rosmarin, wirkt anregend, regt das Haarwachstum an, fettet nicht, kann Haarau","monthly":{"Januar":1378,"Februar":1528,"März":2093,"April":1286,"Mai":1175,"Juni":1511,"Juli":1444,"August":1172,"September":1549,"Oktober":2859,"November":3594,"Dezember":4499}},"B0CKT7Z17V":{"title":"Jean & Len Fruchtiges Duschgel Pfirsich & Maracuja, sanftes Reinigungserlebnis, für ein spürbar weic","monthly":{"Januar":1123,"Februar":1111,"März":1440,"April":1055,"Mai":1044,"Juni":1298,"Juli":1127,"August":957,"September":1158,"Oktober":1440,"November":1802,"Dezember":2296}},"B0BFJ78387":{"title":"Jean & Len Deobalsam Rosemary & Ginger, schenkt auf natürliche Weise bis zu 24h Deo-Schutz, sensitiv","monthly":{"Januar":0,"Februar":0,"März":0,"April":0,"Mai":0,"Juni":0,"Juli":0,"August":0,"September":0,"Oktober":0,"November":0,"Dezember":0}},"B0CP63DPMF":{"title":"Jean & Len Body Ceremony Cardamom & Tonka, mit Hand & Body Cleanser und Hand & Body Balm, hochwertig","monthly":{"Januar":107,"Februar":96,"März":118,"April":84,"Mai":0,"Juni":0,"Juli":0,"August":0,"September":0,"Oktober":0,"November":0,"Dezember":0}},"B0BVWMYMFX":{"title":"Jean & Len Traumlocken Shampoo Reiswasser & Açaibeere, für lockiges & welliges Haar, verleiht Sprung","monthly":{"Januar":2000,"Februar":2000,"März":2400,"April":1800,"Mai":1800,"Juni":2200,"Juli":2000,"August":2000,"September":2400,"Oktober":2913,"November":3237,"Dezember":3877}},"B0984DPVFJ":{"title":"Jean & Len Handseife Blutorange & Vetiver, reinigt Hände sanft, Flüssigseife im Pumpspender für rein","monthly":{"Januar":1800,"Februar":1800,"März":2350,"April":1600,"Mai":1500,"Juni":1800,"Juli":1800,"August":1800,"September":2350,"Oktober":2770,"November":3152,"Dezember":3881}},"B085Z1SP6J":{"title":"Jean & Len Hand & Body Wash Rosemary und Ginger im Nachfüllbeutel, reinigt und pflegt die Haut, würz","monthly":{"Januar":6500,"Februar":6500,"März":8000,"April":6500,"Mai":6500,"Juni":8000,"Juli":6500,"August":6500,"September":8000,"Oktober":10372,"November":15848,"Dezember":16429}},"B0984CRTYQ":{"title":"Hand Soap Peony/Lychee INT, 250 ml","monthly":{"Januar":1600,"Februar":1600,"März":2000,"April":1500,"Mai":1400,"Juni":1600,"Juli":1600,"August":1600,"September":2000,"Oktober":3236,"November":5717,"Dezember":6025}},"B08KYYP625":{"title":"Jean & Len Feuchtigkeit Shampoo Rosemary & Ginger, für trockenes und sprödes Haar, mit Feuchtigkeits","monthly":{"Januar":1178,"Februar":1213,"März":1583,"April":1036,"Mai":964,"Juni":1209,"Juli":1200,"August":1200,"September":1200,"Oktober":2134,"November":2799,"Dezember":3118}},"B078VBX61T":{"title":"Jean & Len Handseife Rosemary & Ginger, INT reinigt beanspruchte Hände, für die tägliche Anwendung, ","monthly":{"Januar":7500,"Februar":7500,"März":9000,"April":7500,"Mai":7500,"Juni":9000,"Juli":8203,"August":8159,"September":9875,"Oktober":9715,"November":11398,"Dezember":14118}},"B0GN8RY1JT":{"title":"Hitzeschutzspray protect & care, 100 ml","monthly":{"Januar":466,"Februar":473,"März":588,"April":385,"Mai":364,"Juni":473,"Juli":1368,"August":1204,"September":1620,"Oktober":4217,"November":5305,"Dezember":6402}},"B0CNH6T29Y":{"title":"Jean & Len Shower Soufflé Cardamom & Tonka, Mandel-, Jojoba- und Babussaöl, für ein duftendes Reinig","monthly":{"Januar":367,"Februar":346,"März":422,"April":282,"Mai":263,"Juni":333,"Juli":0,"August":0,"September":0,"Oktober":0,"November":0,"Dezember":0}},"B0DF7QFSZ8":{"title":"Hand & Body Balm Bergamot/Cedarwood INT, 500 ml","monthly":{"Januar":558,"Februar":594,"März":783,"April":488,"Mai":443,"Juni":543,"Juli":443,"August":410,"September":521,"Oktober":1179,"November":1375,"Dezember":1767}},"B0DM6L4RSK":{"title":"Jean & Len Hydrating Liquid Toner, für jeden Hauttyp geeignet, besonders sanft zum Hautmikrobiom, id","monthly":{"Januar":99,"Februar":108,"März":131,"April":76,"Mai":70,"Juni":87,"Juli":153,"August":120,"September":159,"Oktober":562,"November":828,"Dezember":846}},"B0DN6HL2MM":{"title":"Jean & Len Refreshing Gel Cleanser, ideal für jeden Hauttyp, ölfreie Gel-Textur, schonende Reinigung","monthly":{"Januar":352,"Februar":360,"März":430,"April":235,"Mai":211,"Juni":284,"Juli":554,"August":522,"September":668,"Oktober":965,"November":1048,"Dezember":1299}},"B0DS2S8TL2":{"title":"Jean & Len Exotische Body Butter Mango & Avocado, pflegt trockene bis sehr trockene Haut intensiv, p","monthly":{"Januar":361,"Februar":387,"März":505,"April":291,"Mai":249,"Juni":320,"Juli":370,"August":308,"September":397,"Oktober":657,"November":825,"Dezember":843}},"B0FKBNT74V":{"title":"Handseife Pfingstrose/Litschi Nachfüllpack, 500ml","monthly":{"Januar":250,"Februar":250,"März":250,"April":250,"Mai":250,"Juni":250,"Juli":769,"August":571,"September":753,"Oktober":1339,"November":1519,"Dezember":1812}},"B0DS2V2N7B":{"title":"Jean & Len Verwöhnende Body Butter Arganöl & Feige, pflegt trockene bis sehr trockene Haut intensiv,","monthly":{"Januar":284,"Februar":302,"März":383,"April":225,"Mai":189,"Juni":240,"Juli":549,"August":459,"September":591,"Oktober":929,"November":1309,"Dezember":1703}},"B08NKV8ZV6":{"title":"Jean & Len Handseife Neroli & Jasmin, reinigt Hände sanft, Flüssigseife im Pumpspender für reine und","monthly":{"Januar":1358,"Februar":1339,"März":1647,"April":1175,"Mai":1175,"Juni":1487,"Juli":1373,"August":1255,"September":1624,"Oktober":2289,"November":3053,"Dezember":3917}},"B0CW9NK5ZF":{"title":"Jean & Len Spa Ceremony Giftbox Peony & Lychee, hochwertige Geschenkbox mit 3 hochwertigen Produkten","monthly":{"Januar":66,"Februar":68,"März":92,"April":58,"Mai":51,"Juni":59,"Juli":102,"August":98,"September":136,"Oktober":588,"November":0,"Dezember":0}},"B0DS64RLCV":{"title":"Jean & Len Hand- & Nagelcreme Mango & Avocado, vegane Pflegeformel mit Shea- und Kakaobutter, reichh","monthly":{"Januar":414,"Februar":519,"März":732,"April":258,"Mai":171,"Juni":240,"Juli":393,"August":372,"September":464,"Oktober":1169,"November":1498,"Dezember":2118}},"B0DS66NDMR":{"title":"Jean & Len Handcreme Pfingstrose & Litschi, spendet normalen & trockenen Händen Feuchtigkeit, mit Pr","monthly":{"Januar":1186,"Februar":1210,"März":1440,"April":711,"Mai":580,"Juni":746,"Juli":639,"August":578,"September":755,"Oktober":2056,"November":3050,"Dezember":3663}},"B0DS66SYGG":{"title":"Jean & Len Handcreme Kamille & Olivenöl, vegane Pflegeformel mit Bio-Kamillenblüten Extrakt & Oliven","monthly":{"Januar":405,"Februar":408,"März":494,"April":247,"Mai":212,"Juni":303,"Juli":96,"August":89,"September":113,"Oktober":678,"November":1141,"Dezember":1953}},"B0CP64J5KM":{"title":"Jean & Len Hand Ceremony Cardamom & Tonka, mit Hand & Body Cleanser und Hand Treatment, hochwertige ","monthly":{"Januar":56,"Februar":47,"März":64,"April":36,"Mai":30,"Juni":36,"Juli":6,"August":6,"September":8,"Oktober":22,"November":51,"Dezember":105}},"B0FSF7LY12":{"title":"Jean & Len Kalender Cover 2026 aus veganem Leder, nachhaltiger & robuster Umschlag für die Kalenderh","monthly":{"Januar":8,"Februar":6,"März":6,"April":3,"Mai":3,"Juni":0,"Juli":2,"August":0,"September":0,"Oktober":0,"November":0,"Dezember":0}},"B0DX7BXQD7":{"title":"Jean & Len Sehr geile Handcreme Rosemary & Ginger, mit Urea, Handpflege für trockene & rissige Hände","monthly":{"Januar":0,"Februar":0,"März":0,"April":0,"Mai":0,"Juni":0,"Juli":0,"August":0,"September":0,"Oktober":0,"November":0,"Dezember":0}},"B0CNH7Y3MH":{"title":"Jean & Len Shower Soufflé Peony & Lychee, mit Mandel-, Jojoba- und Babussaöl, für ein duftendes Rein","monthly":{"Januar":501,"Februar":536,"März":718,"April":0,"Mai":0,"Juni":0,"Juli":0,"August":0,"September":0,"Oktober":0,"November":0,"Dezember":0}},"B0FBWWMWSZ":{"title":"Jean & Len Mystische Duschcreme Cassis & Weiße Blüte, reinigt die Haut sanft und schonend, für trock","monthly":{"Januar":637,"Februar":620,"März":897,"April":1091,"Mai":958,"Juni":943,"Juli":1197,"August":1050,"September":1373,"Oktober":1957,"November":2401,"Dezember":2874}},"B0FBWX94KF":{"title":"Jean & Len Sensitiver Duschbalsam Mandelöl & Sheabutter, reinigt die Haut sanft und schonend, für tr","monthly":{"Januar":530,"Februar":523,"März":761,"April":929,"Mai":826,"Juni":817,"Juli":919,"August":810,"September":1021,"Oktober":1861,"November":2089,"Dezember":2485}},"B0FFBH2MXN":{"title":"Jean & Len Energizing Shower Gel To Mousse Bergamot & Cedarwood, mit Mandel-, Jojoba- & Babassuöl, f","monthly":{"Januar":513,"Februar":521,"März":646,"April":772,"Mai":621,"Juni":556,"Juli":541,"August":384,"September":455,"Oktober":1758,"November":2568,"Dezember":3144}},"B0FGK262L4":{"title":"Jean & Len Haarparfum you blossom my heart, duftet nach Blüten & roten Früchten, pflegende Formel, f","monthly":{"Januar":500,"Februar":500,"März":500,"April":700,"Mai":700,"Juni":700,"Juli":607,"August":548,"September":674,"Oktober":4470,"November":6164,"Dezember":8704}},"B0F9KXYRDG":{"title":"Jean & Len Hand & Body Cleanser Marrakech Garden, für ein duftendes Reinigungserlebnis, Körper- & Ha","monthly":{"Januar":100,"Februar":100,"März":100,"April":100,"Mai":100,"Juni":100,"Juli":417,"August":335,"September":448,"Oktober":525,"November":706,"Dezember":768}},"B0FGJZYL5K":{"title":"Jean & Len Shimmering Dry Oil, verleiht einen Bronze-Schimmer, pflegendes Trockenöl für Körper, Gesi","monthly":{"Januar":200,"Februar":200,"März":250,"April":250,"Mai":300,"Juni":300,"Juli":258,"August":170,"September":198,"Oktober":205,"November":224,"Dezember":218}},"B0F9L1FBBN":{"title":"Jean & Len Hand & Body Cleanser Lemonverbena & Mint, für ein duftendes Reinigungserlebnis, Körper- &","monthly":{"Januar":100,"Februar":100,"März":100,"April":100,"Mai":100,"Juni":100,"Juli":434,"August":354,"September":461,"Oktober":564,"November":724,"Dezember":814}},"B0FSF6VHDJ":{"title":"Jean & Len Kalender 2026, flexibles Planersystem mit Halbjahresheften & Jahresübersicht, Fokus-Feld ","monthly":{"Januar":11,"Februar":8,"März":7,"April":4,"Mai":4,"Juni":4,"Juli":4,"August":3,"September":5,"Oktober":0,"November":0,"Dezember":0}},"B0F9KZKSL4":{"title":"Jean & Len Hand & Body Cleanser Pink Pepper & Dark Rose, für ein duftendes Reinigungserlebnis, Körpe","monthly":{"Januar":100,"Februar":100,"März":100,"April":100,"Mai":100,"Juni":100,"Juli":388,"August":307,"September":400,"Oktober":668,"November":1020,"Dezember":1162}},"B0CNH86WTH":{"title":"Jean & Len Shower Soufflé Rosemary & Ginger, mit Mandel-, Jojoba- und Babussaöl, für ein duftendes R","monthly":{"Januar":554,"Februar":537,"März":0,"April":0,"Mai":0,"Juni":0,"Juli":0,"August":0,"September":0,"Oktober":0,"November":0,"Dezember":0}},"B0F9KYNP5G":{"title":"Jean & Len Silky & Rich Hand Treatment Bergamot & Cedarwood, 100% recyclebare Alutube (ohne Deckel),","monthly":{"Januar":100,"Februar":100,"März":100,"April":130,"Mai":130,"Juni":130,"Juli":65,"August":59,"September":71,"Oktober":681,"November":804,"Dezember":1058}},"B0F92Y8HCZ":{"title":"Handcreme Ceramide/Sheabutter mit Tray, 75 ml","monthly":{"Januar":150,"Februar":150,"März":200,"April":300,"Mai":250,"Juni":200,"Juli":778,"August":648,"September":857,"Oktober":2158,"November":3219,"Dezember":3473}},"B0DS6HBQHW":{"title":"Jean & Len Shampoo Anti-Haarbruch Mango & Avocado, für langes & brüchiges Haar, regeneriert beanspru","monthly":{"Januar":383,"Februar":394,"März":457,"April":240,"Mai":214,"Juni":301,"Juli":394,"August":366,"September":458,"Oktober":589,"November":593,"Dezember":717}},"B0DS6DKL8B":{"title":"Jean & Len Frische Shampoo Grüner Tee & Limette, für normales bis schnell fettendes Haar, schützt vo","monthly":{"Januar":240,"Februar":270,"März":338,"April":179,"Mai":159,"Juni":208,"Juli":649,"August":549,"September":648,"Oktober":923,"November":1435,"Dezember":1631}},"B0CWHCVBD3":{"title":"Jean & Len Lockentraum Conditioner Mango & Matcha, bändigt widerspenstiges und krauses Haar, verring","monthly":{"Januar":494,"Februar":534,"März":0,"April":0,"Mai":0,"Juni":0,"Juli":0,"August":0,"September":0,"Oktober":0,"November":0,"Dezember":0}},"B0FFQNJ2T1":{"title":"Jean & Len Haarparfum you’re my coco vanilla, duftet nach Kokos & süßer Vanille, pflegende Formel, f","monthly":{"Januar":1594,"Februar":1612,"März":5473,"April":4394,"Mai":4449,"Juni":5544,"Juli":4600,"August":4498,"September":5674,"Oktober":11005,"November":15139,"Dezember":20916}},"B0FNNCDZX7":{"title":"Jean & Len Handseife Bergamot & Cedarwood im Nachfüllpack, reinigt beanspruchte Hände, für die tägli","monthly":{"Januar":1068,"Februar":1045,"März":1409,"April":1110,"Mai":1330,"Juni":1669,"Juli":1431,"August":1350,"September":1835,"Oktober":4441,"November":5010,"Dezember":5932}},"B0FNX8SCL5":{"title":"Jean & Len Home Perfume Cardamom & Tonka, Raumduft mit sanft-würziger Duftnote, erfrischt mit nur ei","monthly":{"Januar":166,"Februar":163,"März":271,"April":241,"Mai":0,"Juni":0,"Juli":0,"August":0,"September":0,"Oktober":0,"November":0,"Dezember":0}},"B0FNMYF1TS":{"title":"Jean & Len Trockenshampoo Volumen, leicht auszubürsten, sorgt für Textur & Griffigkeit, mit sofort F","monthly":{"Januar":522,"Februar":542,"März":700,"April":566,"Mai":595,"Juni":718,"Juli":626,"August":575,"September":716,"Oktober":1390,"November":1346,"Dezember":1441}},"B0FNMRFJLZ":{"title":"Jean & Len Sea Salt Spray für Volumen, Fülle & Griffigkeit, mit Meersalz & Algen-Extrakt, für Beachw","monthly":{"Januar":603,"Februar":615,"März":793,"April":628,"Mai":669,"Juni":799,"Juli":695,"August":635,"September":779,"Oktober":3791,"November":4524,"Dezember":5756}},"B0FHY72J9Q":{"title":"Trockenshampoo pump up my volume, 200 ml (Blümchen)","monthly":{"Januar":881,"Februar":980,"März":800,"April":0,"Mai":0,"Juni":0,"Juli":0,"August":0,"September":0,"Oktober":0,"November":0,"Dezember":0}},"B0FNMKPTJ8":{"title":"Jean & Len Curling Mousse, für definierte Locken mit Sprungkraft, bändigt Frizz, mit Vitamin E & Pan","monthly":{"Januar":497,"Februar":514,"März":664,"April":530,"Mai":557,"Juni":670,"Juli":573,"August":527,"September":653,"Oktober":3045,"November":3606,"Dezember":4369}},"B0FQJQ19H6":{"title":"Jean & Len Hand & Body Cleanser Cardamom & Tonka im Nachfüllbeutel, für ein duftendes Reinigungserle","monthly":{"Januar":171,"Februar":182,"März":255,"April":212,"Mai":253,"Juni":319,"Juli":277,"August":227,"September":327,"Oktober":861,"November":969,"Dezember":1123}},"B0FNNGZYB1":{"title":"Jean & Len Verwöhnender Duschschaum Cranberry & Feige, samtweiches Hautgefühl, fruchtiger Duft, Gel-","monthly":{"Januar":405,"Februar":406,"März":562,"April":460,"Mai":547,"Juni":735,"Juli":694,"August":539,"September":716,"Oktober":2111,"November":2859,"Dezember":3621}},"B0FNMKN7T8":{"title":"Jean & Len Trockenshampoo my sensitive secret, für sensible Kopfhaut, mit Baumwoll-Extrakt & Panthen","monthly":{"Januar":359,"Februar":380,"März":501,"April":408,"Mai":435,"Juni":531,"Juli":464,"August":426,"September":538,"Oktober":2609,"November":3242,"Dezember":3935}},"B0FKN32FKC":{"title":"Jean & Len Sensitiv Sonnenschutzfluid LSF 50, leicht & schnell einziehend, für sensible Haut, ohne M","monthly":{"Januar":45,"Februar":49,"März":86,"April":91,"Mai":149,"Juni":233,"Juli":173,"August":136,"September":119,"Oktober":173,"November":161,"Dezember":187}},"B0F9L1BB7R":{"title":"Jean & Len Eau de Toilette Lily of the Valley, Eau de Toilette mit Maiglöckchen-Duft, praktisches mi","monthly":{"Januar":132,"Februar":130,"März":182,"April":163,"Mai":169,"Juni":221,"Juli":217,"August":187,"September":239,"Oktober":520,"November":937,"Dezember":1208}},"B0CWHBWD8S":{"title":"Jean & Len Lockentraum Shampoo Mango & Matcha, bändigt widerspenstiges und krauses Haar, verringert ","monthly":{"Januar":605,"Februar":0,"März":0,"April":0,"Mai":0,"Juni":0,"Juli":0,"August":0,"September":0,"Oktober":0,"November":0,"Dezember":0}},"B0FNMYGK28":{"title":"Jean & Len 7in1 Trockenshampoo, ohne weiße Rückstände, für Volumen & Frische, mit UV-Filter, pflegen","monthly":{"Januar":365,"Februar":382,"März":494,"April":405,"Mai":432,"Juni":524,"Juli":473,"August":431,"September":551,"Oktober":2389,"November":2799,"Dezember":3456}},"B0FNNGWXC4":{"title":"Jean & Len Vitalisierendes Duschgel Zitronengras & Minze, sanftes Reinigungserlebnis, für ein spürba","monthly":{"Januar":533,"Februar":529,"März":719,"April":589,"Mai":724,"Juni":1032,"Juli":956,"August":755,"September":978,"Oktober":2213,"November":2721,"Dezember":2800}},"B0CWL5Q911":{"title":"Jean & Len Duschgel Cranberry & Vanille, pH-hautideal, belebendes Duscherlebnis, mit Cranberry- und ","monthly":{"Januar":1432,"Februar":0,"März":0,"April":0,"Mai":0,"Juni":0,"Juli":0,"August":0,"September":0,"Oktober":0,"November":0,"Dezember":0}},"B0FP2RYYV3":{"title":"Jean & Len Frische Shampoo Green Apple & Lemongrass, für fettige Haare, stellt das natürliche Gleich","monthly":{"Januar":303,"Februar":313,"März":415,"April":354,"Mai":389,"Juni":473,"Juli":485,"August":401,"September":520,"Oktober":1642,"November":1938,"Dezember":2303}},"B0FNNFTF57":{"title":"Jean & Len Sanfte Duschcreme Mandelblüte & Reismilch, für trockene & empfindliche Haut, zart-süßer D","monthly":{"Januar":482,"Februar":479,"März":649,"April":535,"Mai":664,"Juni":942,"Juli":876,"August":682,"September":896,"Oktober":2718,"November":3107,"Dezember":3167}},"B0FNMRF1QP":{"title":"Jean & Len Leave-In Haarmaske Peptide Bond Repair, für strapaziertes & geschädigtes Haar, rekonstrui","monthly":{"Januar":188,"Februar":192,"März":0,"April":0,"Mai":0,"Juni":0,"Juli":0,"August":0,"September":0,"Oktober":0,"November":0,"Dezember":0}},"B0FXN32P7Q":{"title":"Jean & Len Leave-In Haarmaske Peptide Bond Repair, für strapaziertes & geschädigtes Haar, rekonstrui","monthly":{"Januar":160,"Februar":188,"März":268,"April":252,"Mai":288,"Juni":386,"Juli":313,"August":359,"September":426,"Oktober":4860,"November":7136,"Dezember":9488}},"B0FNND8V9B":{"title":"Jean & Len Body Milk Ceramide Complex & Kokosöl, reichhaltige Textur, hautbarrierestärkende Pflegefo","monthly":{"Januar":329,"Februar":325,"März":445,"April":371,"Mai":422,"Juni":563,"Juli":539,"August":430,"September":561,"Oktober":1031,"November":1188,"Dezember":1355}},"B0FNMZ11K1":{"title":"Jean & Len Anti-Schuppen Shampoo Thymian & Minze, vegane Pflegeformel, mit Piroctone Olamine, gegen ","monthly":{"Januar":176,"Februar":180,"März":245,"April":211,"Mai":230,"Juni":279,"Juli":250,"August":229,"September":293,"Oktober":875,"November":939,"Dezember":1177}},"B0FNX7RF9V":{"title":"Jean & Len Home Perfume Bergamot & Cedarwood, Raumduft mit spritzig-herber Duftnote, erfrischt mit n","monthly":{"Januar":183,"Februar":182,"März":301,"April":0,"Mai":0,"Juni":0,"Juli":0,"August":0,"September":0,"Oktober":0,"November":0,"Dezember":0}},"B0FP2Y7SZX":{"title":"Jean & Len Deo Roll-On 5in1 protect, mit Aloe Vera-Extrakt, für wirksamen 48h Geruchschutz, hinterlä","monthly":{"Januar":416,"Februar":401,"März":545,"April":464,"Mai":561,"Juni":706,"Juli":742,"August":633,"September":829,"Oktober":662,"November":711,"Dezember":821}},"B0FNX6DLRT":{"title":"Jean & Len Home Perfume Rosemary & Ginger, Raumduft mit würzig-frischer Duftnote, erfrischt mit nur ","monthly":{"Januar":323,"Februar":0,"März":0,"April":0,"Mai":0,"Juni":0,"Juli":0,"August":0,"September":0,"Oktober":0,"November":0,"Dezember":0}},"B0FPQ9D6BW":{"title":"Jean & Len Colorwaschmittel Wasserlilie & Lotus, Farb- und Faserschonend, mit pflanzenbasierten Tens","monthly":{"Januar":359,"Februar":371,"März":579,"April":485,"Mai":514,"Juni":593,"Juli":599,"August":495,"September":590,"Oktober":3523,"November":3585,"Dezember":4135}},"B0FPGDZXQ1":{"title":"Jean & Len Holztablett rechteckig aus Akazienholz, vielseitig einsetzbar für Accessoires & Büro, sty","monthly":{"Januar":43,"Februar":38,"März":45,"April":34,"Mai":36,"Juni":36,"Juli":32,"August":32,"September":54,"Oktober":1161,"November":1888,"Dezember":2655}},"B0F3FXYVLP":{"title":"Jean & Len Scented Candle Manuka Honey & Vanilla, hergestellt mit Sheabutter, Brenndauer ca. 40 Stun","monthly":{"Januar":700,"Februar":700,"März":1910,"April":1542,"Mai":1542,"Juni":2173,"Juli":1757,"August":1758,"September":2229,"Oktober":6198,"November":16193,"Dezember":23484}},"B0FPGGP951":{"title":"Jean & Len Aufbewahrungskorb, rund, aus Baumwolle und Stroh, vielseitig einsetzbar für Handtücher, K","monthly":{"Januar":53,"Februar":51,"März":304,"April":249,"Mai":246,"Juni":331,"Juli":350,"August":351,"September":459,"Oktober":800,"November":1175,"Dezember":1655}},"B0FQW9P97N":{"title":"Jean & Len Kopfhaut Peeling Pink Grapefruit & Spirulina, mit Apfelessig & Niacinamiden, sanftes Scal","monthly":{"Januar":240,"Februar":263,"März":371,"April":304,"Mai":340,"Juni":414,"Juli":405,"August":329,"September":436,"Oktober":2497,"November":2839,"Dezember":3543}},"B0F3FTVY5D":{"title":"Jean & Len Scented Room Diffusor Green Tea & Citrus, Raumduft mit Rattan-Stäbchen, sorgt 6 Wochen fü","monthly":{"Januar":346,"Februar":417,"März":1525,"April":1256,"Mai":1266,"Juni":1597,"Juli":1354,"August":1339,"September":1711,"Oktober":4781,"November":5918,"Dezember":7566}},"B0FPGGJ86H":{"title":"Jean & Len Aufbewahrungskorb, rechteckig, aus Seegras, vielseitig einsetzbar für Handtücher, Kosmeti","monthly":{"Januar":24,"Februar":24,"März":32,"April":27,"Mai":28,"Juni":32,"Juli":29,"August":28,"September":45,"Oktober":568,"November":678,"Dezember":936}},"B0CRZ2JRB2":{"title":"Jean & Len Sensitiv 2in1 Sonnenschutz für Lippen & Gesicht 50+ LSF wasserfest, hoher Sofortschutz fü","monthly":{"Januar":0,"Februar":0,"März":0,"April":0,"Mai":0,"Juni":0,"Juli":0,"August":0,"September":0,"Oktober":0,"November":0,"Dezember":0}},"B0FQJT2X2K":{"title":"Jean & Len Duschpeeling Mango & Avocado, mit natürlichen Peelingkörpern, sanfte Reinigung, kann eing","monthly":{"Januar":239,"Februar":273,"März":400,"April":332,"Mai":377,"Juni":462,"Juli":458,"August":363,"September":474,"Oktober":982,"November":1140,"Dezember":1379}},"B0DNK1MBNH":{"title":"Jean & Len Handcreme I Love You Berry Much, für normale bis trockene Hände, versorgt die Hände mit F","monthly":{"Januar":250,"Februar":0,"März":0,"April":0,"Mai":0,"Juni":0,"Juli":0,"August":0,"September":0,"Oktober":0,"November":0,"Dezember":0}},"B0FR4XGYHD":{"title":"Jean & Len Hand Balm Rosemary & Ginger, mit Bio-Arganöl, Sheabutter und Vitamin E für eine weiche Ha","monthly":{"Januar":103,"Februar":105,"März":130,"April":89,"Mai":90,"Juni":90,"Juli":87,"August":70,"September":107,"Oktober":2934,"November":3711,"Dezember":4520}},"B0FNX8Q8JW":{"title":"Jean & Len Scented Room Diffusor Lotus & Waterlily, Raumduft mit Rattan-Stäbchen, sorgt 6 Wochen für","monthly":{"Januar":320,"Februar":329,"März":543,"April":497,"Mai":564,"Juni":710,"Juli":694,"August":581,"September":812,"Oktober":1549,"November":1649,"Dezember":2219}},"B0FPGL8Q5S":{"title":"Jean & Len Holz Organizer aus Akazienholz, stilvolle Aufbewahrung für Kosmetika, Accessoires & Büro,","monthly":{"Januar":19,"Februar":12,"März":567,"April":458,"Mai":453,"Juni":611,"Juli":660,"August":652,"September":833,"Oktober":1454,"November":1942,"Dezember":2710}},"B0FQWLKBK1":{"title":"Jean & Len Conditioner Pfirsich & Chiasamen, für trockenes Haar, vegane Haarpflege mit Pfirsich- & C","monthly":{"Januar":49,"Februar":58,"März":93,"April":81,"Mai":94,"Juni":109,"Juli":113,"August":80,"September":107,"Oktober":799,"November":921,"Dezember":1089}},"B0F3G8QRPQ":{"title":"Jean & Len Scented Room Diffusor Basil Mint & Eucalyptus, Raumduft mit Rattan-Stäbchen, sorgt 6 Woch","monthly":{"Januar":269,"Februar":279,"März":442,"April":398,"Mai":478,"Juni":582,"Juli":634,"August":548,"September":839,"Oktober":1897,"November":2262,"Dezember":2838}},"B0FQVQD5T1":{"title":"Jean & Len Shampoo Pink Grapefruit & Spirulina, reinigt Haar & Kopfhaut gründlich, befreit von Talg ","monthly":{"Januar":700,"Februar":700,"März":1938,"April":1584,"Mai":1592,"Juni":2238,"Juli":1813,"August":1803,"September":2275,"Oktober":4770,"November":5477,"Dezember":7274}},"B0FQWG8DHC":{"title":"Jean & Len Colorglow Shampoo für coloriertes Haar, mit Granatapfel-, Rosenblütenextrakt & Panthenol,","monthly":{"Januar":85,"Februar":98,"März":152,"April":135,"Mai":162,"Juni":192,"Juli":191,"August":148,"September":198,"Oktober":1110,"November":1252,"Dezember":1609}},"B0F3G68K5Q":{"title":"Jean & Len Scented Room Diffusor Manuka Honey & Vanilla, Raumduft mit Rattan-Stäbchen, sorgt 6 Woche","monthly":{"Januar":226,"Februar":239,"März":388,"April":324,"Mai":368,"Juni":485,"Juli":548,"August":415,"September":635,"Oktober":5480,"November":6130,"Dezember":5989}},"B0FPGJ7SJL":{"title":"Jean & Len Aufbewahrungskorb, rund, aus Baumwolle und Binsen, vielseitig einsetzbar für Handtücher, ","monthly":{"Januar":13,"Februar":12,"März":17,"April":13,"Mai":13,"Juni":15,"Juli":15,"August":13,"September":20,"Oktober":386,"November":543,"Dezember":686}},"B0FQVQFVVG":{"title":"Jean & Len Feuchtigkeits Shampoo Pfirsich & Chiasamen, für trockenes Haar, spendet 72h intensive Feu","monthly":{"Januar":60,"Februar":70,"März":111,"April":94,"Mai":109,"Juni":125,"Juli":129,"August":90,"September":125,"Oktober":1016,"November":1128,"Dezember":1381}},"B0F3G5LWNH":{"title":"Jean & Len Scented Candle Grey Vetiver & Cedarwood, hergestellt mit Sheabutter, Brenndauer ca. 40 St","monthly":{"Januar":53,"Februar":51,"März":72,"April":49,"Mai":52,"Juni":60,"Juli":73,"August":58,"September":92,"Oktober":373,"November":490,"Dezember":703}},"B0F3FZR76V":{"title":"Jean & Len Scented Candle Green Tea & Citrus, hergestellt mit Sheabutter, Brenndauer ca. 40 Stunden,","monthly":{"Januar":59,"Februar":55,"März":77,"April":51,"Mai":53,"Juni":60,"Juli":70,"August":59,"September":95,"Oktober":2165,"November":5078,"Dezember":7351}},"B0F3FXTMKF":{"title":"Jean & Len Scented Room Diffusor Grey Vetiver & Cedarwood, Raumduft mit Rattan-Stäbchen, sorgt 6 Woc","monthly":{"Januar":292,"Februar":300,"März":469,"April":397,"Mai":459,"Juni":563,"Juli":653,"August":480,"September":737,"Oktober":1678,"November":2112,"Dezember":2458}},"B0F3FLY3JS":{"title":"Jean & Len Scented Candle Basil Mint & Eucalyptus, hergestellt mit Sheabutter, Brenndauer ca. 40 Stu","monthly":{"Januar":45,"Februar":43,"März":711,"April":580,"Mai":581,"Juni":724,"Juli":638,"August":683,"September":869,"Oktober":2131,"November":3543,"Dezember":4197}},"B0FP2TYBS9":{"title":"Jean & Len Sensitive Sonnenmilch LSF 50 wasserfest, Sofortschutz für Gesicht & Körper mit Vitamin E,","monthly":{"Januar":50,"Februar":100,"März":300,"April":350,"Mai":500,"Juni":1000,"Juli":600,"August":300,"September":300,"Oktober":797,"November":744,"Dezember":1004}},"B0CV4GJ575":{"title":"Hitzeschutz-Spray Mango, 100ml","monthly":{"Januar":1665,"Februar":0,"März":0,"April":0,"Mai":0,"Juni":0,"Juli":0,"August":0,"September":0,"Oktober":0,"November":0,"Dezember":0}},"B0FPM8KL76":{"title":"Jean & Len Duschvorhang beige, 100% Polyester, hochwertige Leinenoptik, geeignet für Maschinenwäsche","monthly":{"Januar":5,"Februar":4,"März":57,"April":66,"Mai":65,"Juni":81,"Juli":66,"August":85,"September":107,"Oktober":478,"November":555,"Dezember":775}},"B0F3G2MWM4":{"title":"Jean & Len Scented Candle Sea Salt & Coconut, hergestellt mit Sheabutter, Brenndauer ca. 40 Stunden,","monthly":{"Januar":55,"Februar":51,"März":73,"April":50,"Mai":53,"Juni":59,"Juli":71,"August":58,"September":87,"Oktober":772,"November":1031,"Dezember":1619}},"B0FNX5W1BL":{"title":"Jean & Len Scented Candle Lotus & Waterlily, hergestellt mit Sheabutter, Brenndauer ca. 40 Stunden, ","monthly":{"Januar":59,"Februar":56,"März":71,"April":47,"Mai":47,"Juni":50,"Juli":54,"August":41,"September":64,"Oktober":1938,"November":2733,"Dezember":4220}},"B0FPGK6XGW":{"title":"Jean & Len Duschpeeling Hafermilch & Kokos, mit Peeling-Partikel aus Kokosnussschalen, entfernt Haut","monthly":{"Januar":213,"Februar":263,"März":442,"April":360,"Mai":517,"Juni":622,"Juli":701,"August":517,"September":624,"Oktober":1332,"November":1579,"Dezember":2106}},"B0FPM97YN3":{"title":"Jean & Len Kosmetikspiegel, aus Eisen, robust und kratzfest, mattes & stilvolles Finish in beige, Rü","monthly":{"Januar":4,"Februar":3,"März":375,"April":300,"Mai":300,"Juni":500,"Juli":400,"August":400,"September":500,"Oktober":509,"November":760,"Dezember":991}},"B0FQWTDWPQ":{"title":"Jean & Len Colorglow Conditioner für coloriertes Haar, mit Granatapfel-, Rosenblütenextrakt & Panthe","monthly":{"Januar":51,"Februar":62,"März":108,"April":88,"Mai":113,"Juni":128,"Juli":133,"August":91,"September":125,"Oktober":957,"November":1060,"Dezember":1265}},"B0F5BQGJ4Q":{"title":"Jean & Len Body Lotion Arganöl & Feige, für alle Hauttypen, leichte Textur, zieht schnell ein, verwö","monthly":{"Januar":180,"Februar":186,"März":255,"April":214,"Mai":230,"Juni":290,"Juli":238,"August":212,"September":253,"Oktober":481,"November":594,"Dezember":774}},"B0F4KSKKXL":{"title":"Jean & Len Lip Balm Beere, bewahrt die Lippenhaut vor dem Austrocknen, mit natürlichen Wachsen, mit ","monthly":{"Januar":218,"Februar":227,"März":385,"April":309,"Mai":409,"Juni":512,"Juli":411,"August":411,"September":510,"Oktober":683,"November":860,"Dezember":1267}},"B0DS6HRXJM":{"title":"Jean & Len Lip Balm Glow Bomb Hydro Care, bewahrt die Lippen vor dem Austrocknen, mit 1% tiefenwirks","monthly":{"Januar":45,"Februar":42,"März":55,"April":48,"Mai":49,"Juni":60,"Juli":65,"August":40,"September":51,"Oktober":113,"November":149,"Dezember":171}},"B0DJDFGYCW":{"title":"Sehr geile Handcreme Rosemary/Ginger Christmas mit Tray, 75 ml 2025","monthly":{"Januar":1000,"Februar":700,"März":500,"April":500,"Mai":400,"Juni":400,"Juli":300,"August":300,"September":400,"Oktober":2726,"November":8228,"Dezember":9787}},"B0FXMW8N13":{"title":"Jean & Len Haarparfum You’re My Cutie Chai, pflegende Formulierung mit Aminosäuren & Panthenol, wint","monthly":{"Januar":543,"Februar":250,"März":834,"April":754,"Mai":760,"Juni":950,"Juli":844,"August":864,"September":1095,"Oktober":3686,"November":7682,"Dezember":10290}},"B0FYGZGDZ5":{"title":"Jean & Len Seifenspender aus Steingut, matte Optik und weiche Haptik, große Füllmenge von 400 ml, id","monthly":{"Januar":102,"Februar":101,"März":102,"April":101,"Mai":101,"Juni":102,"Juli":101,"August":101,"September":102,"Oktober":283,"November":689,"Dezember":973}},"B0FYGYT5PS":{"title":"Jean & Len Aufbewahrungsdose in sand, aus Dolomit, vielseitige Aufbewahrungsmöglichkeiten, auch idea","monthly":{"Januar":129,"Februar":129,"März":132,"April":132,"Mai":130,"Juni":130,"Juli":131,"August":128,"September":131,"Oktober":362,"November":700,"Dezember":779}},"B0FYGZYHNM":{"title":"Jean & Len Zahnputzbecher aus robustem Steingut, ideal auch für Make-Up Brushes oder als Stiftehalte","monthly":{"Januar":123,"Februar":124,"März":125,"April":124,"Mai":124,"Juni":125,"Juli":124,"August":124,"September":125,"Oktober":637,"November":747,"Dezember":986}},"B0FYGY33DL":{"title":"Jean & Len Gästehandtuch aus 100% Bio-Baumwolle, in der Farbe rosmarin, mit Aufhänger, OEKO-TEX und ","monthly":{"Januar":126,"Februar":126,"März":128,"April":127,"Mai":127,"Juni":129,"Juli":128,"August":127,"September":129,"Oktober":329,"November":400,"Dezember":495}},"B0FYGZS9QC":{"title":"Jean & Len Aufbewahrungsdose in salbei, aus Dolomit, vielseitige Aufbewahrungsmöglichkeiten, auch id","monthly":{"Januar":62,"Februar":61,"März":61,"April":57,"Mai":56,"Juni":57,"Juli":57,"August":55,"September":57,"Oktober":202,"November":343,"Dezember":363}},"B0FYGW277N":{"title":"Jean & Len Gästehandtuch aus 100% Bio-Baumwolle, in der Farbe salbei, mit Aufhänger, OEKO-TEX und GO","monthly":{"Januar":155,"Februar":155,"März":157,"April":156,"Mai":156,"Juni":157,"Juli":156,"August":156,"September":157,"Oktober":464,"November":625,"Dezember":744}},"B0FYGWBPNJ":{"title":"Jean & Len Gästehandtuch aus 100% Bio-Baumwolle, in der Farbe beige, mit Aufhänger, OEKO-TEX und GOT","monthly":{"Januar":57,"Februar":56,"März":58,"April":58,"Mai":57,"Juni":59,"Juli":59,"August":58,"September":60,"Oktober":240,"November":307,"Dezember":389}},"B0FYGS8TC9":{"title":"Jean & Len Rillenvase aus Dolomit, zylindrische Blumen- oder Dekovase, in Beige, Handreinigung empfo","monthly":{"Januar":46,"Februar":44,"März":45,"April":45,"Mai":44,"Juni":45,"Juli":45,"August":45,"September":47,"Oktober":34,"November":74,"Dezember":140}},"B0FYGWTT9C":{"title":"Jean & Len Schmuckablage aus robustem Steingut in dezenter Sandfarbe, vielseitig einsetzbar als Schm","monthly":{"Januar":93,"Februar":93,"März":95,"April":94,"Mai":94,"Juni":94,"Juli":95,"August":93,"September":94,"Oktober":281,"November":478,"Dezember":502}},"B0DS6GMLW7":{"title":"Jean & Len Lip Balm Express Repair & Care, bewahrt die Lippen vor dem Austrocknen, mit 1,5% beruhige","monthly":{"Januar":83,"Februar":76,"März":99,"April":79,"Mai":80,"Juni":98,"Juli":108,"August":86,"September":118,"Oktober":52,"November":33,"Dezember":25}},"B0DJDG3TXQ":{"title":"Hand Soap Rosemary/Ginger Christmas, 250 ml","monthly":{"Januar":0,"Februar":0,"März":0,"April":0,"Mai":0,"Juni":0,"Juli":0,"August":0,"September":0,"Oktober":3397,"November":6616,"Dezember":9313}},"B0G49HZCZL":{"title":"Lip Treatment Teddy Brown, 10 ml","monthly":{"Januar":0,"Februar":0,"März":250,"April":250,"Mai":250,"Juni":250,"Juli":750,"August":750,"September":750,"Oktober":824,"November":1078,"Dezember":1352}},"B0G49MTR84":{"title":"Lip Treatment Sugar Clear, 10 ml","monthly":{"Januar":0,"Februar":0,"März":250,"April":250,"Mai":250,"Juni":250,"Juli":750,"August":750,"September":750,"Oktober":891,"November":1086,"Dezember":1403}},"B0GBX2CK14":{"title":"Deo-Zerstäuber Baumwolle 75ml","monthly":{"Januar":0,"Februar":0,"März":100,"April":100,"Mai":100,"Juni":100,"Juli":750,"August":750,"September":750,"Oktober":2003,"November":2404,"Dezember":2342}},"B0G49J7879":{"title":"Lip Treatment Pink Pillow, 10 ml","monthly":{"Januar":0,"Februar":0,"März":250,"April":250,"Mai":250,"Juni":250,"Juli":750,"August":750,"September":750,"Oktober":1112,"November":1400,"Dezember":1707}},"B0GJF99N71":{"title":"Shampoo Professional Advanced Repair INT, 300 ml","monthly":{"Januar":0,"Februar":0,"März":500,"April":500,"Mai":500,"Juni":500,"Juli":1000,"August":1000,"September":1000,"Oktober":960,"November":1143,"Dezember":1197}},"B0GJFQZSML":{"title":"Body Ceremony Giftbox Bergamot/Cedarwood INT","monthly":{"Januar":0,"Februar":0,"März":50,"April":50,"Mai":50,"Juni":50,"Juli":150,"August":150,"September":150,"Oktober":227,"November":571,"Dezember":606}},"B0GJF2SL1Q":{"title":"Conditioner Professional Advanced Repair INT, 300 ml","monthly":{"Januar":0,"Februar":0,"März":333,"April":333,"Mai":333,"Juni":333,"Juli":750,"August":750,"September":750,"Oktober":1004,"November":1160,"Dezember":1410}},"B0GJF18NNS":{"title":"2-Phase Heat Protection Professional Advanced Repair INT, 150 ml","monthly":{"Januar":0,"Februar":0,"März":416,"April":416,"Mai":416,"Juni":416,"Juli":1000,"August":1000,"September":1000,"Oktober":783,"November":921,"Dezember":1119}},"B0GJF3NZVP":{"title":"2in1 Mask Professional Advanced Repair INT, 200 ml","monthly":{"Januar":0,"Februar":0,"März":250,"April":250,"Mai":250,"Juni":250,"Juli":500,"August":500,"September":500,"Oktober":500,"November":750,"Dezember":750}},"B0GJF17FT3":{"title":"Express Treatment Professional Advanced Repair INT, 200 ml","monthly":{"Januar":0,"Februar":0,"März":250,"April":250,"Mai":250,"Juni":250,"Juli":500,"August":500,"September":500,"Oktober":500,"November":750,"Dezember":750}},"B0GN44CY45":{"title":"Haaröl oil care therapy, 100 ml","monthly":{"Januar":0,"Februar":0,"März":250,"April":250,"Mai":250,"Juni":250,"Juli":500,"August":500,"September":500,"Oktober":1000,"November":1500,"Dezember":1000}},"B0GN44L3ZQ":{"title":"Conditioner Monoiöl/Maracuja, 300 ml","monthly":{"Januar":0,"Februar":0,"März":333,"April":333,"Mai":333,"Juni":333,"Juli":1000,"August":1000,"September":1000,"Oktober":1000,"November":1500,"Dezember":1000}},"B0GN3WC9QX":{"title":"Shampoo Monoiöl/Maracuja, 300 ml","monthly":{"Januar":0,"Februar":0,"März":416,"April":416,"Mai":416,"Juni":416,"Juli":1500,"August":1500,"September":1500,"Oktober":1500,"November":2000,"Dezember":1500}},"B0GL34RNW2":{"title":"Haarparfum from the cotton of my heart, 105 ml","monthly":{"Januar":0,"Februar":0,"März":416,"April":416,"Mai":416,"Juni":416,"Juli":1500,"August":1500,"September":1500,"Oktober":1500,"November":2000,"Dezember":1500}}};
-const ARTNR_MAP={"2900200818":"B0B1J27BXY","2900200817":"B092V6BVLJ","2800100630":"B0FP31DWZK","2900100800":"B092V77QWL","2800100631":"B0FP2TWSZM","2800100623":"B0DSGBF4R6","2800607220":"B0BMVZDWNZ","2800100903":"B099S2XX23","2925000014":"B0G34YFM93","2925000017":"B0D1RJT6N4","2800101208":"B0CNRQT3Q7","2900101606":"B0BSG1Y9WX","2900101127":"B0DG9S89YW","2800100902":"B09YD99FMJ","2800101003":"B085ZCQ7Q2","2800100137":"B0CV5FN53K","2800101542":"B0BSFYZJBM","2800100346":"B0CR4DGW4L","2800607221":"B0BMW1C2XC","2800100123":"B0CXF1Y936","2900100229":"B0FNMGSDG6","2800101414":"B0FMS8B1RZ","2900200821":"B0C7LM49HS","2800100347":"B0BMGM2DN9","2800109235":"B0DLH4ZWKW","2800100193":"B08L9THW3B","2800101416":"B0FMS6YRCW","2902101049":"B0FGJWQP11","2800101104":"B0DFCRMMB4","2800607222":"B0BMW2MXPX","2800100531":"B0CN3BL5RT","2800101045":"B0CN3MM661","2800100625":"B0DSGB9XMH","2800607223":"B0BN86W2ML","2902101050":"B0FGJVPHQ9","2800101415":"B0FMSB8P1F","2800100624":"B0DSG9C9KP","2800100529":"B0CN3DS5ZQ","2800101207":"B0CNRRSSFW","2800101413":"B0FMS6M12G","2800100203":"B07ZTDXQQK","2925000015":"B0G34XTCTK","2800101036":"B0CN191Q3K","2902101048":"B0FR4XYYMD","2902101012":"B092V7KGMQ","2800100530":"B0CN3C26LF","2800101072":"B0F5BVFRC1","2800100519":"B0CN3KWK9V","2800100115":"B095CF7X57","2800101209":"B0CNRRX5Q5","2800100209":"B095CGLKZX","2800101417":"B0FMS7CZHV","2902101043":"B0F9KZMZCP","2800101044":"B0CN3KMJ77","2800100533":"B0CWL9Q9PS","2880308606":"B0CG9X4D83","2800100501":"B085ZKWF2T","2925000072":"B0C5RXYHJ3","2900101602":"B0CN1HQCD3","2800101040":"B0CN18PFK1","2800100621":"B0FP2XTFVB","2800100539":"B0BCQ4HBW4","2800109414":"B0CP62LPJW","2800100901":"B0984DSNHN","2800100344":"B0CR4DYNJB","2800100134":"B0G52NXY85","2800100192":"B092V5JF1V","2900100113":"B0DG9RGYZQ","2900100212":"B0DG9Y688Q","2800109415":"B0CP639JXS","2800109241":"B0DM6LKJHW","2800101069":"B0DMFJ5JTV","2902101034":"B0DMFQSS8T","2800101070":"B0DMFQRWLP","2902101032":"B0DMFM92B6","2902101033":"B0DMFN6D7J","2800109232":"B0DLH3W14T","2800109244":"B0DLH4Y3JJ","2800109236":"B0DLH5XMY7","2800109419":"B0CWLPF6FK","2800109234":"B0DLH3LWR7","2800109231":"B0DL5NBSZQ","2800109230":"B0DL5KYFR1","2900200819":"B01DSTM0ZW","2925000031":"B0FZKFYCC8","2900101604":"B0CN1HRJVJ","2900101615":"B0F9L1PZPL","2900101603":"B0CN1JSP4B","2900101613":"B0F9L2RBK4","2800101116":"B092V7KD9W","2800101035":"B0CN17WPW3","2800100518":"B0CN3LSMJ3","2800101042":"B0CN3LNTJF","2800102807":"B08FC3HPVG","2800100191":"B08L9STCYC","2800100502":"B092V646HS","2800109417":"B0CWLD9QLD","2800100216":"B092V6F1FY","2800100904":"B09YDBB2ZJ","2800100141":"B07ZTDLTJV","2900100215":"B0CXF59BS8","2800100201":"B07ZTDLTJJ","2800100535":"B0CWLFXF5X","2800100339":"B0CN19FVL5","2900100238":"B0GGZXQ3QW","2800100545":"B0DPL3BV7L","2800101111":"B092V71TDJ","2900200820":"B0C7LMWQBG","2800100226":"B09YHZ8B3Z","2800100200":"B07ZTDSPKD","2800101073":"B0BJQD8SNL","2800100190":"B08L9SW3DF","2902101010":"B07XCLTNB7","2900100217":"B0FG7WGDXH","2800101109":"B092V77QWG","2800109409":"B0CW928RF3","2800101406":"B08FCHHBRV","2800609527":"B0FNX57TT2","2925000032":"B0FZKNTTC8","2800100520":"B0CN3KV3X2","2800100900":"B09DD441WK","2800100322":"B0CQM22PGN","2800101068":"B0BJQF4MTH","2800101112":"B092V56CZ8","2800100314":"B0C8BJQL2J","2800100321":"B0CQM4DMDH","2900100214":"B07ZTFFKSF","2900100213":"B0DG9FM6T4","2800100215":"B0BTDVS3WG","2800101000":"B07R6J3WXF","2800101120":"B092V68849","2800109310":"B0DFCJYQGK","2902101016":"B0CQTH9RG9","2900101605":"B0CN1G8V9Q","2900101617":"B0F9L178RJ","2800100324":"B0CKT8L144","2800101131":"B0CV42KNY6","2800100323":"B0CKT7Z17V","2800100615":"B0BFJ78387","2800109413":"B0CP63DPMF","2800100117":"B0BVWMYMFX","2800101008":"B0984DPVFJ","2902101030":"B085Z1SP6J","2800101054":"B0984CRTYQ","2900100122":"B08KYYP625","2900100111":"B078VBX61T","2900100237":"B0GN8RY1JT","2800100325":"B0CNH6T29Y","2800100532":"B0DF7QFSZ8","2800109242":"B0DM6L4RSK","2800109240":"B0DN6HL2MM","2800100513":"B0DS2S8TL2","2902101039":"B0FKBNT74V","2800100514":"B0DS2V2N7B","2800101056":"B08NKV8ZV6","2800109410":"B0CW9NK5ZF","2800101063":"B0DS64RLCV","2800101065":"B0DS66NDMR","2800101064":"B0DS66SYGG","2800109412":"B0CP64J5KM","2800608205":"B0FSF7LY12","2902101052":"B0DX7BXQD7","2800100326":"B0CNH7Y3MH","2800101412":"B0FBWWMWSZ","2800101411":"B0FBWX94KF","2800100328":"B0FFBH2MXN","2900100226":"B0FGK262L4","2902101045":"B0F9KXYRDG","2800101418":"B0FGJZYL5K","2902101044":"B0F9L1FBBN","2800109436":"B0FSF6VHDJ","2902101046":"B0F9KZKSL4","2800100327":"B0CNH86WTH","2800101043":"B0F9KYNP5G","2925000124":"B0F92Y8HCZ","2800100146":"B0DS6HBQHW","2800100145":"B0DS6DKL8B","2800100225":"B0CWHCVBD3","2900100227":"B0FFQNJ2T1","2902101042":"B0FNNCDZX7","2800609526":"B0FNX8SCL5","2900100244":"B0FNMYF1TS","2900100242":"B0FNMRFJLZ","2900100230":"B0FHY72J9Q","2900100241":"B0FNMKPTJ8","2800101060":"B0FQJQ19H6","2800101421":"B0FNNGZYB1","2900100218":"B0FNMKN7T8","2900200822":"B0FKN32FKC","2900101619":"B0F9L1BB7R","2800100138":"B0CWHBWD8S","2900100243":"B0FNMYGK28","2800101420":"B0FNNGWXC4","2800100341":"B0CWL5Q911","2900100224":"B0FP2RYYV3","2800101419":"B0FNNFTF57","2900100228":"B0FNMRF1QP","2900100233":"B0FXN32P7Q","2800101410":"B0FNND8V9B","2900100232":"B0FNMZ11K1","2800609525":"B0FNX7RF9V","2800100632":"B0FP2Y7SZX","2800609528":"B0FNX6DLRT","2925000003":"B0FPQ9D6BW","2800609542":"B0FPGDZXQ1","2800609322":"B0F3FXYVLP","2800609519":"B0FPGGP951","2925000025":"B0FQW9P97N","2800609318":"B0F3FTVY5D","2800609544":"B0FPGGJ86H","2900200815":"B0CRZ2JRB2","2800101428":"B0FQJT2X2K","2800101053":"B0DNK1MBNH","2902101047":"B0FR4XGYHD","2800609320":"B0FNX8Q8JW","2800609524":"B0FPGL8Q5S","2900100222":"B0FQWLKBK1","2800609313":"B0F3G8QRPQ","2925000024":"B0FQVQD5T1","2900100223":"B0FQWG8DHC","2800609319":"B0F3G68K5Q","2800609518":"B0FPGJ7SJL","2900100225":"B0FQVQFVVG","2800609317":"B0F3G5LWNH","2800609316":"B0F3FZR76V","2800609314":"B0F3FXTMKF","2800609315":"B0F3FLY3JS","2800101430":"B0FP2TYBS9","2800100221":"B0CV4GJ575","2800609520":"B0FPM8KL76","2800609323":"B0F3G2MWM4","2800609321":"B0FNX5W1BL","2800101427":"B0FPGK6XGW","2800609539":"B0FPM97YN3","2900100221":"B0FQWTDWPQ","2800100544":"B0F5BQGJ4Q","2800109320":"B0F4KSKKXL","2925000018":"B0DS6HRXJM","2800101071":"B0DJDFGYCW","2925000089":"B0FXMW8N13","2800609538":"B0FYGZGDZ5","2800609515":"B0FYGYT5PS","2800609536":"B0FYGZYHNM","2800609522":"B0FYGY33DL","2800609516":"B0FYGZS9QC","2800609523":"B0FYGW277N","2800609521":"B0FYGWBPNJ","2800609517":"B0FYGS8TC9","2800609537":"B0FYGWTT9C","2800109319":"B0DS6GMLW7","2902101022":"B0DJDG3TXQ","2925000075":"B0G49HZCZL","2925000074":"B0G49MTR84","2800100609":"B0GBX2CK14","2925000073":"B0G49J7879","2925000042":"B0GJF99N71","2800109440":"B0GJFQZSML","2925000043":"B0GJF2SL1Q","2925000046":"B0GJF18NNS","2925000044":"B0GJF3NZVP","2925000045":"B0GJF17FT3","2925000035":"B0GN44CY45","2925000034":"B0GN44L3ZQ","2925000036":"B0GN3WC9QX","2925000063":"B0GL34RNW2"};
+const ARTNR={"2900200818":"B0B1J27BXY","2900200817":"B092V6BVLJ","2800100630":"B0FP31DWZK","2900100800":"B092V77QWL","2800100631":"B0FP2TWSZM","2800100623":"B0DSGBF4R6","2800607220":"B0BMVZDWNZ","2800100903":"B099S2XX23","2925000014":"B0G34YFM93","2925000017":"B0D1RJT6N4","2800101208":"B0CNRQT3Q7","2900101606":"B0BSG1Y9WX","2900101127":"B0DG9S89YW","2800100902":"B09YD99FMJ","2800101003":"B085ZCQ7Q2","2800100137":"B0CV5FN53K","2800101542":"B0BSFYZJBM","2800100346":"B0CR4DGW4L","2800607221":"B0BMW1C2XC","2800100123":"B0CXF1Y936","2900100229":"B0FNMGSDG6","2800101414":"B0FMS8B1RZ","2900200821":"B0C7LM49HS","2800100347":"B0BMGM2DN9","2800109235":"B0DLH4ZWKW","2800100193":"B08L9THW3B","2800101416":"B0FMS6YRCW","2902101049":"B0FGJWQP11","2800101104":"B0DFCRMMB4","2800607222":"B0BMW2MXPX","2800100531":"B0CN3BL5RT","2800101045":"B0CN3MM661","2800100625":"B0DSGB9XMH","2800607223":"B0BN86W2ML","2902101050":"B0FGJVPHQ9","2800101415":"B0FMSB8P1F","2800100624":"B0DSG9C9KP","2800100529":"B0CN3DS5ZQ","2800101207":"B0CNRRSSFW","2800101413":"B0FMS6M12G","2800100203":"B07ZTDXQQK","2925000015":"B0G34XTCTK","2800101036":"B0CN191Q3K","2902101048":"B0FR4XYYMD","2902101012":"B092V7KGMQ","2800100530":"B0CN3C26LF","2800101072":"B0F5BVFRC1","2800100519":"B0CN3KWK9V","2800100115":"B095CF7X57","2800101209":"B0CNRRX5Q5","2800100209":"B095CGLKZX","2800101417":"B0FMS7CZHV","2902101043":"B0F9KZMZCP","2800101044":"B0CN3KMJ77","2800100533":"B0CWL9Q9PS","2880308606":"B0CG9X4D83","2800100501":"B085ZKWF2T","2925000072":"B0C5RXYHJ3","2900101602":"B0CN1HQCD3","2800101040":"B0CN18PFK1","2800100621":"B0FP2XTFVB","2800100539":"B0BCQ4HBW4","2800109414":"B0CP62LPJW","2800100901":"B0984DSNHN","2800100344":"B0CR4DYNJB","2800100134":"B0G52NXY85","2800100192":"B092V5JF1V","2900100113":"B0DG9RGYZQ","2900100212":"B0DG9Y688Q","2800109415":"B0CP639JXS","2800109241":"B0DM6LKJHW","2800101069":"B0DMFJ5JTV","2902101034":"B0DMFQSS8T","2800101070":"B0DMFQRWLP","2902101032":"B0DMFM92B6","2902101033":"B0DMFN6D7J","2800109232":"B0DLH3W14T","2800109244":"B0DLH4Y3JJ","2800109236":"B0DLH5XMY7","2800109419":"B0CWLPF6FK","2800109234":"B0DLH3LWR7","2800109231":"B0DL5NBSZQ","2800109230":"B0DL5KYFR1","2900200819":"B01DSTM0ZW","2925000031":"B0FZKFYCC8","2900101604":"B0CN1HRJVJ","2900101615":"B0F9L1PZPL","2900101603":"B0CN1JSP4B","2900101613":"B0F9L2RBK4","2800101116":"B092V7KD9W","2800101035":"B0CN17WPW3","2800100518":"B0CN3LSMJ3","2800101042":"B0CN3LNTJF","2800102807":"B08FC3HPVG","2800100191":"B08L9STCYC","2800100502":"B092V646HS","2800109417":"B0CWLD9QLD","2800100216":"B092V6F1FY","2800100904":"B09YDBB2ZJ","2800100141":"B07ZTDLTJV","2900100215":"B0CXF59BS8","2800100201":"B07ZTDLTJJ","2800100535":"B0CWLFXF5X","2800100339":"B0CN19FVL5","2900100238":"B0GGZXQ3QW","2800100545":"B0DPL3BV7L","2800101111":"B092V71TDJ","2900200820":"B0C7LMWQBG","2800100226":"B09YHZ8B3Z","2800100200":"B07ZTDSPKD","2800101073":"B0BJQD8SNL","2800100190":"B08L9SW3DF","2902101010":"B07XCLTNB7","2900100217":"B0FG7WGDXH","2800101109":"B092V77QWG","2800109409":"B0CW928RF3","2800101406":"B08FCHHBRV","2800609527":"B0FNX57TT2","2925000032":"B0FZKNTTC8","2800100520":"B0CN3KV3X2","2800100900":"B09DD441WK","2800100322":"B0CQM22PGN","2800101068":"B0BJQF4MTH","2800101112":"B092V56CZ8","2800100314":"B0C8BJQL2J","2800100321":"B0CQM4DMDH","2900100214":"B07ZTFFKSF","2900100213":"B0DG9FM6T4","2800100215":"B0BTDVS3WG","2800101000":"B07R6J3WXF","2800101120":"B092V68849","2800109310":"B0DFCJYQGK","2902101016":"B0CQTH9RG9","2900101605":"B0CN1G8V9Q","2900101617":"B0F9L178RJ","2800100324":"B0CKT8L144","2800101131":"B0CV42KNY6","2800100323":"B0CKT7Z17V","2800100615":"B0BFJ78387","2800109413":"B0CP63DPMF","2800100117":"B0BVWMYMFX","2800101008":"B0984DPVFJ","2902101030":"B085Z1SP6J","2800101054":"B0984CRTYQ","2900100122":"B08KYYP625","2900100111":"B078VBX61T","2900100237":"B0GN8RY1JT","2800100325":"B0CNH6T29Y","2800100532":"B0DF7QFSZ8","2800109242":"B0DM6L4RSK","2800109240":"B0DN6HL2MM","2800100513":"B0DS2S8TL2","2902101039":"B0FKBNT74V","2800100514":"B0DS2V2N7B","2800101056":"B08NKV8ZV6","2800109410":"B0CW9NK5ZF","2800101063":"B0DS64RLCV","2800101065":"B0DS66NDMR","2800101064":"B0DS66SYGG","2800109412":"B0CP64J5KM","2800608205":"B0FSF7LY12","2902101052":"B0DX7BXQD7","2800100326":"B0CNH7Y3MH","2800101412":"B0FBWWMWSZ","2800101411":"B0FBWX94KF","2800100328":"B0FFBH2MXN","2900100226":"B0FGK262L4","2902101045":"B0F9KXYRDG","2800101418":"B0FGJZYL5K","2902101044":"B0F9L1FBBN","2800109436":"B0FSF6VHDJ","2902101046":"B0F9KZKSL4","2800100327":"B0CNH86WTH","2800101043":"B0F9KYNP5G","2925000124":"B0F92Y8HCZ","2800100146":"B0DS6HBQHW","2800100145":"B0DS6DKL8B","2800100225":"B0CWHCVBD3","2900100227":"B0FFQNJ2T1","2902101042":"B0FNNCDZX7","2800609526":"B0FNX8SCL5","2900100244":"B0FNMYF1TS","2900100242":"B0FNMRFJLZ","2900100230":"B0FHY72J9Q","2900100241":"B0FNMKPTJ8","2800101060":"B0FQJQ19H6","2800101421":"B0FNNGZYB1","2900100218":"B0FNMKN7T8","2900200822":"B0FKN32FKC","2900101619":"B0F9L1BB7R","2800100138":"B0CWHBWD8S","2900100243":"B0FNMYGK28","2800101420":"B0FNNGWXC4","2800100341":"B0CWL5Q911","2900100224":"B0FP2RYYV3","2800101419":"B0FNNFTF57","2900100228":"B0FNMRF1QP","2900100233":"B0FXN32P7Q","2800101410":"B0FNND8V9B","2900100232":"B0FNMZ11K1","2800609525":"B0FNX7RF9V","2800100632":"B0FP2Y7SZX","2800609528":"B0FNX6DLRT","2925000003":"B0FPQ9D6BW","2800609542":"B0FPGDZXQ1","2800609322":"B0F3FXYVLP","2800609519":"B0FPGGP951","2925000025":"B0FQW9P97N","2800609318":"B0F3FTVY5D","2800609544":"B0FPGGJ86H","2900200815":"B0CRZ2JRB2","2800101428":"B0FQJT2X2K","2800101053":"B0DNK1MBNH","2902101047":"B0FR4XGYHD","2800609320":"B0FNX8Q8JW","2800609524":"B0FPGL8Q5S","2900100222":"B0FQWLKBK1","2800609313":"B0F3G8QRPQ","2925000024":"B0FQVQD5T1","2900100223":"B0FQWG8DHC","2800609319":"B0F3G68K5Q","2800609518":"B0FPGJ7SJL","2900100225":"B0FQVQFVVG","2800609317":"B0F3G5LWNH","2800609316":"B0F3FZR76V","2800609314":"B0F3FXTMKF","2800609315":"B0F3FLY3JS","2800101430":"B0FP2TYBS9","2800100221":"B0CV4GJ575","2800609520":"B0FPM8KL76","2800609323":"B0F3G2MWM4","2800609321":"B0FNX5W1BL","2800101427":"B0FPGK6XGW","2800609539":"B0FPM97YN3","2900100221":"B0FQWTDWPQ","2800100544":"B0F5BQGJ4Q","2800109320":"B0F4KSKKXL","2925000018":"B0DS6HRXJM","2800101071":"B0DJDFGYCW","2925000089":"B0FXMW8N13","2800609538":"B0FYGZGDZ5","2800609515":"B0FYGYT5PS","2800609536":"B0FYGZYHNM","2800609522":"B0FYGY33DL","2800609516":"B0FYGZS9QC","2800609523":"B0FYGW277N","2800609521":"B0FYGWBPNJ","2800609517":"B0FYGS8TC9","2800609537":"B0FYGWTT9C","2800109319":"B0DS6GMLW7","2902101022":"B0DJDG3TXQ","2925000075":"B0G49HZCZL","2925000074":"B0G49MTR84","2800100609":"B0GBX2CK14","2925000073":"B0G49J7879","2925000042":"B0GJF99N71","2800109440":"B0GJFQZSML","2925000043":"B0GJF2SL1Q","2925000046":"B0GJF18NNS","2925000044":"B0GJF3NZVP","2925000045":"B0GJF17FT3","2925000035":"B0GN44CY45","2925000034":"B0GN44L3ZQ","2925000036":"B0GN3WC9QX","2925000063":"B0GL34RNW2"};
 const MONTH='März', MONTH_LABEL='März 2026';
-const SK='jl_po_maerz2026';
+const REPO='Marc585/jl-dashboards', STATE_FILE='po-state.json';
+const RAW_URL='https://raw.githubusercontent.com/'+REPO+'/main/'+STATE_FILE;
+const API_URL='https://api.github.com/repos/'+REPO+'/contents/'+STATE_FILE;
 
-// BC: session only (kein localStorage – Lagerbestand ändert sich täglich)
-let bcStock = {}; // ASIN → PFD Menge
-let bcLoaded = false;
+// Upload phase selection (which column to read on PO upload)
+let uploadPhase='a'; // 'a'=angefordert, 'k'=akzeptiert, 'v'=versandt
+// View phase (which column to display)
+let viewPhase='a';
 
-let sortK='deviation', sortD=-1, rows=[];
+// State
+let state={v:1,month:MONTH_LABEL,mk:MONTH,imports:[]};
+let bcRawRows=[], bcCols=[], bcStock={}; // {ASIN: qty}
+let bcLoaded=false;
+let rows=[];
+let sortK='dev', sortD=-1;
 
-// ── Storage ───────────────────────────────────────────────────────────────────
-const ld=()=>{try{return JSON.parse(localStorage.getItem(SK))||{a:{},im:[]}}catch{return{a:{},im:[]}}};
-const sv=s=>localStorage.setItem(SK,JSON.stringify(s));
+// ── GitHub Sync ───────────────────────────────────────────────────────────────
+const getPAT=()=>localStorage.getItem('jl_pat')||'';
+const getLocal=()=>{try{return JSON.parse(localStorage.getItem('jl_po_v2'))||null}catch{return null}};
+const saveLocal=s=>localStorage.setItem('jl_po_v2',JSON.stringify(s));
 
-// ── Status ────────────────────────────────────────────────────────────────────
-function updStrip(){
-  const s=ld();
-  const tot=Object.values(s.a).reduce((x,y)=>x+y,0);
-  const last=s.im.length?s.im[s.im.length-1]:null;
-  document.getElementById('s-cnt').textContent=s.im.length;
-  document.getElementById('s-tot').textContent=fmt(tot)+' Stück';
-  const el=document.getElementById('s-last');
-  if(last){
-    const d=new Date(last.ts);
-    el.className='sv';
-    el.textContent=d.toLocaleDateString('de-DE',{day:'2-digit',month:'2-digit',year:'numeric'})
-      +' '+d.toLocaleTimeString('de-DE',{hour:'2-digit',minute:'2-digit'})
-      +' · '+last.f;
-  }else{el.className='sv none';el.textContent='—'}
+function setSyncStatus(status,msg){
+  const dot=document.getElementById('sync-dot'), lbl=document.getElementById('sync-label');
+  dot.className='sync-dot';
+  if(status==='ok'){dot.classList.add('ok');lbl.textContent=msg||'Synchronisiert'}
+  else if(status==='err'){dot.classList.add('err');lbl.textContent=msg||'Sync-Fehler'}
+  else if(status==='spin'){dot.classList.add('spin');lbl.textContent=msg||'Synchronisiert...'}
+  else{lbl.textContent=msg||'Nur lokal'}
+}
 
-  // PFD gesamt
-  const pfdEl=document.getElementById('s-pfd');
-  if(bcLoaded){
-    const pfdTot=Object.values(bcStock).reduce((x,y)=>x+y,0);
-    pfdEl.className='sv';
-    pfdEl.textContent=fmt(pfdTot)+' Stück';
-  }else{pfdEl.className='sv none';pfdEl.textContent='— (kein BC hochgeladen)'}
+async function loadState(){
+  setSyncStatus('spin','Lade...');
+  try{
+    const r=await fetch(RAW_URL+'?t='+Date.now());
+    if(r.ok){
+      const remote=await r.json();
+      // Merge: if remote is newer (more imports), use remote; else keep local
+      const local=getLocal();
+      if(local&&local.imports&&local.imports.length>(remote.imports||[]).length){
+        state=local;
+        setSyncStatus('','Lokal (remote älter)');
+      } else {
+        state=remote;
+        saveLocal(state);
+        setSyncStatus('ok');
+      }
+    } else {
+      const local=getLocal();
+      if(local)state=local;
+      setSyncStatus('','Nur lokal');
+    }
+  }catch(e){
+    const local=getLocal();
+    if(local)state=local;
+    setSyncStatus('','Nur lokal');
+  }
+  updStrip(); analyse();
+}
+
+async function saveState(){
+  saveLocal(state);
+  const pat=getPAT();
+  if(!pat){setSyncStatus('','Nur lokal – kein Token');return}
+  setSyncStatus('spin');
+  try{
+    // Get current SHA
+    const r=await fetch(API_URL,{headers:{'Authorization':'token '+pat,'Accept':'application/vnd.github.v3+json'}});
+    const meta=await r.json();
+    const sha=meta.sha;
+    // Update
+    const content=btoa(unescape(encodeURIComponent(JSON.stringify(state))));
+    const resp=await fetch(API_URL,{
+      method:'PUT',
+      headers:{'Authorization':'token '+pat,'Accept':'application/vnd.github.v3+json','Content-Type':'application/json'},
+      body:JSON.stringify({message:'Update PO state '+new Date().toISOString().slice(0,16),content,sha})
+    });
+    if(resp.ok){setSyncStatus('ok','Synchronisiert '+new Date().toLocaleTimeString('de-DE',{hour:'2-digit',minute:'2-digit'}))}
+    else{setSyncStatus('err','Sync fehlgeschlagen')}
+  }catch(e){setSyncStatus('err','Sync fehlgeschlagen')}
+}
+
+function openSettings(){document.getElementById('modal').style.display='flex';document.getElementById('pat-inp').value=getPAT()}
+function closeModal(){document.getElementById('modal').style.display='none'}
+function savePAT(){
+  const p=document.getElementById('pat-inp').value.trim();
+  if(!p){toast('Bitte Token eingeben','err');return}
+  localStorage.setItem('jl_pat',p);
+  closeModal();
+  saveState();
+}
+
+// ── Upload Phase ──────────────────────────────────────────────────────────────
+function selectPhase(e,ph){
+  e.stopPropagation();
+  uploadPhase=ph;
+  ['a','k','v'].forEach(p=>{
+    document.getElementById('ps-'+p).className='pselbtn'+(p===ph?' active':'');
+  });
+}
+
+function setPhase(ph){
+  viewPhase=ph;
+  ['a','k','v'].forEach(p=>{
+    document.getElementById('ptab-'+p).className='ptab'+(p===ph?' active':'');
+  });
+  const names={a:'Angefordert',k:'Akzeptiert',v:'Versandt'};
+  document.getElementById('r-title').textContent=names[ph]+' vs. Forecast – '+MONTH_LABEL;
+  updStrip(); render();
 }
 
 // ── Drop Zones ────────────────────────────────────────────────────────────────
-function setupDrop(dzId, fiId, handler){
-  const dz=document.getElementById(dzId), fi=document.getElementById(fiId);
-  dz.addEventListener('click',()=>fi.click());
-  fi.addEventListener('change',e=>{if(e.target.files[0])handler(e.target.files[0])});
+function setupDrop(dzId,fiId,fn){
+  const dz=document.getElementById(dzId),fi=document.getElementById(fiId);
+  dz.addEventListener('click',e=>{if(!e.target.closest('button')&&!e.target.closest('input[type=checkbox]'))fi.click()});
+  fi.addEventListener('change',e=>{if(e.target.files[0])fn(e.target.files[0])});
   dz.addEventListener('dragover',e=>{e.preventDefault();dz.classList.add('over')});
   dz.addEventListener('dragleave',()=>dz.classList.remove('over'));
-  dz.addEventListener('drop',e=>{e.preventDefault();dz.classList.remove('over');if(e.dataTransfer.files[0])handler(e.dataTransfer.files[0])});
+  dz.addEventListener('drop',e=>{e.preventDefault();dz.classList.remove('over');if(e.dataTransfer.files[0])fn(e.dataTransfer.files[0])});
 }
-
 setupDrop('dz-po','fi-po',handlePO);
 setupDrop('dz-bc','fi-bc',handleBC);
 
 // ── PO Upload ─────────────────────────────────────────────────────────────────
+const PHASE_COLS={
+  a:'Angeforderte Menge',
+  k:'Akzeptierte Menge',
+  v:'Empfangene Stückzahl'
+};
+
 function handlePO(file){
-  readXL(file, wb=>{
+  readXL(file,wb=>{
     const ws=wb.Sheets['Einzelposten']||wb.Sheets[wb.SheetNames[0]];
     const data=XLSX.utils.sheet_to_json(ws,{defval:''});
-    if(!data.length){toast('PO-Datei leer oder falsches Format');return}
-    if(!('ASIN' in data[0])||!('Angeforderte Menge' in data[0])){
-      toast('Spalten „ASIN" oder „Angeforderte Menge" nicht gefunden');return
-    }
-    const map={};
+    if(!data.length){toast('Datei leer','err');return}
+
+    const ph=uploadPhase;
+    const colName=PHASE_COLS[ph];
+    if(!(colName in data[0])){toast('Spalte „'+colName+'" nicht gefunden','err');return}
+    if(!('ASIN' in data[0])){toast('Spalte ASIN nicht gefunden','err');return}
+
+    const asins={};
     data.forEach(r=>{
       const asin=String(r['ASIN']||'').trim().toUpperCase();
-      const qty=parseFloat(String(r['Angeforderte Menge']).replace(',','.'))||0;
-      if(asin) map[asin]=(map[asin]||0)+qty;
+      const qty=parseFloat(String(r[colName]).replace(',','.'))||0;
+      if(asin&&qty>0) asins[asin]=(asins[asin]||0)+qty;
     });
-    const s=ld();
-    Object.entries(map).forEach(([a,q])=>{s.a[a]=(s.a[a]||0)+q});
-    const tot=Object.values(map).reduce((x,y)=>x+y,0);
-    s.im.push({ts:new Date().toISOString(),f:file.name,n:Object.keys(map).length,t:tot});
-    sv(s);
-    flashDrop('dz-po','fi-po',file.name,Object.keys(map).length+' ASINs · '+fmt(tot)+' Stück addiert','ok');
+
+    const total=Object.values(asins).reduce((x,y)=>x+y,0);
+    const imp={
+      ts:new Date().toISOString(),
+      f:file.name,
+      ph,
+      asins,
+      t:total,
+      n:Object.keys(asins).length
+    };
+    state.imports.push(imp);
+    saveState();
+
+    const pname={a:'Angefordert',k:'Akzeptiert',v:'Versandt'}[ph];
+    flashDrop('dz-po','fi-po',file.name,pname+': '+Object.keys(asins).length+' ASINs · '+fmt(total)+' Stück addiert','ok');
     updStrip(); analyse();
-    toast('✓ PO: '+Object.keys(map).length+' ASINs, '+fmt(tot)+' Stück',true);
+    toast('✓ '+pname+': '+fmt(total)+' Stück',true);
   });
 }
 
 // ── BC Upload ─────────────────────────────────────────────────────────────────
+let bcRawData=[];
+
 function handleBC(file){
-  readXL(file, wb=>{
+  readXL(file,wb=>{
     const ws=wb.Sheets[wb.SheetNames[0]];
-    const data=XLSX.utils.sheet_to_json(ws,{defval:''});
-    if(!data.length){toast('BC-Datei leer');return}
+    bcRawData=XLSX.utils.sheet_to_json(ws,{defval:''});
+    if(!bcRawData.length){toast('BC-Datei leer','err');return}
 
-    // Spalte "Nr." und "PFD" suchen
-    const firstRow=data[0];
-    const nrKey=Object.keys(firstRow).find(k=>k.trim()==='Nr.'||k.trim()==='Nr');
-    const pfdKey=Object.keys(firstRow).find(k=>k.trim()==='PFD');
-    if(!nrKey||!pfdKey){toast('Spalten „Nr." oder „PFD" nicht gefunden in BC-Datei');return}
-
-    bcStock={};
-    let matched=0, total=0;
-    data.forEach(r=>{
-      const artnr=String(r[nrKey]||'').trim();
-      const pfd=parseFloat(String(r[pfdKey]).replace(',','.'))||0;
-      if(!artnr||pfd<=0) return;
-      const asin=ARTNR_MAP[artnr];
-      if(asin){bcStock[asin]=(bcStock[asin]||0)+pfd; matched++;}
-      total+=pfd;
+    // Find numeric warehouse columns (exclude Nr. and Beschreibung)
+    const allCols=Object.keys(bcRawData[0]);
+    // Warehouse cols: exclude text cols, keep those with numeric data
+    const warehouseCols=allCols.filter(c=>{
+      if(c==='Nr.'||c==='Nr'||c==='Beschreibung'||c==='Beschreibung ')return false;
+      const sample=bcRawData.slice(0,20).map(r=>r[c]).filter(v=>v!==''&&v!==null&&v!==undefined);
+      return sample.some(v=>typeof v==='number'||(!isNaN(parseFloat(v))&&String(v).trim()!==''));
     });
-    bcLoaded=true;
+    // Sort by total stock descending
+    const colTotals=warehouseCols.map(c=>({c,t:bcRawData.reduce((s,r)=>{const v=parseFloat(r[c])||0;return s+(v>0?v:0)},0)}));
+    colTotals.sort((a,b)=>b.t-a.t);
+    bcCols=colTotals.map(x=>x.c);
 
-    const pfdTot=Object.values(bcStock).reduce((x,y)=>x+y,0);
-    flashDrop('dz-bc','fi-bc',file.name,matched+' ASINs zugeordnet · PFD gesamt: '+fmt(pfdTot)+' Stück','bc-loaded');
-    updStrip(); analyse();
-    toast('✓ BC geladen: PFD '+fmt(pfdTot)+' Stück',true);
+    // Render checkboxes – pre-check PFD and STEINHARDT if present
+    const picker=document.getElementById('col-picker');
+    const boxes=document.getElementById('col-checkboxes');
+    const autoCheck=['PFD','STEINHARDT','STEINHRT'];
+    boxes.innerHTML=colTotals.map(({c,t})=>`
+      <label><input type="checkbox" value="${c}" ${autoCheck.includes(c)||autoCheck.some(a=>c.toUpperCase().includes(a))?'checked':''}>
+      ${c} <span style="color:#97a0af">(${fmt(t)} Stk)</span></label>
+    `).join('');
+    picker.style.display='block';
+
+    document.getElementById('dz-bc').classList.add('bc','loaded');
+    document.getElementById('dz-bc').querySelector('.drop-title').textContent='✓ '+file.name;
+    document.getElementById('dz-bc').querySelector('.drop-hint').textContent='Lagerspalten auswählen und übernehmen';
   });
 }
 
+function applyBCCols(){
+  const checked=[...document.querySelectorAll('#col-checkboxes input:checked')].map(i=>i.value);
+  if(!checked.length){toast('Mindestens eine Spalte wählen','err');return}
+
+  const nrKey=Object.keys(bcRawData[0]).find(k=>k.trim()==='Nr.'||k.trim()==='Nr');
+  if(!nrKey){toast('Spalte „Nr." nicht gefunden','err');return}
+
+  bcStock={};
+  let matched=0, total=0;
+  bcRawData.forEach(r=>{
+    const artnr=String(r[nrKey]||'').trim();
+    if(!artnr)return;
+    const asin=ARTNR[artnr];
+    let qty=0;
+    checked.forEach(c=>{qty+=parseFloat(r[c])||0});
+    if(qty<=0)return;
+    total+=qty;
+    if(asin){bcStock[asin]=(bcStock[asin]||0)+qty;matched++;}
+  });
+  bcLoaded=true;
+
+  const pfdTot=Object.values(bcStock).reduce((x,y)=>x+y,0);
+  document.getElementById('dz-bc').querySelector('.drop-hint').textContent=
+    checked.join(' + ')+' · '+matched+' ASINs · '+fmt(total)+' Stück';
+  updStrip(); analyse();
+  toast('✓ Lager: '+fmt(pfdTot)+' Stück ('+matched+' ASINs)',true);
+}
+
+// ── Helpers ───────────────────────────────────────────────────────────────────
 function readXL(file,cb){
   const r=new FileReader();
-  r.onload=e=>{try{cb(XLSX.read(new Uint8Array(e.target.result),{type:'array'}))}catch(err){toast('Fehler: '+err.message)}};
+  r.onload=e=>{try{cb(XLSX.read(new Uint8Array(e.target.result),{type:'array'}))}catch(err){toast('Fehler: '+err.message,'err')}};
   r.readAsArrayBuffer(file);
 }
 
-function flashDrop(dzId,fiId,filename,sub,cls){
+function flashDrop(dzId,fiId,fname,sub,cls){
   const dz=document.getElementById(dzId),fi=document.getElementById(fiId);
   dz.classList.add(cls);
-  dz.querySelector('.drop-title').textContent='✓ '+filename;
+  dz.querySelector('.drop-title').textContent='✓ '+fname;
   dz.querySelector('.drop-hint').textContent=sub;
   if(cls==='ok'){
     setTimeout(()=>{
       dz.classList.remove(cls);
       dz.querySelector('.drop-title').textContent='POItemExport hier ablegen';
-      dz.querySelector('.drop-hint').textContent='Sheet „Einzelposten" · ASIN + Angeforderte Menge · wird addiert';
+      dz.querySelector('.drop-hint').textContent='Sheet „Einzelposten" wird automatisch gelesen';
       fi.value='';
     },3000);
   }
 }
 
+// ── Totals ────────────────────────────────────────────────────────────────────
+function computeTotals(){
+  const t={a:{},k:{},v:{}};
+  state.imports.forEach(imp=>{
+    const ph=imp.ph||'a';
+    Object.entries(imp.asins).forEach(([asin,qty])=>{
+      t[ph][asin]=(t[ph][asin]||0)+qty;
+    });
+  });
+  return t;
+}
+
+// ── Status ────────────────────────────────────────────────────────────────────
+function updStrip(){
+  const t=computeTotals();
+  const tot={a:Object.values(t.a).reduce((x,y)=>x+y,0),k:Object.values(t.k).reduce((x,y)=>x+y,0),v:Object.values(t.v).reduce((x,y)=>x+y,0)};
+  const last=state.imports.length?state.imports[state.imports.length-1]:null;
+
+  document.getElementById('s-cnt').textContent=state.imports.length;
+  document.getElementById('s-ta').textContent=fmt(tot.a)+' Stück';
+  document.getElementById('s-tk').textContent=tot.k?fmt(tot.k)+' Stück':'—';
+  document.getElementById('s-tv').textContent=tot.v?fmt(tot.v)+' Stück':'—';
+
+  const el=document.getElementById('s-last');
+  if(last){
+    const d=new Date(last.ts),pname={a:'Angefordert',k:'Akzeptiert',v:'Versandt'}[last.ph||'a'];
+    el.className='sv';
+    el.textContent=d.toLocaleDateString('de-DE',{day:'2-digit',month:'2-digit'})+' '+d.toLocaleTimeString('de-DE',{hour:'2-digit',minute:'2-digit'})+' · '+pname+' · '+last.f;
+  }else{el.className='sv none';el.textContent='—'}
+
+  // Phase tags
+  ['a','k','v'].forEach(p=>{
+    const c=Object.keys(t[p]).length;
+    const el=document.getElementById('ptag-'+p);
+    el.textContent=c||0;
+    el.className='ptag '+(c>0?'has':'no');
+  });
+
+  // Lager
+  const lEl=document.getElementById('s-lager');
+  if(bcLoaded){
+    const lt=Object.values(bcStock).reduce((x,y)=>x+y,0);
+    lEl.className='sv';lEl.textContent=fmt(lt)+' Stück';
+  }else{lEl.className='sv none';lEl.textContent='— (kein BC hochgeladen)'}
+}
+
 // ── Analyse ───────────────────────────────────────────────────────────────────
 function analyse(){
-  const s=ld();
+  const t=computeTotals();
   rows=[];
+
   Object.entries(FC).forEach(([asin,fc])=>{
     const forecast=fc.monthly[MONTH]||0;
-    const actual=s.a[asin]||0;
-    const dev=actual-forecast;
-    const pct=forecast>0?(actual/forecast*100):null;
-    const pfd=bcLoaded?(bcStock[asin]||0):null;
-    rows.push({asin,title:fc.title,forecast,actual,dev,pct,pfd});
+    const qa=t.a[asin]||0, qk=t.k[asin]||0, qv=t.v[asin]||0;
+    const qView={a:qa,k:qk,v:qv}[viewPhase];
+    const dev=qView-forecast;
+    const pct=forecast>0?(qView/forecast*100):null;
+    const lager=bcLoaded?(bcStock[asin]||0):null;
+    rows.push({asin,title:fc.title,forecast,qa,qk,qv,dev,pct,lager});
   });
-  Object.keys(s.a).forEach(asin=>{
-    if(!FC[asin]&&s.a[asin]>0){
-      const pfd=bcLoaded?(bcStock[asin]||0):null;
-      rows.push({asin,title:'⚠ Kein Forecast',forecast:0,actual:s.a[asin],dev:s.a[asin],pct:null,pfd});
+  // ASINs in PO but not in FC
+  const allPOasins=new Set([...Object.keys(t.a),...Object.keys(t.k),...Object.keys(t.v)]);
+  allPOasins.forEach(asin=>{
+    if(!FC[asin]){
+      const qa=t.a[asin]||0,qk=t.k[asin]||0,qv=t.v[asin]||0;
+      const qView={a:qa,k:qk,v:qv}[viewPhase];
+      rows.push({asin,title:'⚠ Kein Forecast',forecast:0,qa,qk,qv,dev:qView,pct:null,lager:bcLoaded?(bcStock[asin]||0):null});
     }
   });
 
+  // Sums for strip
   const totFc=rows.reduce((x,r)=>x+r.forecast,0);
-  const totAct=rows.reduce((x,r)=>x+r.actual,0);
-  const totDev=totAct-totFc;
+  const totView=rows.reduce((x,r)=>x+{a:r.qa,k:r.qk,v:r.qv}[viewPhase],0);
+  const totDev=totView-totFc;
   const totPct=totFc>0?(totDev/totFc*100):null;
   const over=rows.filter(r=>r.dev>0).length;
 
-  document.getElementById('r-meta').textContent='Forecast: '+fmt(totFc)+' · Bestellt MTD: '+fmt(totAct)+' · '+rows.length+' Artikel';
-
-  // Strip
-  const devEl=document.getElementById('s-dev'), overEl=document.getElementById('s-over');
+  const devEl=document.getElementById('s-dev'),overEl=document.getElementById('s-over');
   devEl.className='sv'+(totDev>0?' red':totDev<0?' grn':'');
   devEl.textContent=(totDev>0?'+':'')+fmt(totDev)+' Stück'+(totPct!==null?' ('+totPct.toFixed(1)+'%)':'');
   overEl.className='sv'+(over>0?' red':' grn');
   overEl.textContent=over>0?over+' Artikel':'Alle im Plan';
 
+  document.getElementById('r-meta').textContent='Forecast: '+fmt(totFc)+' · Aktuelle Phase: '+fmt(totView)+' · '+rows.length+' Artikel';
+  const b=document.getElementById('r-badge');
+  b.className=over>0?'badge badge-warn':'badge badge-ok';
+  b.textContent=over>0?'⚠ '+over+' über Forecast':'✓ Alles im Plan';
+
   document.getElementById('res').style.display='block';
   render();
 }
 
-// ── Tabelle ───────────────────────────────────────────────────────────────────
+// ── Table ─────────────────────────────────────────────────────────────────────
 const COLS=[
-  {k:'rank',   l:'#',              cl:'',      s:false},
-  {k:'asin',   l:'ASIN',          cl:'',      s:true},
-  {k:'title',  l:'Artikel',       cl:'',      s:true},
-  {k:'forecast',l:'Forecast März',cl:'n',     s:true},
-  {k:'actual', l:'Bestellt MTD',  cl:'n',     s:true},
-  {k:'dev',    l:'Abweichung ↕',  cl:'dv',    s:true},
-  {k:'pfd',    l:'PFD Bestand',   cl:'n',     s:true},
-  {k:'bar',    l:'',              cl:'',      s:false},
+  {k:'rank',l:'#',cl:'',s:false},
+  {k:'asin',l:'ASIN',cl:'',s:true},
+  {k:'title',l:'Artikel',cl:'',s:true},
+  {k:'forecast',l:'Forecast März',cl:'n',s:true},
+  {k:'qa',l:'Angeford.',cl:'n',s:true},
+  {k:'qk',l:'Akzeptiert',cl:'n',s:true},
+  {k:'qv',l:'Versandt',cl:'n',s:true},
+  {k:'dev',l:'Abw. (Phase) ↕',cl:'dv',s:true},
+  {k:'lager',l:'Lager gesamt',cl:'n',s:true},
+  {k:'bar',l:'',cl:'',s:false},
 ];
+
 (()=>{
   const tr=document.getElementById('th-row');
   COLS.forEach(c=>{
     const th=document.createElement('th');
-    th.id='th-'+c.k;
-    th.className=c.cl+(c.k===sortK?' sa':'');
+    th.id='th-'+c.k; th.className=c.cl+(c.k===sortK?' sa':'');
     th.innerHTML=c.l;
     if(c.s)th.onclick=()=>sb(c.k);
     tr.appendChild(th);
@@ -364,10 +641,7 @@ const COLS=[
 
 function sb(k){
   if(sortK===k)sortD*=-1; else{sortK=k;sortD=(k==='asin'||k==='title')?1:-1}
-  COLS.forEach(c=>{
-    const th=document.getElementById('th-'+c.k);
-    if(th)th.className=c.cl+(c.k===sortK?' sa':'');
-  });
+  COLS.forEach(c=>{const th=document.getElementById('th-'+c.k);if(th)th.className=c.cl+(c.k===sortK?' sa':'')});
   render();
 }
 
@@ -378,7 +652,7 @@ function render(){
     if(aO&&bO)return b.dev-a.dev;
     const av=a[sortK],bv=b[sortK];
     if(av===null&&bv===null)return 0;
-    if(av===null)return 1; if(bv===null)return -1;
+    if(av===null)return 1;if(bv===null)return -1;
     if(typeof av==='string')return sortD*av.localeCompare(bv);
     return sortD*((bv||0)-(av||0));
   });
@@ -392,11 +666,9 @@ function render(){
   b.className=over>0?'badge badge-warn':'badge badge-ok';
   b.textContent=over>0?'⚠ '+over+' über Forecast':'✓ Alles im Plan';
 
-  const tb=document.getElementById('tb'),tf=document.getElementById('tf');
-  const em=document.getElementById('empty');
+  const tb=document.getElementById('tb'),tf=document.getElementById('tf'),em=document.getElementById('empty');
   if(!data.length){tb.innerHTML='';tf.innerHTML='';em.style.display='block';return}
   em.style.display='none';
-
   const mx=Math.max(...data.filter(r=>r.dev>0).map(r=>r.dev),1);
 
   tb.innerHTML=data.map((r,i)=>{
@@ -404,65 +676,65 @@ function render(){
     const bw=isO?Math.min(100,(r.dev/mx)*100).toFixed(1):0;
     const cr=r.pct!==null&&r.pct>130;
     const dvCls='dv '+(isO?'over':r.dev<0?'under':'zero');
-    const devTxt=isO?'+'+fmt(r.dev)+(r.pct!==null?'<span class="dp">('+r.pct.toFixed(0)+'%)</span>':'')
-                    :(r.dev<0?fmt(r.dev):'—');
-
-    let pfdHtml='<span class="pfd-none">—</span>';
-    if(r.pfd!==null){
-      const enough=!isO||(r.pfd>=(r.dev));
-      pfdHtml='<span class="'+(r.pfd===0?'pfd-low':(enough?'pfd-ok':'pfd-low'))+'">'+fmt(r.pfd)+'</span>';
+    const devTxt=isO?'+'+fmt(r.dev)+(r.pct!==null?'<span class="dp">('+r.pct.toFixed(0)+'%)</span>':''):(r.dev<0?fmt(r.dev):'—');
+    let lHtml='<span class="lager-none">—</span>';
+    if(r.lager!==null){
+      const ok=!isO||(r.lager>=r.dev);
+      lHtml='<span class="'+(r.lager===0?'lager-warn':(ok?'lager-ok':'lager-warn'))+'">'+fmt(r.lager)+'</span>';
     }
-
+    // Highlight active phase column
+    const phCls=p=>p===viewPhase?'n" style="font-weight:700;color:#172b4d':'n';
     return'<tr class="'+(isO?'row-over':'')+'">'+
-      '<td style="color:#97a0af;font-size:11px">'+(i+1)+'</td>'+
+      '<td style="color:#97a0af;font-size:10px">'+(i+1)+'</td>'+
       '<td class="mono">'+esc(r.asin)+'</td>'+
       '<td class="tc" title="'+esc(r.title)+'">'+esc(r.title)+'</td>'+
       '<td class="n">'+fmt(r.forecast)+'</td>'+
-      '<td class="n">'+fmt(r.actual)+'</td>'+
+      '<td class="'+phCls('a')+'">'+fmt(r.qa)+'</td>'+
+      '<td class="'+phCls('k')+'">'+fmt(r.qk)+'</td>'+
+      '<td class="'+phCls('v')+'">'+fmt(r.qv)+'</td>'+
       '<td class="'+dvCls+'">'+devTxt+'</td>'+
-      '<td class="pfd-cell">'+pfdHtml+'</td>'+
+      '<td class="lager-cell">'+lHtml+'</td>'+
       '<td><div class="bg"><div class="br'+(cr?' cr':'')+'" style="width:'+bw+'%"></div></div></td>'+
     '</tr>';
   }).join('');
 
   const tF=data.reduce((x,r)=>x+r.forecast,0);
-  const tA=data.reduce((x,r)=>x+r.actual,0);
+  const tA=data.reduce((x,r)=>x+r.qa,0),tK=data.reduce((x,r)=>x+r.qk,0),tV=data.reduce((x,r)=>x+r.qv,0);
   const tD=data.reduce((x,r)=>x+r.dev,0);
-  const tP=bcLoaded?data.reduce((x,r)=>x+(r.pfd||0),0):null;
+  const tL=bcLoaded?data.reduce((x,r)=>x+(r.lager||0),0):null;
   const tDCls='dv '+(tD>0?'over':tD<0?'under':'zero');
-  const tDTxt=tD>0?'+'+fmt(tD):tD<0?fmt(tD):'—';
   tf.innerHTML='<tr>'+
     '<td></td><td colspan="2"><strong>Gesamt ('+data.length+')</strong></td>'+
     '<td class="n">'+fmt(tF)+'</td>'+
-    '<td class="n">'+fmt(tA)+'</td>'+
-    '<td class="'+tDCls+'">'+tDTxt+'</td>'+
-    '<td class="pfd-cell">'+(tP!==null?'<strong>'+fmt(tP)+'</strong>':'—')+'</td>'+
-    '<td></td>'+
-  '</tr>';
+    '<td class="n">'+fmt(tA)+'</td><td class="n">'+fmt(tK)+'</td><td class="n">'+fmt(tV)+'</td>'+
+    '<td class="'+tDCls+'">'+(tD>0?'+':'')+fmt(tD)+'</td>'+
+    '<td class="lager-cell">'+(tL!==null?'<strong>'+fmt(tL)+'</strong>':'—')+'</td>'+
+    '<td></td></tr>';
 }
 
 // ── CSV ───────────────────────────────────────────────────────────────────────
 function exportCSV(){
-  if(!rows.length){toast('Keine Daten');return}
-  const h='ASIN;Artikel;Forecast März;Bestellt MTD;Abweichung;%;PFD Bestand';
-  const lines=[h,...rows.map(r=>[r.asin,'"'+r.title.replace(/"/g,'')+'"',r.forecast,r.actual,r.dev,r.pct!=null?r.pct.toFixed(1):'',r.pfd!==null?r.pfd:''].join(';'))];
+  if(!rows.length){toast('Keine Daten','err');return}
+  const lines=['ASIN;Artikel;Forecast März;Angefordert;Akzeptiert;Versandt;Abweichung;%;Lager gesamt',
+    ...rows.map(r=>[r.asin,'"'+r.title.replace(/"/g,'')+'"',r.forecast,r.qa,r.qk,r.qv,r.dev,r.pct!=null?r.pct.toFixed(1):'',r.lager!==null?r.lager:''].join(';'))];
   const blob=new Blob(['\uFEFF'+lines.join('\n')],{type:'text/csv;charset=utf-8'});
-  const a=document.createElement('a');a.href=URL.createObjectURL(blob);
-  a.download='PO_Analyse_'+new Date().toISOString().slice(0,10)+'.csv';a.click();
+  const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download='PO_'+new Date().toISOString().slice(0,10)+'.csv';a.click();
 }
 
 // ── Reset ─────────────────────────────────────────────────────────────────────
 function doReset(){
-  const s=ld();
-  if(!s.im.length){toast('Keine Daten');return}
-  if(!confirm('Alle '+s.im.length+' PO-Importe für '+MONTH_LABEL+' löschen?'))return;
-  localStorage.removeItem(SK);
+  if(!state.imports.length){toast('Keine Daten');return}
+  if(!confirm('Alle '+state.imports.length+' Importe für '+MONTH_LABEL+' löschen?'))return;
+  state={v:1,month:MONTH_LABEL,mk:MONTH,imports:[]};
   bcStock={};bcLoaded=false;rows=[];
-  updStrip();
-  document.getElementById('res').style.display='none';
-  document.getElementById('dz-bc').classList.remove('bc-loaded');
-  document.getElementById('dz-bc').querySelector('.drop-title').textContent='BC Lagermatrix hier ablegen';
-  document.getElementById('dz-bc').querySelector('.drop-hint').textContent='„Artikel nach Lagerort – Matrix" · Lagerort PFD · optional';
+  saveState();
+  localStorage.removeItem('jl_po_v2');
+  updStrip();document.getElementById('res').style.display='none';
+  document.getElementById('col-picker').style.display='none';
+  const bc=document.getElementById('dz-bc');
+  bc.classList.remove('loaded');
+  bc.querySelector('.drop-title').textContent='BC Lagermatrix hier ablegen';
+  bc.querySelector('.drop-hint').textContent='„Artikel nach Lagerort – Matrix" · Lagerspalten wählbar';
   toast('Zurückgesetzt');
 }
 
@@ -470,16 +742,16 @@ function doReset(){
 const fmt=n=>Math.round(n||0).toLocaleString('de-DE');
 const esc=s=>String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
 let tt;
-function toast(msg,ok=false){
+function toast(msg,type='ok'){
   const t=document.getElementById('toast');
-  t.textContent=msg;t.className='toast'+(ok?' ok':'');
+  t.textContent=msg;t.className='toast '+(type==='ok'?'ok':type==='err'?'err':'');
   requestAnimationFrame(()=>t.classList.add('show'));
   clearTimeout(tt);tt=setTimeout(()=>t.classList.remove('show'),4000);
 }
 
 // ── Init ──────────────────────────────────────────────────────────────────────
-updStrip();
-if(Object.keys(ld().a).length)analyse();
+setPhase('a');
+loadState();
 </script>
 </body>
 </html>
