@@ -295,7 +295,8 @@ const kpis = [
         ist: 604580, ziel: 836924, unit: "€",
         trend: "up",
         massnahme: "Q1-Ziel: 836.924€ | Jahresprognose: 5.042.156€ | Quelle: Jessis Reporting",
-        color: "--green"
+        color: "--green",
+        yoy: 33
     },
     {
         name: "Webshop AOV",
@@ -321,13 +322,14 @@ const kpis = [
     },
     {
         name: "Amazon J&L (Q1 Umsatz)",
-        ist: 1376070, ziel: 2147000, unit: "€",
+        ist: 1508279, ziel: 2147000, unit: "€",
         trend: "up",
-        massnahme: "DE/USA KW1–7, UK KW1–6. IT Feb, ES/FR/NL/SE Jan eingetragen.",
+        massnahme: "DE/USA/UK KW1–8. IT/ES/FR/NL/SE Jan eingetragen.",
         color: "--accent",
-        linearPlan: 825769,
-        dataWeeks: 7,
-        totalWeeks: 13
+        linearPlan: Math.round(2147000 / 13 * 8),
+        dataWeeks: 8,
+        totalWeeks: 13,
+        yoy: 67
     }
 ];
 
@@ -488,6 +490,7 @@ function renderKPIs() {
                 </div>
                 <div class="kpi-values">
                     <span class="kpi-ist" style="color: var(${k.color})">${fmt(Math.round(k.ist))} ${k.unit}</span>
+                    ${k.yoy ? `<span style="background:rgba(74,124,89,0.15);color:var(--green);font-size:11px;font-weight:700;padding:2px 8px;border-radius:10px;margin-left:4px;">+${k.yoy}% YoY</span>` : ''}
                 </div>
                 <div style="font-size:13px;margin-bottom:12px;">
                     <span style="color:var(--muted)">Q1-Ziel:</span> <strong>${zielStr}</strong>
@@ -535,6 +538,7 @@ function renderKPIs() {
             <div class="kpi-values">
                 <span class="kpi-ist" style="color: var(${k.color})">${istDisplay}</span>
                 <span class="kpi-pct" style="color: ${fillColor}">${pct}%</span>
+                ${k.yoy ? `<span style="background:rgba(74,124,89,0.15);color:var(--green);font-size:11px;font-weight:700;padding:2px 8px;border-radius:10px;margin-left:4px;">+${k.yoy}% YoY</span>` : ''}
             </div>
             <div class="kpi-bar"><div class="kpi-fill" style="width: ${Math.min(pct, 100)}%; background: ${fillColor};"></div></div>
             <div style="font-size: 12px; color: var(--muted); margin-bottom: 6px;">${zielDisplay}</div>

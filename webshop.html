@@ -692,9 +692,14 @@ function renderAll() {
     renderWarnings();
 
     const kpiEl = document.getElementById('kpiCards');
+    // YoY Vergleich Webshop (2025 YTD Jan1–Anf.März aus Monatsauswertung)
+    const wsYtdVorjahr = 522218;
+    const wsYtdAktuell = sum(raw, 'umsatz');
+    const wsYoy = Math.round(((wsYtdAktuell / wsYtdVorjahr) - 1) * 100);
+    const yoyBadge = currentMode === 'ytd' ? `<div class="delta delta-green" style="font-weight:700;">+${wsYoy}% vs. Vorjahr</div>` : '';
     // Perioden: Gesamtwert + Ø pro Tag
     kpiEl.innerHTML = `
-        <div class="card kpi"><div class="label">Umsatz (${focus.label})</div><div class="value" style="color:var(--green)">${fmt(Math.round(fUmsatz))}€</div><div class="target">${focus.sublabel}</div><div class="delta delta-green">Ø ${fmt(Math.round(fAvgUmsatz))}€/Tag</div></div>
+        <div class="card kpi"><div class="label">Umsatz (${focus.label})</div><div class="value" style="color:var(--green)">${fmt(Math.round(fUmsatz))}€</div><div class="target">${focus.sublabel}</div><div class="delta delta-green">Ø ${fmt(Math.round(fAvgUmsatz))}€/Tag</div>${yoyBadge}</div>
         <div class="card kpi"><div class="label">Bestellungen (${focus.label})</div><div class="value" style="color:var(--blue)">${fmt(fBest)}</div><div class="target">${focus.sublabel}</div><div class="delta delta-green">Ø ${fmt(Math.round(fAvgBest))}/Tag</div></div>
         <div class="card kpi"><div class="label">Ø AOV</div><div class="value" style="color:${aovColor}">${fmt2(fAov)}€</div><div class="target">Ziel: 49,15€</div><div class="delta ${fAov>=49.15?'delta-green':'delta-red'}">${fAov>=49.15?'↑ über Ziel':'↓ -'+aovDelta+'% vom Ziel'}</div></div>
         <div class="card kpi"><div class="label">Ø Conversion Rate</div><div class="value" style="color:${crColor}">${fCr!=null?fmt2(fCr)+'%':'n/a'}</div><div class="target">Ziel: 2,81%</div><div class="delta ${fCr!=null&&fCr>=2.81?'delta-green':'delta-yellow'}">${fCr!=null?(fCr>=2.81?'↑ über Ziel':'↓ -'+crDelta+'%'):'keine Daten'}</div></div>

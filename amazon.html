@@ -524,6 +524,7 @@
         <div class="label">Amazon Ads 2026 &ndash; Budget &amp; Performance</div>
         <div id="banner-hero-umsatz" class="amount" style="color:var(--accent);">1.509.157 &euro;</div>
         <div id="banner-hero-label" style="font-size: 15px; font-weight:600; color: var(--text); margin-bottom: 4px;">Amazon Au&szlig;enumsatz YTD 2026 &ndash; alle 8 M&auml;rkte</div>
+        <div id="banner-yoy" style="margin-bottom:6px;"></div>
         <div style="font-size:13px; color:var(--muted); margin-bottom: 8px;">Ads Jahresbudget 2026: <strong>619.300 &euro;</strong> (alle 8 M&auml;rkte)</div>
         <div style="display: flex; justify-content: center; gap: 32px; flex-wrap: wrap; margin: 12px 0 8px;">
             <div style="text-align: center;">
@@ -1835,6 +1836,11 @@
           if (heroEl) heroEl.textContent = d.amazon.ytd_gesamt.toLocaleString('de-DE') + ' €';
           const heroLbl = document.getElementById('banner-hero-label');
           if (heroLbl) heroLbl.textContent = d.amazon.ytd_gesamt_label;
+          const yoyEl = document.getElementById('banner-yoy');
+          if (yoyEl && d.amazon.ytd_vorjahr) {
+            const yoyPct = Math.round(((d.amazon.ytd_gesamt / d.amazon.ytd_vorjahr) - 1) * 100);
+            yoyEl.innerHTML = `<span style="background:rgba(74,124,89,0.15);color:var(--green);font-size:13px;font-weight:700;padding:3px 10px;border-radius:12px;">+${yoyPct}% vs. Vorjahr (KW1&ndash;KW8 2025)</span>`;
+          }
           // Update spend
           const spendEl = document.querySelector('[data-kpi="spend"]');
           if (spendEl) spendEl.textContent = d.amazon.ad_spend_ytd.toLocaleString('de-DE') + ' €';

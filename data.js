@@ -27,6 +27,7 @@ window.JL_DATA = {
     ad_spend_ytd:       61017,   // Ads Spend YTD DE+UK+USA (€)
     paid_roas_ytd:       11.2,   // Paid ROAS YTD DE+UK
     interner_roas:       31.9,   // ERP EU / Spend DE+UK
+    ytd_vorjahr:       904514,   // 2025 KW1-KW8 alle Märkte (UK noch nicht aktiv)
 
     // Einzelne Märkte – Amazon Außenumsatz (Paid + Organic)
     laender: {
@@ -61,6 +62,7 @@ window.JL_DATA = {
     aov_ziel:       49.15,
     cr:              2.77,   // Conversion Rate %
     cr_ziel:         2.81,
-    tages_schnitt:  10830    // Ø Umsatz/Tag
+    tages_schnitt:  10830,   // Ø Umsatz/Tag
+    ytd_vorjahr:   522218    // 2025 YTD Jan 1 – Anf. März (aus Monatsauswertung)
   }
 };
