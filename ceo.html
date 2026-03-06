@@ -493,36 +493,33 @@ function renderKPIs() {
             const diff = k.ist - k.linearPlan;
             const ahead = diff > 0;
             const aheadPct = ((k.ist / k.linearPlan) - 1) * 100;
-            const istStr = (k.ist / 1000).toFixed(0) + 'K ' + k.unit;
+            const istStr  = (k.ist / 1000).toFixed(0) + 'K ' + k.unit;
             const planStr = (k.linearPlan / 1000).toFixed(0) + 'K ' + k.unit;
             const diffStr = (Math.abs(diff) / 1000).toFixed(0) + 'K ' + k.unit;
             const zielStr = fmt2(k.ziel / 1000000) + ' Mio ' + k.unit;
             const badgeClass = ahead ? 'badge-green' : 'badge-red';
             const badgeText = ahead ? '+' + aheadPct.toFixed(1) + '% über Plan' : aheadPct.toFixed(1) + '% unter Plan';
+            const istDisplay = k.ist >= 1000000
+                ? fmt2(k.ist / 1000000) + '\u202FMio\u202F' + k.unit
+                : fmt(Math.round(k.ist)) + '\u202F' + k.unit;
 
             return `<div class="card kpi-card" style="border-color:${ahead ? 'rgba(74,124,89,0.3)' : 'rgba(229,36,39,0.3)'}">
                 <div class="kpi-header">
                     <span class="kpi-name">${k.name}</span>
                     <span class="badge ${badgeClass}">${badgeText}</span>
                 </div>
-                <div class="kpi-values">
-                    <span class="kpi-ist" style="color: var(${k.color})">${fmt(Math.round(k.ist))} ${k.unit}</span>
-                    ${k.yoy ? `<span style="background:rgba(74,124,89,0.15);color:var(--green);font-size:11px;font-weight:700;padding:2px 8px;border-radius:10px;margin-left:4px;">+${k.yoy}% YoY</span>` : ''}
+                <div class="kpi-values" style="flex-wrap:wrap;">
+                    <span class="kpi-ist" style="color:var(${k.color});font-size:28px;white-space:nowrap;">${istDisplay}</span>
                 </div>
-                <div style="font-size:13px;margin-bottom:12px;">
-                    <span style="color:var(--muted)">Q1-Ziel:</span> <strong>${zielStr}</strong>
-                    <span style="color:var(--muted);margin-left:8px;">|</span>
-                    <span style="color:var(--muted);margin-left:8px;">Nach ${k.dataWeeks} von ${k.totalWeeks} Wochen</span>
+                ${k.yoy ? `<div style="margin-bottom:8px;"><span style="background:rgba(74,124,89,0.15);color:var(--green);font-size:11px;font-weight:700;padding:2px 8px;border-radius:10px;">+${k.yoy}% vs. Vorjahr</span></div>` : ''}
+                <div style="font-size:12px;color:var(--muted);margin-bottom:10px;">
+                    Q1-Ziel: <strong>${zielStr}</strong> &nbsp;|&nbsp; KW\u202F${k.dataWeeks}\u202Fvon\u202F${k.totalWeeks}
                 </div>
-                <div style="display:flex;align-items:center;gap:10px;padding:10px 14px;background:${ahead ? 'rgba(74,124,89,0.08)' : 'rgba(229,36,39,0.08)'};border-radius:8px;margin-bottom:10px;">
-                    <span style="font-size:20px">${ahead ? '&#9650;' : '&#9660;'}</span>
+                <div style="display:flex;align-items:center;gap:10px;padding:9px 12px;background:${ahead ? 'rgba(74,124,89,0.08)' : 'rgba(229,36,39,0.08)'};border-radius:8px;margin-bottom:8px;">
+                    <span style="font-size:16px">${ahead ? '&#9650;' : '&#9660;'}</span>
                     <div>
-                        <div style="font-size:14px;font-weight:700;color:${ahead ? 'var(--green)' : 'var(--red)'}">
-                            ${diffStr} ${ahead ? 'über' : 'unter'} Plan
-                        </div>
-                        <div style="font-size:12px;color:var(--muted)">
-                            Erwartet bis KW${k.dataWeeks}: ${planStr} &#8594; Tatsächlich: ${istStr}
-                        </div>
+                        <div style="font-size:13px;font-weight:700;color:${ahead ? 'var(--green)' : 'var(--red)'}">${diffStr} ${ahead ? 'über' : 'unter'} Plan</div>
+                        <div style="font-size:11px;color:var(--muted)">Erwartet KW${k.dataWeeks}: ${planStr} &#8594; Ist: ${istStr}</div>
                     </div>
                 </div>
                 <div class="kpi-context" style="font-size:11px;color:var(--muted)">&#9432; ${k.massnahme}</div>
