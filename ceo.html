@@ -155,7 +155,7 @@
 <div class="header">
     <h1>E-Commerce CEO Dashboard</h1>
     <div class="sub">Q1 2026 | Marc Böhle, CDO</div>
-    <div class="meta" id="header-meta">Stand: 26.02.2026 | KW09 | Datenquellen: Jessis Reporting, Amazon Allocation, Inventory Dashboard</div>
+    <div class="meta" id="header-meta">Stand: 06.03.2026 | KW10 | Datenquellen: Jessis Reporting, Amazon Allocation, Inventory Dashboard</div>
 </div>
 
 <!-- Datenstand-Leiste -->
@@ -168,29 +168,29 @@
 </div>
 <div style="display:flex; flex-direction:column; gap:10px; margin-bottom:32px;">
 
-    <!-- EINTRAG: Datenschutzvorfall Webshop -->
-    <div style="background:rgba(245,158,11,0.08); border-left:4px solid #f59e0b; border-radius:0 8px 8px 0; padding:14px 16px; display:flex; gap:14px; align-items:flex-start;">
-        <span style="font-size:18px; flex-shrink:0; margin-top:1px;">&#9888;&#65039;</span>
+    <!-- EINTRAG: Datenschutzvorfall Webshop – behoben -->
+    <div style="background:rgba(74,124,89,0.06); border-left:4px solid var(--green); border-radius:0 8px 8px 0; padding:14px 16px; display:flex; gap:14px; align-items:flex-start;">
+        <span style="font-size:18px; flex-shrink:0; margin-top:1px;">&#9989;</span>
         <div>
-            <div style="font-size:11px; font-weight:700; color:#b45309; text-transform:uppercase; letter-spacing:0.5px; margin-bottom:3px;">Webshop</div>
+            <div style="font-size:11px; font-weight:700; color:var(--green); text-transform:uppercase; letter-spacing:0.5px; margin-bottom:3px;">Webshop</div>
             <div style="font-weight:600; font-size:13px; margin-bottom:4px;">
-                M&ouml;glicher Datenschutzvorfall &ndash; Shopware-Plugin mit Backdoor
-                <span style="background:rgba(245,158,11,0.2); color:#b45309; font-size:10px; font-weight:700; padding:1px 7px; border-radius:4px; margin-left:6px;">FYI &middot; l&auml;uft</span>
+                Malwareangriff behoben &ndash; Shopware-Plugin mit Backdoor
+                <span style="background:rgba(74,124,89,0.15); color:var(--green); font-size:10px; font-weight:700; padding:1px 7px; border-radius:4px; margin-left:6px;">BEHOBEN</span>
             </div>
-            <div style="font-size:12px; color:var(--muted); line-height:1.7;">Plugin hatte Backdoor, k&ouml;nnte Kundendaten abgegriffen haben. DSB informiert, Beh&ouml;rdenmeldung erfolgt. Forensische Pr&uuml;fung l&auml;uft.</div>
+            <div style="font-size:12px; color:var(--muted); line-height:1.7;">Fr&uuml;hzeitig erkannt &ndash; Schadcode entfernt. DSB informiert, Beh&ouml;rdenmeldung erfolgt. Kein Datenverlust best&auml;tigt.</div>
         </div>
     </div>
 
     <!-- EINTRAG: Amazon Jahresverhandlungen -->
-    <div style="background:rgba(99,102,241,0.06); border-left:4px solid var(--accent); border-radius:0 8px 8px 0; padding:14px 16px; display:flex; gap:14px; align-items:flex-start;">
+    <div style="background:rgba(74,124,89,0.06); border-left:4px solid var(--green); border-radius:0 8px 8px 0; padding:14px 16px; display:flex; gap:14px; align-items:flex-start;">
         <span style="font-size:18px; flex-shrink:0; margin-top:1px;">&#128233;</span>
         <div>
-            <div style="font-size:11px; font-weight:700; color:var(--accent); text-transform:uppercase; letter-spacing:0.5px; margin-bottom:3px;">Amazon</div>
+            <div style="font-size:11px; font-weight:700; color:var(--green); text-transform:uppercase; letter-spacing:0.5px; margin-bottom:3px;">Amazon</div>
             <div style="font-weight:600; font-size:13px; margin-bottom:4px;">
                 Jahresverhandlungen Amazon
-                <span style="background:rgba(99,102,241,0.15); color:var(--accent); font-size:10px; font-weight:700; padding:1px 7px; border-radius:4px; margin-left:6px;">OFFEN</span>
+                <span style="background:rgba(74,124,89,0.15); color:var(--green); font-size:10px; font-weight:700; padding:1px 7px; border-radius:4px; margin-left:6px;">POSITIV</span>
             </div>
-            <div style="font-size:12px; color:var(--muted); line-height:1.7;">Warten auf R&uuml;ckmeldung der Amazon Account Managerin zum Abschluss der Jahresverhandlungen.</div>
+            <div style="font-size:12px; color:var(--muted); line-height:1.7;">Kopfkonditionen um 3&ndash;3,5% gesenkt. PICS Logistik-Programm eingef&uuml;hrt. Verhandlungen abgeschlossen.</div>
         </div>
     </div>
 
@@ -283,24 +283,24 @@
 
 // --- Datenstand (für Freshness-Anzeige) ---
 const datenstand = {
-    webshop: { datum: "25.02.2026", quelle: "Jessis Reporting Excel" },
-    amazon:  { datum: "KW7 (14.02.2026)", quelle: "Budget Tracker Excel" },
-    dashboard: { datum: "26.02.2026", autor: "Marc / Claude" }
+    webshop: { datum: "05.03.2026", quelle: "Jessis Reporting Excel" },
+    amazon:  { datum: "KW8 (21.02.2026)", quelle: "Budget Tracker Excel" },
+    dashboard: { datum: "06.03.2026", autor: "Marc / Claude" }
 };
 
 // --- Kern-KPIs ---
 const kpis = [
     {
         name: "Webshop – YTD Umsatz",
-        ist: 604580, ziel: 836924, unit: "€",
+        ist: 693088, ziel: 836924, unit: "€",
         trend: "up",
-        massnahme: "Q1-Ziel: 836.924€ | Jahresprognose: 5.042.156€ | Quelle: Jessis Reporting",
+        massnahme: "Quelle: Jessis Reporting | Stand: 05.03.2026",
         color: "--green",
         yoy: 33
     },
     {
         name: "Webshop AOV",
-        ist: 45.50, ziel: 49.15, unit: "€",
+        ist: 45.40, ziel: 49.15, unit: "€",
         trend: "up",
         massnahme: "Customer Journey Workshop + Bug-Fixes für höheren Warenkorb",
         color: "--orange"
@@ -345,7 +345,7 @@ const steineWebshopQ1 = [
 ];
 
 const steineAmazonQ1 = [
-    { name: "Jahresgespräche Amazon", detail: "Kopfkonditionen: 23,5% → Ziel 20,5%", owner: "Marc", status: "red", meilenstein: "Konditionen auf 20,5% verhandeln", deadline: "Q1" },
+    { name: "Jahresgespräche Amazon", detail: "Kopfkonditionen: 3–3,5% gesenkt, PICS Logistik-Programm eingeführt", owner: "Marc", status: "green", meilenstein: "Abgeschlossen", deadline: "Q1" },
     { name: "UK Expansion", detail: "Ziel: 5.000 GBP/Woche (Break-even Pick & Pack) | Ist: ca. 4.500 GBP", owner: "Lena", status: "yellow", meilenstein: "5.000 GBP/Woche stabil erreichen", deadline: "Q1" },
     { name: "Amazon USA – Handseifen Launch", detail: "5 US Handseifen live nehmen | Launch kurz bevor", owner: "Karina", status: "yellow", meilenstein: "Go-Live bis 01.03.", deadline: "01.03." },
     { name: "Amazon TOX", detail: "Hybrid-Projekt gestartet, externer Berater an Bord", owner: "Marc", status: "yellow", meilenstein: "Projekt-Abschluss in 4 Monaten", deadline: "Jun" },
@@ -403,23 +403,23 @@ const projekte = [
 const umsatz = {
     webshop: {
         label: "Webshop J&L",
-        ist: 604580,    // YTD Summe aus Jessis Reporting (bis 26.02.)
+        ist: 693088,    // YTD Summe aus Jessis Reporting (bis 05.03.)
         plan: 836924,   // Q1-Umsatzziel (836.923,62€)
         planJahr: 5042156, // Jahresprognose 2026
-        zeitraum: "YTD (01.01.–26.02.)",
-        detail: "57 Tage | Ø 10.606€/Tag | 13.463 Bestellungen",
+        zeitraum: "YTD (01.01.–05.03.)",
+        detail: "64 Tage | Ø 10.830€/Tag | 15.267 Bestellungen",
         color: "var(--green)"
     },
     amazon: {
         label: "Amazon J&L (alle Märkte)",
-        ist: 1376070, // DE 1.150.725€ + UK 27.153€ + USA 20.259€ + IT Feb + EU Jan
+        ist: 1508279, // DE/UK/USA KW1-8 + IT/ES/FR/NL/SE Jan
         plan: 2147000, // Q1 Prognose (11,3 Mio € Jahresprognose = 19%)
         planJahr: 11300000, // Jahresprognose
-        linearPlan: 825769, // Linearer Plan für KW1-5 (2.147.000 * 5/13)
-        dataWeeks: 7, // Wochen mit Daten
+        linearPlan: 1321231, // Linearer Plan KW1-8 (2.147.000 * 8/13)
+        dataWeeks: 8, // Wochen mit Daten
         totalWeeks: 13, // Q1 Gesamtwochen
-        zeitraum: "YTD (KW1–KW7)",
-        detail: "DE/USA KW7, UK KW6 | IT Feb | ES/FR/NL/SE Jan eingetragen",
+        zeitraum: "YTD (KW1–KW8)",
+        detail: "DE/USA/UK KW8 | IT Feb | ES/FR/NL/SE Jan eingetragen",
         monatsPlan: { jan: 791000, feb: 565000 }, // Aus DE Budget Tracker (ERP Monthly Plan)
         color: "var(--accent)"
     }
@@ -429,14 +429,14 @@ const umsatz = {
 // Daten aus Budget Tracker Excel (OneDrive), aktualisiert Mi wöchentlich
 // Total Sales Amazon = Paid + Organic Sales
 const amazonLaender = [
-    { flag: "&#127465;&#127466;", name: "Deutschland", budgetQ1: 60500, istQ1: 1150725, adSpend: 32232, roas: 14.22, orders: 79884, budgetJahr: 320000, status: "active", datenstand: "KW1–7" },
-    { flag: "&#127468;&#127463;", name: "UK", budgetQ1: 20000, istQ1: 27153, adSpend: 9334, roas: 2.20, orders: 2209, budgetJahr: 100000, status: "growth", datenstand: "KW1–6", note: "GBP→EUR" },
+    { flag: "&#127465;&#127466;", name: "Deutschland", budgetQ1: 60500, istQ1: 1272967, adSpend: 34798, roas: 14.46, orders: 87577, budgetJahr: 320000, status: "active", datenstand: "KW1–8" },
+    { flag: "&#127468;&#127463;", name: "UK", budgetQ1: 20000, istQ1: 34839, adSpend: 12436, roas: 2.11, orders: 2858, budgetJahr: 100000, status: "growth", datenstand: "KW1–8", note: "GBP→EUR" },
     { flag: "&#127466;&#127480;", name: "Spanien", budgetQ1: 9360, istQ1: 48565, adSpend: 3475, roas: null, orders: null, budgetJahr: 46800, status: "active", datenstand: "Jan '26" },
     { flag: "&#127467;&#127479;", name: "Frankreich", budgetQ1: 7600, istQ1: 44011, adSpend: 3215, roas: null, orders: null, budgetJahr: 39800, status: "active", datenstand: "Jan '26" },
     { flag: "&#127470;&#127481;", name: "Italien", budgetQ1: 10080, istQ1: 68985, adSpend: 5479, roas: null, orders: null, budgetJahr: 50400, status: "active", datenstand: "Feb '26" },
     { flag: "&#127475;&#127473;", name: "Niederlande", budgetQ1: 1200, istQ1: 11277, adSpend: 600, roas: null, orders: null, budgetJahr: 5000, status: "active", datenstand: "Jan '26" },
     { flag: "&#127480;&#127466;", name: "Schweden", budgetQ1: 14325, istQ1: 5094, adSpend: 637, roas: null, orders: null, budgetJahr: 57300, status: "new", datenstand: "Jan '26" },
-    { flag: "&#127482;&#127480;", name: "USA", budgetQ1: null, istQ1: 20259, adSpend: 12656, roas: 0.71, orders: 708, budgetJahr: null, status: "launch", datenstand: "KW1–7", note: "USD→EUR" }
+    { flag: "&#127482;&#127480;", name: "USA", budgetQ1: null, istQ1: 22541, adSpend: 13783, roas: 0.71, orders: 799, budgetJahr: null, status: "launch", datenstand: "KW1–8", note: "USD→EUR" }
 ];
 
 // --- Artikelgruppen (Platzhalter für Power BI Daten) ---
@@ -528,21 +528,24 @@ function renderKPIs() {
 
         // Standardfall: AOV, CR etc.
         const fillColor = pct >= 95 ? 'var(--green)' : pct >= 80 ? 'var(--yellow)' : 'var(--orange)';
-        const istDisplay = k.ist >= 1000000 ? fmt2(k.ist / 1000000) + ' Mio ' + k.unit : fmt2(k.ist) + ' ' + k.unit;
+        const istDisplay = k.ist >= 1000000 ? fmt2(k.ist / 1000000) + ' Mio ' + k.unit
+                         : k.ist >= 10000   ? fmt(Math.round(k.ist)) + '\u202F' + k.unit
+                         : fmt2(k.ist) + ' ' + k.unit;
+        const istFontSize = k.ist >= 100000 ? '26px' : '32px';
 
         return `<div class="card kpi-card">
             <div class="kpi-header">
                 <span class="kpi-name">${k.name}</span>
                 <span class="kpi-trend">${trendIcon}</span>
             </div>
-            <div class="kpi-values">
-                <span class="kpi-ist" style="color: var(${k.color})">${istDisplay}</span>
+            <div class="kpi-values" style="flex-wrap:wrap;">
+                <span class="kpi-ist" style="color: var(${k.color}); font-size:${istFontSize}; white-space:nowrap;">${istDisplay}</span>
                 <span class="kpi-pct" style="color: ${fillColor}">${pct}%</span>
-                ${k.yoy ? `<span style="background:rgba(74,124,89,0.15);color:var(--green);font-size:11px;font-weight:700;padding:2px 8px;border-radius:10px;margin-left:4px;">+${k.yoy}% YoY</span>` : ''}
             </div>
+            ${k.yoy ? `<div style="margin-bottom:6px;"><span style="background:rgba(74,124,89,0.15);color:var(--green);font-size:11px;font-weight:700;padding:2px 8px;border-radius:10px;">+${k.yoy}% vs. Vorjahr</span></div>` : ''}
             <div class="kpi-bar"><div class="kpi-fill" style="width: ${Math.min(pct, 100)}%; background: ${fillColor};"></div></div>
             <div style="font-size: 12px; color: var(--muted); margin-bottom: 6px;">${zielDisplay}</div>
-            <div class="kpi-context">&#9881; <strong>${k.massnahme}</strong></div>
+            <div class="kpi-context">&#9881; ${k.massnahme}</div>
         </div>`;
     }).join('');
 }
