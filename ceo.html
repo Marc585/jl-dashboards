@@ -141,9 +141,32 @@
         /* Footer */
         .footer { text-align: center; color: var(--muted); font-size: 11px; margin-top: 48px; padding: 20px 0; border-top: 1px solid var(--border); }
 
-        /* Responsive */
-        @media (max-width: 900px) { .grid-3 { grid-template-columns: 1fr 1fr; } }
-        @media (max-width: 600px) { .grid-3, .grid-2, .quick-links { grid-template-columns: 1fr; } .roadmap-label { width: 120px; } }
+        /* Responsive Grids */
+        .kpi-grid  { display: grid; grid-template-columns: repeat(5, 1fr); gap: 16px; margin-bottom: 24px; }
+        .week-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin-bottom: 32px; }
+
+        @media (max-width: 1000px) {
+            .kpi-grid { grid-template-columns: repeat(3, 1fr); }
+        }
+        @media (max-width: 900px) {
+            .grid-3 { grid-template-columns: 1fr 1fr; }
+            .rev-grid { grid-template-columns: 1fr; }
+        }
+        @media (max-width: 640px) {
+            .kpi-grid { grid-template-columns: 1fr 1fr; }
+            .week-grid { grid-template-columns: 1fr; }
+            .grid-3, .grid-2, .quick-links { grid-template-columns: 1fr; }
+            .roadmap-label { width: 100px; }
+            .kpi-card .kpi-ist { font-size: 24px !important; }
+            .country-table { font-size: 11px; }
+            .country-table td, .country-table th { padding: 6px 8px; }
+            .header h1 { font-size: 22px; }
+            .section-title { font-size: 13px; }
+        }
+        @media (max-width: 420px) {
+            .kpi-grid { grid-template-columns: 1fr; }
+            .container { padding: 16px 12px; }
+        }
     </style>
     <script src="data.js"></script>
 </head>
@@ -182,15 +205,15 @@
     </div>
 
     <!-- EINTRAG: Amazon Jahresverhandlungen -->
-    <div style="background:rgba(74,124,89,0.06); border-left:4px solid var(--green); border-radius:0 8px 8px 0; padding:14px 16px; display:flex; gap:14px; align-items:flex-start;">
+    <div style="background:rgba(245,158,11,0.06); border-left:4px solid #f59e0b; border-radius:0 8px 8px 0; padding:14px 16px; display:flex; gap:14px; align-items:flex-start;">
         <span style="font-size:18px; flex-shrink:0; margin-top:1px;">&#128233;</span>
         <div>
-            <div style="font-size:11px; font-weight:700; color:var(--green); text-transform:uppercase; letter-spacing:0.5px; margin-bottom:3px;">Amazon</div>
+            <div style="font-size:11px; font-weight:700; color:#b45309; text-transform:uppercase; letter-spacing:0.5px; margin-bottom:3px;">Amazon</div>
             <div style="font-weight:600; font-size:13px; margin-bottom:4px;">
                 Jahresverhandlungen Amazon
-                <span style="background:rgba(74,124,89,0.15); color:var(--green); font-size:10px; font-weight:700; padding:1px 7px; border-radius:4px; margin-left:6px;">POSITIV</span>
+                <span style="background:rgba(245,158,11,0.2); color:#b45309; font-size:10px; font-weight:700; padding:1px 7px; border-radius:4px; margin-left:6px;">IN VERHANDLUNG</span>
             </div>
-            <div style="font-size:12px; color:var(--muted); line-height:1.7;">Kopfkonditionen um 3&ndash;3,5% gesenkt. PICS Logistik-Programm eingef&uuml;hrt. Verhandlungen abgeschlossen.</div>
+            <div style="font-size:12px; color:var(--muted); line-height:1.7;">Noch kein Abschluss. Verhandlungen laufen.</div>
         </div>
     </div>
 
@@ -198,29 +221,27 @@
 
 <!-- ===== DIESE WOCHE WICHTIG ===== -->
 <div class="section-title">&#128204; Diese Woche wichtig</div>
-<div style="display:grid;grid-template-columns:1fr 1fr;gap:20px;margin-bottom:32px;">
+<div class="week-grid">
     <div class="card" style="border-left:4px solid var(--accent);">
         <div style="font-size:13px;font-weight:700;color:var(--accent);text-transform:uppercase;letter-spacing:0.5px;margin-bottom:10px;">🛒 Webshop</div>
-        <ul style="margin:0;padding-left:18px;font-size:13px;line-height:2;">
-            <li><strong>Adressvalidierung für ausländische Kunden</strong> — spart Problemfälle bis in die Buchhaltung <span style="background:rgba(228,36,39,0.12);color:#e52427;font-size:10px;font-weight:700;padding:1px 6px;border-radius:4px;margin-left:4px;">HOCH</span></li>
-            <li><strong>ROSI live schalten</strong> — eigener Chatbot für Beratung, Zendesk-Anbindung &amp; Entlastung Customer Service (inkl. DHL-Tracking im Chat)</li>
-            <li><strong>Customer Journey Workshop</strong> — bessere Führung durch den Shop, Conversion-Potenzial heben</li>
+        <ul style="margin:0;padding-left:18px;font-size:13px;line-height:2.2;">
+            <li><strong>Adressvalidierung</strong> <span style="background:rgba(228,36,39,0.12);color:#e52427;font-size:10px;font-weight:700;padding:1px 6px;border-radius:4px;margin-left:4px;">HOCH</span></li>
+            <li><strong>ROSI live schalten</strong></li>
+            <li><strong>Customer Journey Workshop</strong></li>
         </ul>
     </div>
     <div class="card" style="border-left:4px solid var(--accent);">
         <div style="font-size:13px;font-weight:700;color:var(--accent);text-transform:uppercase;letter-spacing:0.5px;margin-bottom:10px;">📦 Amazon</div>
-        <ul style="margin:0;padding-left:18px;font-size:13px;line-height:2;">
-            <li><strong>UK Expansion vorbereiten</strong> — Fulfilmentcrowd-Anbindung prüfen, Listing-Übersetzungen für UK freigeben <span style="background:rgba(228,36,39,0.12);color:#e52427;font-size:10px;font-weight:700;padding:1px 6px;border-radius:4px;margin-left:4px;">HOCH</span></li>
-            <li><strong>Budget-Kontrolle KW09</strong> — Tagesgenaues Monitoring nach Jessi-Update Montag; DE + FR Budget für KW10 freigeben</li>
-            <li><strong>ACOS-Optimierung DE</strong> — Top-3-Kampagnen mit ACOS &gt; 30% identifizieren und Gebote anpassen</li>
-            <li><strong>Jahresverhandlungen Amazon</strong> — Warten auf R&uuml;ckmeldung der Account Managerin <span style="background:rgba(245,158,11,0.15);color:#b45309;font-size:10px;font-weight:700;padding:1px 6px;border-radius:4px;margin-left:4px;">OFFEN</span></li>
+        <ul style="margin:0;padding-left:18px;font-size:13px;line-height:2.2;">
+            <li><strong>UK Expansion</strong> <span style="background:rgba(228,36,39,0.12);color:#e52427;font-size:10px;font-weight:700;padding:1px 6px;border-radius:4px;margin-left:4px;">HOCH</span></li>
+            <li><strong>Jahresverhandlungen Amazon</strong> <span style="background:rgba(245,158,11,0.15);color:#b45309;font-size:10px;font-weight:700;padding:1px 6px;border-radius:4px;margin-left:4px;">OFFEN</span></li>
         </ul>
     </div>
 </div>
 
 <!-- ===== SECTION 1: QUARTALSZIELE ===== -->
 <div class="section-title">Quartalsziele Q1 – Status</div>
-<div style="display:grid;grid-template-columns:repeat(5,1fr);gap:16px;margin-bottom:24px;" id="kpiGrid"></div>
+<div class="kpi-grid" id="kpiGrid"></div>
 
 <!-- ===== SECTION: UMSATZÜBERSICHT ===== -->
 <div class="section-title">Umsatzübersicht – Plan vs. Ist</div>
@@ -249,15 +270,7 @@
 <div class="section-title">Aktuelle Blockaden & Fuck-ups</div>
 <div id="fuckupList"></div>
 
-<!-- ===== SECTION 5: INNOVATION & AUTOMATISIERUNG ===== -->
-<div class="section-title">E-Commerce Innovation & Automatisierung</div>
-<div class="grid-2" id="innovationGrid"></div>
-
-<!-- ===== SECTION 6: ARTIKELGRUPPEN ===== -->
-<div class="section-title">Artikelgruppen – Absatzanteile YTD Jan–Feb 2026</div>
-<div class="card" style="padding: 20px;" id="kategorienCard"></div>
-
-<!-- ===== SECTION 7: QUICK LINKS ===== -->
+<!-- ===== SECTION 5: QUICK LINKS ===== -->
 <div class="section-title">Detail-Dashboards</div>
 <div class="quick-links">
     <a href="webshop.html" class="quick-link">
@@ -362,9 +375,9 @@ const steineWebshopQ1 = [
 ];
 
 const steineAmazonQ1 = [
-    { name: "Jahresgespräche Amazon", detail: "Kopfkonditionen: 3–3,5% gesenkt, PICS Logistik-Programm eingeführt", owner: "Marc", status: "green", meilenstein: "Abgeschlossen", deadline: "Q1" },
+    { name: "Jahresgespräche Amazon", detail: "Kopfkonditionen in Verhandlung – kein Abschluss bisher", owner: "Marc", status: "yellow", meilenstein: "Konditionen final verhandeln", deadline: "Q1" },
     { name: "UK Expansion", detail: "Ziel: 5.000 GBP/Woche (Break-even Pick & Pack) | Ist: ca. 4.500 GBP", owner: "Lena", status: "yellow", meilenstein: "5.000 GBP/Woche stabil erreichen", deadline: "Q1" },
-    { name: "Amazon USA – Handseifen Launch", detail: "5 US Handseifen live nehmen | Launch kurz bevor", owner: "Karina", status: "yellow", meilenstein: "Go-Live bis 01.03.", deadline: "01.03." },
+    { name: "Amazon USA – Handseifen Launch", detail: "Buchhalterische Schwierigkeiten gelöst – Go-Live mit Bestand im Laufe der Woche", owner: "Karina", status: "yellow", meilenstein: "Live mit Bestand KW10", deadline: "KW10" },
     { name: "Amazon TOX", detail: "Hybrid-Projekt gestartet, externer Berater an Bord", owner: "Marc", status: "yellow", meilenstein: "Projekt-Abschluss in 4 Monaten", deadline: "Jun" },
     { name: "Amazon Profitabilität", detail: "DB5 aktuell 13,4% → Ziel 15%", owner: "Marc", status: "yellow", meilenstein: "DB5 auf 15% steigern", deadline: "Q2" },
 ];
@@ -387,9 +400,7 @@ const steineAmazonRocks = [
 
 // --- Fuck-ups & Blockaden ---
 const fuckups = [
-    { problem: "Google Ads – Daten KW09 ausstehend", impact: "Jessi trägt Daten montags nach – KW09-Werte noch nicht im Reporting", massnahme: "Montag Datenstand prüfen, ggf. nachhaken", owner: "Marc/Jessi", deadline: "03.03.", status: "active" },
-    { problem: "Beiersdorf OHNE GEDØNS – 46 Produkte", impact: "Produkte müssen umbenannt/ausgelistet werden", massnahme: "Liste mit Lynn finalisieren", owner: "Marc/Lynn", deadline: "17.02.", status: "active" },
-    { problem: "USA Gründung – Steuer/Logistik Setup", impact: "Verzögert Amazon USA Launch", massnahme: "Priorisierung + ggf. Freelancer-Support", owner: "Marc", deadline: "Ende Feb", status: "active" }
+    { problem: "Beiersdorf – Schadensübersicht für Anwalt", impact: "Tabelle mit potentieller Schadenssumme muss finalisiert werden", massnahme: "Tabelle finalisieren und an RA Jaworski (NORDEMANN) übergeben", owner: "Marc/Lynn", deadline: "offen", status: "active" }
 ];
 
 // --- Maßnahmen-Roadmap ---
