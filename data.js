@@ -12,8 +12,8 @@ window.JL_DATA = {
   stand: {
     amazon_weekly:  "KW8 (15.02 - 21.02)",   // DE/UK/USA KW8 – wöchentlich
     amazon_monthly: "ES/FR/IT/NL/SE: Januar 2026",  // monatlich
-    webshop:        "03.03.2026",
-    dashboard:      "04.03.2026"
+    webshop:        "05.03.2026",
+    dashboard:      "06.03.2026"
   },
 
   // ─── AMAZON ADS 2026 ──────────────────────────────────────────
@@ -55,12 +55,12 @@ window.JL_DATA = {
 
   // ─── WEBSHOP 2026 ─────────────────────────────────────────────
   webshop: {
-    ytd_umsatz:    670857,   // YTD Umsatz
-    ytd_bestellungen: 14749, // Bestellungen YTD
-    aov:            45.48,   // Ø Bestellwert
+    ytd_umsatz:    693088,   // YTD Umsatz
+    ytd_bestellungen: 15267, // Bestellungen YTD
+    aov:            45.40,   // Ø Bestellwert
     aov_ziel:       49.15,
-    cr:              2.76,   // Conversion Rate %
+    cr:              2.77,   // Conversion Rate %
     cr_ziel:         2.81,
-    tages_schnitt:  10820    // Ø Umsatz/Tag
+    tages_schnitt:  10830    // Ø Umsatz/Tag
   }
 };
