@@ -281,6 +281,23 @@
 //  DATEN – Hier einfach editieren für wöchentliche Updates
 // ============================================================
 
+// --- YoY Webshop – dynamisch aus JL_DATA.webshop_2025_monatlich ---
+// Berechnet für denselben Zeitraum wie der aktuelle Webshop-Datenstand
+function wsYoYPct() {
+    const d = window.JL_DATA;
+    if (!d || !d.webshop_2025_monatlich) return null;
+    const m = d.webshop_2025_monatlich;
+    const mKeys = ['jan','feb','mar','apr','mai','jun','jul','aug','sep','okt','nov','dez'];
+    // stand.webshop Format: "05.03.2026" → Tag=5, Monat=3 (März)
+    const parts = d.stand.webshop.split('.');
+    const day = parseInt(parts[0]);
+    const month0 = parseInt(parts[1]) - 1;
+    let ytdVj = 0;
+    for (let i = 0; i < month0; i++) ytdVj += m[mKeys[i]];
+    ytdVj += m[mKeys[month0]] * (day / new Date(2025, month0 + 1, 0).getDate());
+    return Math.round(((d.webshop.ytd_umsatz / ytdVj) - 1) * 100);
+}
+
 // --- Datenstand (für Freshness-Anzeige) ---
 const datenstand = {
     webshop: { datum: "05.03.2026", quelle: "Jessis Reporting Excel" },
@@ -296,7 +313,7 @@ const kpis = [
         trend: "up",
         massnahme: "Quelle: Jessis Reporting | Stand: 05.03.2026",
         color: "--green",
-        yoy: 33
+        yoy: wsYoYPct()
     },
     {
         name: "Webshop AOV",

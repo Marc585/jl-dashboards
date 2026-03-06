@@ -62,7 +62,16 @@ window.JL_DATA = {
     aov_ziel:       49.15,
     cr:              2.77,   // Conversion Rate %
     cr_ziel:         2.81,
-    tages_schnitt:  10830,   // Ø Umsatz/Tag
-    ytd_vorjahr:   522218    // 2025 YTD Jan 1 – Anf. März (aus Monatsauswertung)
+    tages_schnitt:  10830    // Ø Umsatz/Tag
+  },
+
+  // ─── WEBSHOP 2025 MONATSDATEN ─────────────────────────────────
+  // Quelle: Jessis Reporting → Tab "monthly_quarterly" → Zeile "Shopumsatz 2025"
+  // Wird für dynamischen YoY-Vergleich genutzt (Dashboards berechnen korrekte Vergleichsperiode)
+  webshop_2025_monatlich: {
+    jan: 269902, feb: 214736, mar: 232992, apr: 244272,
+    mai: 266408, jun: 280430, jul: 260592, aug: 475167,
+    sep: 489122, okt: 553222, nov: 526741, dez: 431505
+    // Gesamt 2025: 4.245.088€
   }
 };
