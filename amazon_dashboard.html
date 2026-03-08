@@ -1,0 +1,2161 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Amazon J&L - Dashboard Q1 2026</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg: #f2ece7;
+            --card: #ffffff;
+            --border: #e6dcce;
+            --text: #221e1b;
+            --muted: #8b8577;
+            --accent: #3f5a3f;
+            --green: #4a7c59;
+            --yellow: #ba6a49;
+            --red: #e52427;
+            --blue: #3f5a3f;
+            --purple: #ed98df;
+            --orange: #ba6a49;
+            --cyan: #647c64;
+            --pink: #ed98df;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            font-family: 'Poppins', -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif;
+            background: var(--bg);
+            color: var(--text);
+            line-height: 1.6;
+            padding: 24px;
+        }
+
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 32px;
+            padding-bottom: 20px;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .header h1 {
+            font-size: 28px;
+            font-weight: 700;
+            background: linear-gradient(135deg, #3f5a3f, #647c64);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .header .meta {
+            color: var(--muted);
+            font-size: 14px;
+            text-align: right;
+        }
+
+        .header .meta strong { color: var(--text); }
+
+        /* Grid */
+        .grid { display: grid; gap: 20px; margin-bottom: 24px; }
+        .grid-4 { grid-template-columns: repeat(4, 1fr); }
+        .grid-3 { grid-template-columns: repeat(3, 1fr); }
+        .grid-2 { grid-template-columns: repeat(2, 1fr); }
+        .grid-8 { grid-template-columns: repeat(8, 1fr); }
+
+        /* Cards */
+        .card {
+            background: var(--card);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 20px;
+            box-shadow: 0 2px 12px rgba(34,28,22,0.04);
+        }
+
+        .card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 16px;
+        }
+
+        .card-header h3 {
+            font-size: 14px;
+            font-weight: 600;
+            color: var(--muted);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .card-header .badge {
+            font-size: 11px;
+            padding: 3px 10px;
+            border-radius: 20px;
+            font-weight: 600;
+        }
+
+        .badge-green { background: rgba(74,124,89,0.15); color: var(--green); }
+        .badge-yellow { background: rgba(186,106,73,0.15); color: var(--yellow); }
+        .badge-red { background: rgba(229,36,39,0.15); color: var(--red); }
+        .badge-blue { background: rgba(63,90,63,0.15); color: var(--blue); }
+
+        /* KPI Cards */
+        .kpi { text-align: center; }
+        .kpi .flag { font-size: 32px; margin-bottom: 8px; }
+        .kpi .country { font-size: 13px; color: var(--muted); font-weight: 600; text-transform: uppercase; letter-spacing: 1px; }
+        .kpi .value { font-size: 28px; font-weight: 700; margin: 4px 0; }
+        .kpi .label { font-size: 12px; color: var(--muted); }
+        .kpi .sub { font-size: 11px; color: var(--muted); margin-top: 4px; }
+        .kpi .budget-line { font-size: 12px; color: var(--muted); margin-top: 8px; display: flex; align-items: center; justify-content: center; gap: 6px; flex-wrap: wrap; }
+        .kpi .budget-line strong { color: var(--text); }
+        .roas-tag { display: inline-block; padding: 1px 7px; border-radius: 10px; font-size: 10px; font-weight: 600; }
+        .roas-tag.roas-green { background: rgba(74,124,89,0.15); color: var(--green); }
+        .roas-tag.roas-yellow { background: rgba(186,106,73,0.15); color: var(--yellow); }
+        .roas-tag.roas-red { background: rgba(229,36,39,0.15); color: var(--red); }
+
+        /* Total Banner */
+        .total-banner {
+            background: linear-gradient(135deg, rgba(63,90,63,0.15), rgba(100,124,100,0.15));
+            border: 1px solid rgba(63,90,63,0.3);
+            border-radius: 16px;
+            padding: 28px;
+            text-align: center;
+            margin-bottom: 24px;
+        }
+
+        .total-banner .label { font-size: 14px; color: var(--muted); text-transform: uppercase; letter-spacing: 1px; }
+        .total-banner .amount { font-size: 48px; font-weight: 800; margin: 8px 0; }
+        .total-banner .sub { font-size: 15px; color: var(--muted); }
+        .total-banner .sub strong { color: var(--accent); }
+
+        /* Section Title */
+        .section-title {
+            font-size: 20px;
+            font-weight: 700;
+            margin: 32px 0 16px;
+            padding-left: 12px;
+            border-left: 3px solid var(--accent);
+        }
+
+        /* Table */
+        .table-wrapper { overflow-x: auto; }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 13px;
+        }
+
+        th {
+            text-align: left;
+            padding: 10px 12px;
+            font-weight: 600;
+            color: var(--muted);
+            font-size: 11px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            border-bottom: 2px solid var(--border);
+        }
+
+        td {
+            padding: 10px 12px;
+            border-bottom: 1px solid var(--border);
+        }
+
+        tr:hover td { background: rgba(63,90,63,0.04); }
+
+        .num { text-align: right; font-variant-numeric: tabular-nums; }
+
+        .highlight { color: var(--accent); font-weight: 600; }
+
+        /* ROAS Indicator */
+        .roas-bar {
+            display: inline-block;
+            height: 6px;
+            border-radius: 3px;
+            margin-left: 8px;
+            vertical-align: middle;
+        }
+
+        /* Status Dots */
+        .dot {
+            display: inline-block;
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            margin-right: 6px;
+        }
+
+        .dot-green { background: var(--green); }
+        .dot-yellow { background: var(--yellow); }
+        .dot-red { background: var(--red); }
+
+        /* Chart Container */
+        .chart-container {
+            position: relative;
+            height: 300px;
+            margin-top: 12px;
+        }
+
+        .chart-container-lg {
+            position: relative;
+            height: 400px;
+            margin-top: 12px;
+        }
+
+        /* Country Color Bars */
+        .country-bar {
+            display: flex;
+            height: 40px;
+            border-radius: 8px;
+            overflow: hidden;
+            margin: 12px 0;
+        }
+
+        .country-bar div {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 11px;
+            font-weight: 700;
+            color: white;
+            transition: all 0.3s;
+        }
+
+        .country-bar div:hover { opacity: 0.8; }
+
+        /* Legend */
+        .legend {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 16px;
+            margin-top: 12px;
+        }
+
+        .legend-item {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            font-size: 12px;
+            color: var(--muted);
+        }
+
+        .legend-dot {
+            width: 10px;
+            height: 10px;
+            border-radius: 3px;
+        }
+
+        /* Warning Box */
+        .warning {
+            background: rgba(186,106,73,0.1);
+            border: 1px solid rgba(186,106,73,0.3);
+            border-radius: 10px;
+            padding: 16px 20px;
+            margin-bottom: 20px;
+            display: flex;
+            align-items: flex-start;
+            gap: 12px;
+        }
+
+        .warning .icon { font-size: 20px; }
+        .warning .text { font-size: 13px; }
+        .warning .text strong { color: var(--yellow); }
+
+        /* Footer */
+        /* Dashboard Navigation */
+        .dashboard-nav { display: flex; align-items: center; gap: 16px; margin-bottom: 20px; padding-bottom: 12px; border-bottom: 1px solid var(--border); flex-wrap: wrap; }
+        .dashboard-nav a { color: var(--accent); text-decoration: none; font-size: 13px; font-weight: 500; transition: color 0.2s; }
+        .dashboard-nav a:hover { color: var(--text); text-decoration: underline; }
+        .dashboard-nav .nav-sep { color: var(--border); font-size: 12px; }
+        .quick-links { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; margin-top: 32px; }
+        .quick-link { display: block; text-decoration: none; padding: 20px; text-align: center; border-radius: 12px; background: var(--card); border: 1px solid var(--border); transition: all 0.2s; }
+        .quick-link:hover { border-color: var(--accent); transform: translateY(-2px); }
+        .quick-link .ql-icon { font-size: 28px; margin-bottom: 6px; }
+        .quick-link .ql-title { font-size: 14px; font-weight: 700; color: var(--text); }
+        .quick-link .ql-desc { font-size: 12px; color: var(--muted); margin-top: 4px; }
+
+        .footer {
+            margin-top: 40px;
+            padding-top: 20px;
+            border-top: 1px solid var(--border);
+            color: var(--muted);
+            font-size: 12px;
+            text-align: center;
+        }
+
+        @media (max-width: 1200px) {
+            .grid-4 { grid-template-columns: repeat(2, 1fr); }
+            .grid-8 { grid-template-columns: repeat(4, 1fr); }
+        }
+
+        @media (max-width: 768px) {
+            .grid-4, .grid-3, .grid-2, .grid-8 { grid-template-columns: 1fr; }
+            body { padding: 12px; }
+        }
+    
+  /* ── VENDOR SALES: vendor-specific styles ────────────────── */
+/* HEADER */
+  .header {
+    background: var(--accent);
+    color: #fff;
+    padding: 28px 40px 24px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 12px;
+  }
+  .header h1 { font-size: 1.5rem; font-weight: 700; letter-spacing: -0.02em; }
+  .header .subtitle { font-size: 0.82rem; opacity: 0.75; margin-top: 3px; }
+  .header .badge {
+    background: rgba(255,255,255,0.18);
+    border: 1px solid rgba(255,255,255,0.3);
+    border-radius: 20px;
+    padding: 5px 14px;
+    font-size: 0.78rem;
+    font-weight: 500;
+    white-space: nowrap;
+  }
+
+  /* LAYOUT */
+  .container { max-width: 1400px; margin: 0 auto; padding: 32px 24px; }
+  .section-title {
+    font-size: 1rem;
+    font-weight: 600;
+    color: var(--accent);
+    margin-bottom: 16px;
+    padding-bottom: 8px;
+    border-bottom: 2px solid var(--border);
+    letter-spacing: 0.01em;
+  }
+
+  /* KPI CARDS */
+  .kpi-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; margin-bottom: 32px; }
+  .kpi-card {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 20px 24px;
+    position: relative;
+    overflow: hidden;
+  }
+  .kpi-card::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 3px;
+    background: var(--accent);
+  }
+  .kpi-label { font-size: 0.75rem; font-weight: 500; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.06em; margin-bottom: 6px; }
+  .kpi-value { font-size: 1.9rem; font-weight: 700; color: var(--text); line-height: 1; }
+  .kpi-sub { font-size: 0.75rem; color: var(--text-muted); margin-top: 4px; }
+
+  /* CHARTS GRID */
+  .charts-grid { display: grid; grid-template-columns: 340px 1fr; gap: 20px; margin-bottom: 32px; }
+  .card {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 24px;
+  }
+  .chart-wrap { position: relative; }
+  .chart-wrap canvas { display: block; }
+
+  /* DONUT LEGEND */
+  .donut-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 0; margin-top: 16px; }
+  .legend-item {
+    display: flex;
+    align-items: center;
+    gap: 7px;
+    padding: 4px 0;
+    font-size: 0.72rem;
+    color: var(--text);
+  }
+  .legend-dot { width: 10px; height: 10px; border-radius: 50%; flex-shrink: 0; }
+  .legend-pct { font-weight: 600; margin-left: auto; color: var(--text-muted); font-size: 0.7rem; }
+
+  /* DATA TABLE */
+  .table-wrap { overflow-x: auto; margin-bottom: 32px; }
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 0.82rem;
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    overflow: hidden;
+  }
+  thead th {
+    background: var(--accent);
+    color: #fff;
+    padding: 11px 12px;
+    text-align: right;
+    font-weight: 600;
+    font-size: 0.75rem;
+    white-space: nowrap;
+  }
+  thead th:first-child { text-align: left; min-width: 180px; }
+  tbody tr { border-bottom: 1px solid var(--border); }
+  tbody tr:last-child { border-bottom: none; }
+  tbody tr:nth-child(even) { background: #faf7f4; }
+  tbody tr:hover { background: #f0ebe4; }
+  tbody td {
+    padding: 9px 12px;
+    text-align: right;
+    white-space: nowrap;
+  }
+  tbody td:first-child { text-align: left; font-weight: 500; }
+  .total-row td { background: #eef2ee !important; font-weight: 700; color: var(--accent); border-top: 2px solid var(--border); }
+  .pct-pill {
+    display: inline-block;
+    background: #e8f0e8;
+    color: var(--accent);
+    border-radius: 4px;
+    padding: 1px 5px;
+    font-size: 0.68rem;
+    font-weight: 600;
+    margin-left: 4px;
+  }
+
+  /* RETURNS TABLE */
+  .two-col { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin-bottom: 32px; }
+  .ret-green { color: #166534; background: #dcfce7; }
+  .ret-orange { color: #92400e; background: #fef3c7; }
+  .ret-red { color: #991b1b; background: #fee2e2; }
+  .ret-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    padding: 2px 8px;
+    border-radius: 4px;
+    font-size: 0.75rem;
+    font-weight: 600;
+    min-width: 60px;
+    justify-content: center;
+  }
+
+  /* TOP PRODUCTS */
+  .top-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; margin-bottom: 32px; }
+  .top-cat-card {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 16px 18px;
+  }
+  .top-cat-title {
+    font-size: 0.8rem;
+    font-weight: 700;
+    color: var(--accent);
+    margin-bottom: 10px;
+    padding-bottom: 8px;
+    border-bottom: 1px solid var(--border);
+  }
+  .top-prod {
+    display: flex;
+    align-items: flex-start;
+    gap: 8px;
+    padding: 6px 0;
+    border-bottom: 1px solid #f0ebe4;
+  }
+  .top-prod:last-child { border-bottom: none; }
+  .top-rank {
+    width: 18px;
+    height: 18px;
+    border-radius: 50%;
+    background: var(--accent);
+    color: #fff;
+    font-size: 0.65rem;
+    font-weight: 700;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    margin-top: 1px;
+  }
+  .top-prod-title { font-size: 0.72rem; color: var(--text); line-height: 1.4; flex: 1; }
+  .top-prod-rev { font-size: 0.72rem; font-weight: 700; color: var(--green); white-space: nowrap; }
+
+  /* FOOTER */
+  .footer { text-align: center; font-size: 0.72rem; color: var(--text-muted); padding: 20px 0; border-top: 1px solid var(--border); margin-top: 8px; }
+</style>
+    <script src="data.js"></script>
+</head>
+<body>
+
+    <div class="dashboard-nav">
+        <a href="index.html">&#8592; Alle Dashboards</a>
+        <span class="nav-sep">|</span>
+        <a href="ceo.html">CEO Dashboard</a>
+        <span class="nav-sep">|</span>
+        <a href="webshop.html">Webshop Dashboard</a>
+        <span class="nav-sep">|</span>
+        <a href="vendor.html">&#8594; Vendor Sales</a>
+    </div>
+
+    <!-- HEADER -->
+    <div class="header">
+        <div>
+            <h1>Amazon J&L International Dashboard</h1>
+            <p style="color: var(--muted); margin-top: 4px;">Ads Budget Allocation & Performance | Alle Marktplätze</p>
+        </div>
+        <div class="meta">
+            <strong>Marc Böhle</strong> | CDO<br>
+            Stand: 04.03.2026 | Q1 2026
+        </div>
+    </div>
+
+    <!-- DIESE WOCHE WICHTIG – AMAZON -->
+    <div class="section-title">📌 Diese Woche wichtig – Amazon</div>
+    <div class="card" style="border-left:4px solid var(--green);margin-bottom:24px;">
+        <ul style="margin:0;padding-left:18px;font-size:13px;line-height:2;">
+            <li><strong>UK Expansion vorbereiten</strong> — Fulfilmentcrowd-Anbindung prüfen, Listing-Übersetzungen für UK freigeben <span style="background:rgba(228,36,39,0.12);color:var(--red);font-size:10px;font-weight:700;padding:1px 6px;border-radius:4px;margin-left:4px;">HOCH</span></li>
+            <li><strong>Budget-Kontrolle KW09</strong> — Tagesgenaues Monitoring nach Jessi-Update Montag; DE + FR Budget für KW10 freigeben</li>
+            <li><strong>ACOS-Optimierung DE</strong> — Top-3-Kampagnen mit ACOS &gt; 30% identifizieren und Gebote anpassen</li>
+            <li><strong>Jahresverhandlungen Amazon</strong> — Weitere Verhandlungsrunde abgeschlossen. Sieht gut aus: Kopfkonditionen k&ouml;nnen um <strong>3&ndash;3,5%</strong> reduziert werden, wenn wir daf&uuml;r Cost Price Decreases f&uuml;r Auslaufprodukte anbieten. Sobald das Logistik-PICS-Programm umgesetzt ist, werden weitere Prozente von den Kopfkonditionen abgezogen. <span style="background:rgba(34,197,94,0.15);color:#15803d;font-size:10px;font-weight:700;padding:1px 6px;border-radius:4px;margin-left:4px;">POSITIV</span></li>
+        </ul>
+    </div>
+
+    <!-- TOTAL BANNER -->
+    <div class="total-banner">
+        <div class="label">Amazon Ads 2026 &ndash; Budget &amp; Performance</div>
+        <div id="banner-hero-umsatz" class="amount" style="color:var(--accent);">1.509.157 &euro;</div>
+        <div id="banner-hero-label" style="font-size: 15px; font-weight:600; color: var(--text); margin-bottom: 4px;">Amazon Au&szlig;enumsatz YTD 2026 &ndash; alle 8 M&auml;rkte</div>
+        <div id="banner-yoy" style="margin-bottom:6px;"></div>
+        <div style="font-size:13px; color:var(--muted); margin-bottom: 8px;">Ads Jahresbudget 2026: <strong>619.300 &euro;</strong> (alle 8 M&auml;rkte)</div>
+        <div style="display: flex; justify-content: center; gap: 32px; flex-wrap: wrap; margin: 12px 0 8px;">
+            <div style="text-align: center;">
+                <div style="font-size: 28px; font-weight: 800; color: var(--green);">11,2x</div>
+                <div style="font-size: 11px; color: var(--muted);">Paid ROAS YTD (EU)</div>
+            </div>
+            <div style="text-align: center;">
+                <div id="banner-umsatz-value" style="font-size: 28px; font-weight: 800; color: var(--accent);">1.509.157 &euro;</div>
+                <div id="banner-umsatz-label" style="font-size: 11px; color: var(--muted);">Amazon Au&szlig;enumsatz YTD alle M&auml;rkte</div>
+            </div>
+            <div style="text-align: center;">
+                <div style="font-size: 28px; font-weight: 800; color: var(--muted);">61.554 &euro;</div>
+                <div style="font-size: 11px; color: var(--muted);">Ad Spend YTD</div>
+            </div>
+            <div style="text-align: center;">
+                <div style="font-size: 28px; font-weight: 800; color: var(--accent);">31,9x</div>
+                <div style="font-size: 11px; color: var(--muted);">Interner ROAS (ERP EU)</div>
+            </div>
+        </div>
+        <div class="sub" style="margin-top: 8px;">
+            Umsatzprognose 2026: <strong>11.300.000 &euro;</strong> |
+            Alle 8 M&auml;rkte erfasst (DE, UK, USA, IT, ES, FR, NL, SE) |
+            Paid ROAS = Einnahmen Paid / Ausgaben Paid &bull; Interner ROAS = ERP EU / Spend DE+UK
+        </div>
+    </div>
+
+    <!-- ÜBERSICHT PRO LAND -->
+    <div class="section-title">Umsatz &amp; Budget pro Land</div>
+    <div style="font-size: 12px; color: var(--muted); margin: -8px 0 16px 16px;">Amazon Au&szlig;enumsatz (Paid + Organic) &ndash; alle M&auml;rkte</div>
+
+    <div style="display:flex; gap:8px; margin-bottom:16px; align-items:center;">
+      <span style="font-size:12px; color:var(--muted);">Zeitraum:</span>
+      <button id="cards-btn-2025" onclick="setCardsView('2025')"
+        style="padding:5px 14px; border-radius:20px; border:1px solid var(--border); background:transparent; color:var(--text); font-size:12px; font-weight:600; cursor:pointer; font-family:inherit;">
+        2025 Gesamt
+      </button>
+      <button id="cards-btn-2026" onclick="setCardsView('2026')"
+        style="padding:5px 14px; border-radius:20px; border:1px solid var(--accent); background:var(--accent); color:#fff; font-size:12px; font-weight:600; cursor:pointer; font-family:inherit;">
+        2026 Aktuell
+      </button>
+      <span id="cards-zeitraum-label" style="font-size:11px; color:var(--muted); margin-left:4px;">Amazon Au&szlig;enumsatz 2026 &ndash; DE/UK/USA KW1&ndash;8 YTD | ES/FR/IT/NL/SE: Jan</span>
+      <span style="margin-left:auto;"></span>
+      <span style="font-size:12px; color:var(--muted);">Summe:&nbsp;</span><span id="cards-total-sum" style="font-size:14px; font-weight:700; color:var(--accent);">1.509.157 &euro;</span>
+    </div>
+    <div class="grid grid-4">
+        <div class="card kpi" style="border-color: rgba(63,90,63,0.3);" data-2025="7.727.122&euro;" data-2026="1.272.967&euro;" data-label-2025="Amazon Au&szlig;enumsatz 2025" data-label-2026="Amazon Au&szlig;enumsatz YTD KW1&ndash;8 &rsquo;26">
+            <div class="flag">&#127465;&#127466;</div>
+            <div class="country">Deutschland</div>
+            <div class="value card-main-value" style="color: var(--accent)">7.727.122&euro;</div>
+            <div class="label card-time-label">Amazon Au&szlig;enumsatz 2025</div>
+            <div class="budget-line">Jahresbudget '26: <strong>320.000&euro;</strong> <span class="roas-tag roas-green">Paid ROAS: 14,46</span></div>
+            <div class="sub">Hauptmarkt | Spend: 34.798&euro; | 87.577 Bestellungen</div>
+        </div>
+        <div class="card kpi" data-2025="416.615&euro;" data-2026="68.985&euro;" data-label-2025="Amazon Au&szlig;enumsatz 2025" data-label-2026="Amazon Au&szlig;enumsatz Jan &rsquo;26">
+            <div class="flag">&#127470;&#127481;</div>
+            <div class="country">Italien</div>
+            <div class="value card-main-value" style="color: var(--green)">416.615&euro;</div>
+            <div class="label card-time-label">Amazon Au&szlig;enumsatz 2025</div>
+            <div class="budget-line">Jahresbudget '26: <strong>50.400&euro;</strong> <span class="roas-tag roas-green">Total ROAS '25: 3,84</span></div>
+            <div class="sub">Top Performer | Ziel '26: 101.372&euro;</div>
+        </div>
+        <div class="card kpi" data-2025="399.815&euro;" data-2026="48.565&euro;" data-label-2025="Amazon Au&szlig;enumsatz 2025" data-label-2026="Amazon Au&szlig;enumsatz Jan &rsquo;26">
+            <div class="flag">&#127466;&#127480;</div>
+            <div class="country">Spanien</div>
+            <div class="value card-main-value" style="color: var(--orange)">399.815&euro;</div>
+            <div class="label card-time-label">Amazon Au&szlig;enumsatz 2025</div>
+            <div class="budget-line">Jahresbudget '26: <strong>46.800&euro;</strong> <span class="roas-tag roas-green">Total ROAS '25: 4,41</span></div>
+            <div class="sub">Top Performer | Ziel '26: 208.000&euro;</div>
+        </div>
+        <div class="card kpi" data-2025="319.801&euro;" data-2026="44.011&euro;" data-label-2025="Amazon Au&szlig;enumsatz 2025" data-label-2026="Amazon Au&szlig;enumsatz Jan &rsquo;26">
+            <div class="flag">&#127467;&#127479;</div>
+            <div class="country">Frankreich</div>
+            <div class="value card-main-value" style="color: var(--cyan)">319.801&euro;</div>
+            <div class="label card-time-label">Amazon Au&szlig;enumsatz 2025</div>
+            <div class="budget-line">Jahresbudget '26: <strong>39.800&euro;</strong> <span class="roas-tag roas-green">Total ROAS '25: 2,97</span></div>
+            <div class="sub">Stabil | Ziel '26: 79.000&euro;</div>
+        </div>
+        <div class="card kpi" data-2025="87.987&euro;" data-2026="11.277&euro;" data-label-2025="Amazon Au&szlig;enumsatz 2025" data-label-2026="Amazon Au&szlig;enumsatz Jan &rsquo;26">
+            <div class="flag">&#127475;&#127473;</div>
+            <div class="country">Niederlande</div>
+            <div class="value card-main-value" style="color: var(--purple)">87.987&euro;</div>
+            <div class="label card-time-label">Amazon Au&szlig;enumsatz 2025</div>
+            <div class="budget-line">Jahresbudget '26: <strong>5.000&euro;</strong> <span class="roas-tag roas-green">Total ROAS '25: 9,98</span></div>
+            <div class="sub">Cash Cow | Bester ROAS!</div>
+        </div>
+        <div class="card kpi" data-2025="56.971&euro;" data-2026="34.839&euro;" data-label-2025="Amazon Au&szlig;enumsatz 2025 (ab Jun&rsquo;25) &ndash; in EUR, umgerechnet aus GBP" data-label-2026="Amazon Au&szlig;enumsatz YTD KW1&ndash;8 &rsquo;26 &ndash; in EUR, umgerechnet aus GBP">
+            <div class="flag">&#127468;&#127463;</div>
+            <div class="country">UK</div>
+            <div class="value card-main-value" style="color: var(--blue)">56.971&euro;</div>
+            <div class="label card-time-label">Amazon Au&szlig;enumsatz 2025 (ab Jun&rsquo;25) &ndash; in EUR</div>
+            <div style="font-size:10px;color:var(--muted);margin-top:2px;line-height:1.4;">Außenumsatz = Amazon-Abverkauf an Endkunden &bull; Umgerechnet aus GBP &bull; Stand: KW8 2026</div>
+            <div class="budget-line">Jahresbudget '26: <strong>100.000&euro;</strong> <span class="roas-tag roas-green">Paid ROAS: 2,11</span></div>
+            <div class="sub">Wachstumsmarkt | Spend: 12.436&euro; | 2.858 Bestellungen</div>
+        </div>
+        <div class="card kpi" data-2025="179.789&euro;" data-2026="23.419&euro;" data-label-2025="Amazon Au&szlig;enumsatz 2025 (~187.280 USD)" data-label-2026="Amazon Au&szlig;enumsatz YTD KW1&ndash;8 &rsquo;26 (~24.395 USD)">
+            <div class="flag">&#127482;&#127480;</div>
+            <div class="country">USA</div>
+            <div class="value card-main-value" style="color: var(--yellow)">179.789&euro;</div>
+            <div class="label card-time-label">Amazon Au&szlig;enumsatz 2025 (~187.280 USD)</div>
+            <div style="font-size:10px; color:var(--muted); margin-top:2px; line-height:1.4;">Umgerechnet, Kurs: 1 USD &asymp; 0,96 EUR</div>
+            <div class="budget-line">Jahresbudget '26: <strong>TBD</strong> <span class="roas-tag roas-red">Paid ROAS: 0,71</span></div>
+            <div class="sub">Marktaufbau | Ticket to Retail | Spend: 14.320&euro; | 799 Bestellungen</div>
+        </div>
+        <div class="card kpi" data-2025="32.481&euro;" data-2026="5.094&euro;" data-label-2025="Amazon Au&szlig;enumsatz 2025" data-label-2026="Amazon Au&szlig;enumsatz Jan &rsquo;26">
+            <div class="flag">&#127480;&#127466;</div>
+            <div class="country">Schweden</div>
+            <div class="value card-main-value" style="color: var(--muted)">32.481&euro;</div>
+            <div class="label card-time-label">Amazon Au&szlig;enumsatz 2025</div>
+            <div class="budget-line">Jahresbudget '26: <strong>~5.200&euro;</strong></div>
+            <div class="sub">57.300 SEK &divide; 11 &asymp; 434&euro;/Monat</div>
+        </div>
+    </div>
+
+    <!-- BUDGET VERTEILUNG CHART -->
+    <div class="grid grid-2">
+        <div class="card">
+            <div class="card-header">
+                <h3>Budgetverteilung nach Land</h3>
+                <span class="badge badge-blue">2026</span>
+            </div>
+            <div class="chart-container">
+                <canvas id="budgetPieChart"></canvas>
+            </div>
+        </div>
+        <div class="card">
+            <div class="card-header">
+                <h3>Monatliches Budget DE vs. Rest EU</h3>
+                <span class="badge badge-blue">2026</span>
+            </div>
+            <div class="chart-container">
+                <canvas id="monthlyBudgetChart"></canvas>
+            </div>
+        </div>
+    </div>
+
+    <!-- DE DEEP DIVE -->
+    <div class="section-title">Deutschland - Deep Dive (Hauptmarkt)</div>
+
+    <div class="grid grid-3">
+        <div class="card">
+            <div class="card-header">
+                <h3>Budget 2026</h3>
+                <span class="badge badge-green">320.000&euro;</span>
+            </div>
+            <div style="font-size: 36px; font-weight: 700; margin: 12px 0;">320k&euro;</div>
+            <div style="color: var(--muted); font-size: 13px;">
+                Flex-Budget für Peak Seasons<br>
+                Feb Spend (KW6–8): 9.149&euro; | Jan Final: 22.634&euro;
+            </div>
+        </div>
+        <div class="card">
+            <div class="card-header">
+                <h3>Feb. Auslastung (KW6&ndash;8)</h3>
+                <span class="badge badge-green">43,6% &#x2713;</span>
+            </div>
+            <div style="margin-top: 20px;">
+                <div style="background: var(--border); border-radius: 6px; height: 20px; overflow: hidden;">
+                    <div style="background: var(--green); height: 100%; width: 43.6%; border-radius: 6px;"></div>
+                </div>
+                <div style="display: flex; justify-content: space-between; margin-top: 8px; font-size: 12px; color: var(--muted);">
+                    <span>9.149&euro; ausgegeben (3 von 4 Wochen)</span>
+                    <span style="color: var(--green)">&minus;11.851&euro; unter Budget</span>
+                </div>
+            </div>
+            <div style="color: var(--muted); font-size: 12px; margin-top: 12px;">
+                Budget: 21.000&euro; | KW9 (22.–28.02.) noch ausstehend
+            </div>
+        </div>
+        <div class="card">
+            <div class="card-header">
+                <h3>DE &ndash; Feb 2026 Performance (KW6&ndash;8)</h3>
+                <span class="badge badge-blue">KW9 ausstehend</span>
+            </div>
+            <table style="margin-top: 8px; width: 100%;">
+                <tr><td style="color: var(--muted); font-size:12px; padding: 4px 0;">Paid Ads Spend</td><td class="num"><strong>9.149 &euro;</strong></td></tr>
+                <tr><td style="color: var(--muted); font-size:12px; padding: 4px 0;">Paid Sales</td><td class="num">154.666 &euro;</td></tr>
+                <tr><td style="color: var(--muted); font-size:12px; padding: 4px 0;">Organic Sales</td><td class="num">273.548 &euro;</td></tr>
+                <tr><td style="color: var(--muted); font-size:12px; padding: 4px 0;">Total Sales</td><td class="num"><strong style="color: var(--green)">428.214 &euro;</strong></td></tr>
+                <tr><td style="color: var(--muted); font-size:12px; padding: 4px 0;">Paid ROAS</td><td class="num" style="color: var(--green)">16,90x</td></tr>
+                <tr><td style="color: var(--muted); font-size:12px; padding: 4px 0;">Total ROAS</td><td class="num" style="color: var(--green)">46,81x</td></tr>
+                <tr><td style="color: var(--muted); font-size:12px; padding: 4px 0;">Paid ACoS</td><td class="num">5,92%</td></tr>
+            </table>
+        </div>
+    </div>
+
+    <!-- BUDGET MONATSÜBERSICHT -->
+    <div style="background: var(--card); border: 1px solid var(--border); border-radius: 12px; padding: 20px 24px; margin-bottom: 20px;">
+        <div style="font-size: 15px; font-weight: 700; margin-bottom: 16px;">&#127465;&#127466; Deutschland &ndash; Budget vs. Ist (Q1 2026)</div>
+        <table style="width: 100%; border-collapse: collapse; font-size: 13px;">
+            <thead>
+                <tr style="font-size: 11px; color: var(--muted); text-transform: uppercase; letter-spacing: 0.5px; border-bottom: 1px solid var(--border);">
+                    <th style="text-align: left; padding: 6px 8px;">Monat</th>
+                    <th style="text-align: right; padding: 6px 8px;">Budget (Plan)</th>
+                    <th style="text-align: right; padding: 6px 8px;">Ausgegeben (Ist)</th>
+                    <th style="text-align: right; padding: 6px 8px;">Differenz</th>
+                    <th style="text-align: right; padding: 6px 8px;">Auslastung</th>
+                    <th style="text-align: right; padding: 6px 8px;">Total Sales</th>
+                    <th style="text-align: right; padding: 6px 8px;">Paid ROAS</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr style="border-bottom: 1px solid var(--border);">
+                    <td style="padding: 8px 8px; font-weight: 700; color: var(--red);">&#128308; Januar 2026</td>
+                    <td style="text-align: right; padding: 8px 8px; color: var(--muted);">18.000 &euro;</td>
+                    <td style="text-align: right; padding: 8px 8px; font-weight: 700; color: var(--red);">22.634 &euro;</td>
+                    <td style="text-align: right; padding: 8px 8px; color: var(--red);">+4.634 &euro;</td>
+                    <td style="text-align: right; padding: 8px 8px; color: var(--red);">125,7%</td>
+                    <td style="text-align: right; padding: 8px 8px;">762.868 &euro;</td>
+                    <td style="text-align: right; padding: 8px 8px; color: var(--green);">13,92x</td>
+                </tr>
+                <tr style="border-bottom: 1px solid var(--border); background: rgba(74,124,89,0.05);">
+                    <td style="padding: 8px 8px; font-weight: 700; color: var(--green);">&#128994; Februar 2026 <span style="font-size:10px;font-weight:400;color:var(--muted);">(KW6–8, KW9 ausstehend)</span></td>
+                    <td style="text-align: right; padding: 8px 8px; color: var(--muted);">21.000 &euro;</td>
+                    <td style="text-align: right; padding: 8px 8px; font-weight: 700; color: var(--green);">9.149 &euro;</td>
+                    <td style="text-align: right; padding: 8px 8px; color: var(--green);">&minus;11.851 &euro;</td>
+                    <td style="text-align: right; padding: 8px 8px; color: var(--green);">43,6%</td>
+                    <td style="text-align: right; padding: 8px 8px;">428.214 &euro; <span style="font-size:10px;color:var(--muted);">*</span></td>
+                    <td style="text-align: right; padding: 8px 8px; color: var(--green);">16,90x</td>
+                </tr>
+                <tr style="opacity: 0.5;">
+                    <td style="padding: 8px 8px; color: var(--muted);">&#9898; März 2026</td>
+                    <td style="text-align: right; padding: 8px 8px; color: var(--muted);">21.500 &euro;</td>
+                    <td style="text-align: right; padding: 8px 8px; color: var(--muted);">—</td>
+                    <td style="text-align: right; padding: 8px 8px; color: var(--muted);">—</td>
+                    <td style="text-align: right; padding: 8px 8px; color: var(--muted);">laufend</td>
+                    <td style="text-align: right; padding: 8px 8px; color: var(--muted);">—</td>
+                    <td style="text-align: right; padding: 8px 8px; color: var(--muted);">—</td>
+                </tr>
+            </tbody>
+        </table>
+        <div style="font-size: 11px; color: var(--muted); margin-top: 10px;">* Februar Total Sales ohne KW9 (22.–28.02.). Jan-Quelle: Monthly Performance Tab. Feb-Quelle: Weekly KW6–8.</div>
+    </div>
+
+        <div class="card" style="margin-bottom: 20px;">
+        <div class="card-header">
+            <h3>DE - Monatliche Budget Allocation 2026</h3>
+            <span class="badge badge-blue">Plan</span>
+        </div>
+        <div class="chart-container">
+            <canvas id="deBudgetChart"></canvas>
+        </div>
+    </div>
+
+    <!-- UK -->
+    <div class="section-title">UK - Wachstumsmarkt</div>
+
+    <div class="grid grid-2">
+        <div class="card">
+            <div class="card-header">
+                <h3>UK Budget &amp; Ziele 2026</h3>
+                <span class="badge badge-blue">100.000&euro;</span>
+            </div>
+            <table>
+                <tr><td style="color: var(--muted)">Jahresbudget</td><td class="num"><strong>100.000 &euro;</strong></td></tr>
+                <tr><td style="color: var(--muted)">Q1 Budget</td><td class="num">20.000 &euro;</td></tr>
+                <tr><td style="color: var(--muted)">ROAS Ziel (mit Amalyze)</td><td class="num"><strong style="color: var(--green)">4,0</strong></td></tr>
+                <tr><td style="color: var(--muted)">Shift Budget (Prime)</td><td class="num">20.000 &euro;</td></tr>
+                <tr><td style="color: var(--muted)"><strong>Umsatzziel 2026</strong></td><td class="num"><strong style="color: var(--accent)">480.000 &euro;</strong></td></tr>
+            </table>
+        </div>
+        <div class="card">
+            <div class="card-header">
+                <h3 id="uk-chart-title">UK Performance 2026 &ndash; YTD (KW1&ndash;8)</h3>
+                <div style="display:flex;gap:6px;align-items:center;">
+                    <button id="uk-chart-btn-2026" onclick="setUkChart('2026')"
+                        style="padding:4px 12px;border-radius:20px;border:1px solid var(--accent);background:var(--accent);color:#fff;font-size:11px;font-weight:600;cursor:pointer;font-family:inherit;">
+                        2026 YTD
+                    </button>
+                    <button id="uk-chart-btn-2025" onclick="setUkChart('2025')"
+                        style="padding:4px 12px;border-radius:20px;border:1px solid var(--border);background:transparent;color:var(--text);font-size:11px;font-weight:600;cursor:pointer;font-family:inherit;">
+                        2025 Ref.
+                    </button>
+                </div>
+            </div>
+            <div class="chart-container">
+                <canvas id="ukRoasChart"></canvas>
+            </div>
+        </div>
+    </div>
+
+    <!-- UK BUDGET MONATSÜBERSICHT -->
+    <div style="background: var(--card); border: 1px solid var(--border); border-radius: 12px; padding: 20px 24px; margin-bottom: 20px;">
+        <div style="font-size: 15px; font-weight: 700; margin-bottom: 4px;">&#127468;&#127463; UK &ndash; Budget vs. Ist (Q1 2026)</div>
+        <div style="font-size: 11px; color: var(--muted); margin-bottom: 16px;">&#9432; Amazon-Daten kommen mit ca. 14 Tagen Verzug &ndash; Feb/KW9 ggf. noch nicht vollst&auml;ndig</div>
+        <table style="width: 100%; border-collapse: collapse; font-size: 13px;">
+            <thead>
+                <tr style="font-size: 11px; color: var(--muted); text-transform: uppercase; letter-spacing: 0.5px; border-bottom: 1px solid var(--border);">
+                    <th style="text-align: left; padding: 6px 8px;">Monat</th>
+                    <th style="text-align: right; padding: 6px 8px;">Budget (Plan)</th>
+                    <th style="text-align: right; padding: 6px 8px;">Spend Ist</th>
+                    <th style="text-align: right; padding: 6px 8px;">Differenz</th>
+                    <th style="text-align: right; padding: 6px 8px;">Auslastung</th>
+                    <th style="text-align: right; padding: 6px 8px;">Total Sales</th>
+                    <th style="text-align: right; padding: 6px 8px;">Paid ROAS</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr style="border-bottom: 1px solid var(--border);">
+                    <td style="padding: 8px 8px; font-weight: 700; color: var(--red);">&#128308; Januar 2026</td>
+                    <td style="text-align: right; padding: 8px 8px; color: var(--muted);">6.000 &euro;</td>
+                    <td style="text-align: right; padding: 8px 8px; font-weight: 700; color: var(--red);">6.756 &euro;</td>
+                    <td style="text-align: right; padding: 8px 8px; color: var(--red);">+756 &euro;</td>
+                    <td style="text-align: right; padding: 8px 8px; color: var(--red);">112,6%</td>
+                    <td style="text-align: right; padding: 8px 8px;">19.132 &euro;</td>
+                    <td style="text-align: right; padding: 8px 8px; color: var(--yellow);">2,21x</td>
+                </tr>
+                <tr style="border-bottom: 1px solid var(--border); background: rgba(74,124,89,0.05);">
+                    <td style="padding: 8px 8px; font-weight: 700; color: var(--green);">&#128994; Februar 2026 <span style="font-size:10px;font-weight:400;color:var(--muted);">(KW6&ndash;8, KW9 ausstehend)</span></td>
+                    <td style="text-align: right; padding: 8px 8px; color: var(--muted);">7.000 &euro;</td>
+                    <td style="text-align: right; padding: 8px 8px; font-weight: 700; color: var(--green);">4.827 &euro;</td>
+                    <td style="text-align: right; padding: 8px 8px; color: var(--green);">&minus;2.173 &euro;</td>
+                    <td style="text-align: right; padding: 8px 8px; color: var(--green);">68,96%</td>
+                    <td style="text-align: right; padding: 8px 8px;">13.773 &euro; <span style="font-size:10px;color:var(--muted);">*</span></td>
+                    <td style="text-align: right; padding: 8px 8px; color: var(--yellow);">2,04x</td>
+                </tr>
+                <tr style="opacity: 0.5;">
+                    <td style="padding: 8px 8px; color: var(--muted);">&#9898; M&auml;rz 2026</td>
+                    <td style="text-align: right; padding: 8px 8px; color: var(--muted);">7.000 &euro;</td>
+                    <td style="text-align: right; padding: 8px 8px; color: var(--muted);">—</td>
+                    <td style="text-align: right; padding: 8px 8px; color: var(--muted);">—</td>
+                    <td style="text-align: right; padding: 8px 8px; color: var(--muted);">laufend</td>
+                    <td style="text-align: right; padding: 8px 8px; color: var(--muted);">—</td>
+                    <td style="text-align: right; padding: 8px 8px; color: var(--muted);">—</td>
+                </tr>
+            </tbody>
+        </table>
+        <div style="font-size: 11px; color: var(--muted); margin-top: 10px;">* Feb Total Sales ohne KW9 (22.–28.02.). ROAS-Ziel 2026: 4,0x (mit Amalyze). Quelle: UK Budget Allocation Weekly Performance.</div>
+    </div>
+
+
+    <!-- UK ARTIKEL-PERFORMANCE -->
+    <div class="section-title" style="margin-top:32px;">🇬🇧 UK Top-Artikel 2026 – Umsatz auf Artikelbasis</div>
+    <div style="font-size:12px;color:var(--muted);margin:-8px 0 16px 16px;">Quelle: UK Budget Allocation 2026 · Tab „Umsatz auf Artikelbasis" · Stand: KW08 | Außenumsatz (Amazon-Abverkauf an Endkunden) in £ nativ &bull; <strong>Nicht vergleichbar mit der KW1–8 EUR-Zahl oben</strong> (anderer Zeitraum + Währung)</div>
+
+    <!-- KPI Cards -->
+    <div class="grid grid-4" style="margin-bottom:20px">
+        <div class="card kpi" style="text-align:center;padding:20px">
+            <div style="font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:1px;font-weight:600">Außenumsatz UK – Jan+Feb MTD</div>
+            <div style="font-size:30px;font-weight:800;color:var(--accent);margin:6px 0" id="uk-art-ytd-total">–</div>
+            <div style="font-size:12px;color:var(--muted)">in £ nativ · 33 Artikel aktiv · KW1–KW8</div>
+        </div>
+        <div class="card kpi" style="text-align:center;padding:20px">
+            <div style="font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:1px;font-weight:600">Bestellte Einheiten YTD</div>
+            <div style="font-size:30px;font-weight:800;color:var(--blue);margin:6px 0" id="uk-art-units-total">–</div>
+            <div style="font-size:12px;color:var(--muted)" id="uk-art-avg-price">Ø Preis: –</div>
+        </div>
+        <div class="card kpi" style="text-align:center;padding:20px">
+            <div style="font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:1px;font-weight:600">#1 Artikel YTD</div>
+            <div style="font-size:15px;font-weight:700;color:var(--green);margin:6px 0;line-height:1.3" id="uk-art-top1-name">–</div>
+            <div style="font-size:12px;color:var(--muted)" id="uk-art-top1-val">–</div>
+        </div>
+        <div class="card kpi" style="text-align:center;padding:20px">
+            <div style="font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:1px;font-weight:600">KW08 Trend</div>
+            <div style="font-size:24px;font-weight:800;margin:6px 0" id="uk-art-kw8-total">–</div>
+            <div style="font-size:12px;color:var(--muted)" id="uk-art-kw8-vs-kw7">vs. KW07: –</div>
+        </div>
+    </div>
+
+    <!-- Charts: Top 10 Bar + Wöchentlicher Trend -->
+    <div class="grid grid-2" style="margin-bottom:20px">
+        <div class="card">
+            <div class="card-header">
+                <h3>Top 10 Artikel – YTD Umsatz (£)</h3>
+                <span class="badge badge-green">Jan + Feb MTD</span>
+            </div>
+            <div style="position:relative;height:380px;margin-top:8px">
+                <canvas id="ukArtTop10Chart"></canvas>
+            </div>
+        </div>
+        <div class="card">
+            <div class="card-header">
+                <h3>Wöchentlicher Trend – Top 5</h3>
+                <span class="badge badge-blue">KW06 → KW08</span>
+            </div>
+            <div style="position:relative;height:380px;margin-top:8px">
+                <canvas id="ukArtTrendChart"></canvas>
+            </div>
+        </div>
+    </div>
+
+    <!-- Jan vs Feb Vergleich -->
+    <div class="card" style="margin-bottom:20px">
+        <div class="card-header">
+            <h3>Januar vs. Februar MTD – Top 10</h3>
+            <span class="badge badge-yellow">Monatsvergleich</span>
+        </div>
+        <div style="position:relative;height:280px;margin-top:8px">
+            <canvas id="ukArtMonthChart"></canvas>
+        </div>
+    </div>
+
+    <!-- Vollständige Tabelle -->
+    <div class="card" style="margin-bottom:20px">
+        <div class="card-header">
+            <h3>Alle Artikel – Vollständige Übersicht</h3>
+            <span class="badge badge-blue" id="uk-art-table-count">33 Artikel</span>
+        </div>
+        <div style="display:flex;gap:10px;margin-bottom:14px;flex-wrap:wrap;align-items:center">
+            <input type="text" id="uk-art-search" placeholder="🔍 Artikel suchen…"
+                   onkeyup="renderUkArtTable()"
+                   style="padding:7px 12px;border:1px solid var(--border);border-radius:8px;font-family:inherit;font-size:13px;flex:1;min-width:180px;background:var(--bg);color:var(--text)">
+            <select id="uk-art-sort" onchange="renderUkArtTable()"
+                    style="padding:7px 12px;border:1px solid var(--border);border-radius:8px;font-family:inherit;font-size:13px;background:var(--bg);color:var(--text)">
+                <option value="ytd">Sortierung: YTD ↓</option>
+                <option value="feb">Sortierung: Feb MTD ↓</option>
+                <option value="kw8">Sortierung: KW08 ↓</option>
+                <option value="units">Sortierung: Einheiten ↓</option>
+                <option value="trend">Sortierung: Trend ↓</option>
+            </select>
+        </div>
+        <div style="overflow-x:auto">
+            <table style="width:100%;border-collapse:collapse;font-size:12px">
+                <thead>
+                    <tr style="font-size:10px;color:var(--muted);text-transform:uppercase;letter-spacing:0.5px;border-bottom:2px solid var(--border)">
+                        <th style="text-align:left;padding:8px 10px">#</th>
+                        <th style="text-align:left;padding:8px 10px">Artikel</th>
+                        <th style="text-align:right;padding:8px 10px">KW06</th>
+                        <th style="text-align:right;padding:8px 10px">KW07</th>
+                        <th style="text-align:right;padding:8px 10px">KW08</th>
+                        <th style="text-align:right;padding:8px 10px">Trend</th>
+                        <th style="text-align:right;padding:8px 10px">Jan</th>
+                        <th style="text-align:right;padding:8px 10px">Feb MTD</th>
+                        <th style="text-align:right;padding:8px 10px">YTD</th>
+                        <th style="text-align:right;padding:8px 10px">Units</th>
+                    </tr>
+                </thead>
+                <tbody id="uk-art-tbody"></tbody>
+            </table>
+        </div>
+    </div>
+
+    <script>
+    // ========== UK ARTIKEL DATA ==========
+    const ukArtData = [{"a":"B0DF7QFSZ8","n":"Hand & Body Balm Bergamot/Cedarwood 5\u2026","sku":"2800100532","kw6":957.58,"kw7":625.0,"kw8":532.92,"jan":2134.61,"feb":2556.56,"ytd":4691.17,"u":551},{"a":"B0CN19FVL5","n":"Hand & Body Cleanser Bergamot & Cedar\u2026","sku":"2800100339","kw6":799.04,"kw7":537.75,"kw8":407.89,"jan":1967.78,"feb":2323.31,"ytd":4291.09,"u":432},{"a":"B0DG9S89YW","n":"Hair Mask Rosemary & Ginger","sku":"2900101127","kw6":553.73,"kw7":251.6,"kw8":316.45,"jan":2048.73,"feb":1665.63,"ytd":3714.36,"u":444},{"a":"B0DG9LDPB9","n":"Shampoo Hydration Rosemary & Ginger","sku":"2900100122","kw6":442.41,"kw7":360.61,"kw8":497.01,"jan":1459.06,"feb":1715.98,"ytd":3175.04,"u":378},{"a":"B0DG9FM6T4","n":"Conditioner Hydration Rosemary & Ginger","sku":"2900100213","kw6":307.23,"kw7":149.46,"kw8":207.4,"jan":1541.28,"feb":895.42,"ytd":2436.7,"u":283},{"a":"B0CN3KWK9V","n":"Hand & Body Balm Peony/Lychee 500ml INT","sku":"2800100519","kw6":384.86,"kw7":174.07,"kw8":153.93,"jan":909.51,"feb":1040.08,"ytd":1949.59,"u":168},{"a":"B0CN18PFK1","n":"Hand & Body Cleanser Rosemary & Ginger","sku":"2800101040","kw6":339.85,"kw7":130.01,"kw8":112.88,"jan":889.75,"feb":794.93,"ytd":1684.68,"u":159},{"a":"B0DG9Y688Q","n":"Conditioner Rosemary/Ginger Refill","sku":"2900100212","kw6":334.06,"kw7":162.51,"kw8":124.44,"jan":781.25,"feb":774.47,"ytd":1555.71,"u":146},{"a":"B0DG9RGYZQ","n":"Shampoo Moisture Rosemary & Ginger","sku":"2900100113","kw6":281.62,"kw7":123.93,"kw8":148.43,"jan":707.02,"feb":707.37,"ytd":1414.4,"u":119},{"a":"B0CN3LSMJ3","n":"Hand & Body Balm Cardamom/Tonka 500ml\u2026","sku":"2800100518","kw6":187.44,"kw7":143.22,"kw8":98.34,"jan":596.53,"feb":774.51,"ytd":1371.04,"u":121},{"a":"B0F9KYNP5G","n":"Silky and Rich Hand Treatment Bergamo\u2026","sku":"2800101043","kw6":126.47,"kw7":99.16,"kw8":96.26,"jan":647.55,"feb":505.65,"ytd":1153.2,"u":133},{"a":"B0CNH7Y3MH","n":"Caring Shower Gel to Mousse Peony & L\u2026","sku":"2800100326","kw6":163.74,"kw7":64.83,"kw8":59.55,"jan":721.13,"feb":401.88,"ytd":1123.0,"u":136},{"a":"B0CNH6T29Y","n":"Regenerating Shower Gel to Mousse Car\u2026","sku":"2800100325","kw6":68.19,"kw7":124.33,"kw8":44.96,"jan":744.48,"feb":281.24,"ytd":1025.72,"u":120},{"a":"B0CN17WPW3","n":"Hand & Body Cleanser Cardamom & Tonka","sku":"2800101035","kw6":107.33,"kw7":73.35,"kw8":104.72,"jan":565.04,"feb":383.92,"ytd":948.96,"u":87},{"a":"B0CNH86WTH","n":"Vitalizing Shower Gel to Mousse Rosem\u2026","sku":"2800100327","kw6":123.16,"kw7":126.59,"kw8":137.44,"jan":424.63,"feb":498.79,"ytd":923.42,"u":107},{"a":"B0F9KZKSL4","n":"Hand and Body Cleanser Pink Pepper an\u2026","sku":"2902101046","kw6":165.62,"kw7":94.4,"kw8":159.41,"jan":344.24,"feb":518.23,"ytd":862.47,"u":98},{"a":"B0CN3KMJ77","n":"Hand Treatment Cardamom/Tonka 500 ml INT","sku":"2800101044","kw6":87.93,"kw7":147.21,"kw8":156.92,"jan":348.02,"feb":506.12,"ytd":854.14,"u":104},{"a":"B0FFBH2MXN","n":"Energizing Shower Gel To Mousse Berga\u2026","sku":"2800100328","kw6":165.49,"kw7":78.8,"kw8":86.68,"jan":370.61,"feb":409.78,"ytd":780.39,"u":99},{"a":"B0CN191Q3K","n":"Hand & Body Cleanser Peony & Lychee","sku":"2800101036","kw6":74.04,"kw7":63.09,"kw8":70.92,"jan":334.95,"feb":313.66,"ytd":648.61,"u":59},{"a":"B0CN3KV3X2","n":"Hand & Body Balm Rosemary/Ginger 500 \u2026","sku":"2800100520","kw6":59.27,"kw7":37.52,"kw8":91.74,"jan":308.73,"feb":321.97,"ytd":630.7,"u":60},{"a":"B0F9KZMZCP","n":"Hand and Body Cleanser Arabica and Musk","sku":"2902101043","kw6":88.94,"kw7":51.9,"kw8":29.07,"jan":324.56,"feb":269.76,"ytd":594.32,"u":68},{"a":"B0CN3LNTJF","n":"Hand Treatment Rosemary/Ginger 500 mlINT","sku":"2800101042","kw6":63.21,"kw7":31.78,"kw8":157.91,"jan":91.35,"feb":344.54,"ytd":435.89,"u":67},{"a":"B0F9L178RJ","n":"Eau de Toilette Rosemary and Ginger F\u2026","sku":"2900101617","kw6":43.48,"kw7":8.24,"kw8":23.24,"jan":122.51,"feb":138.03,"ytd":260.54,"u":31},{"a":"B0F9L1FBBN","n":"Hand and Body Cleanser Lemon Verbena \u2026","sku":"2902101044","kw6":28.03,"kw7":9.34,"kw8":0.0,"jan":190.28,"feb":68.28,"ytd":258.55,"u":26},{"a":"B0F9L2RBK4","n":"Eau de Toilette Cardamom and Tonka Fr\u2026","sku":"2900101613","kw6":31.81,"kw7":14.94,"kw8":21.54,"jan":127.8,"feb":75.81,"ytd":203.61,"u":27},{"a":"B0F9KXYRDG","n":"Hand and Body Cleanser Marrakech Garden","sku":"2902101045","kw6":0.0,"kw7":18.42,"kw8":9.37,"jan":107.71,"feb":57.66,"ytd":165.38,"u":17},{"a":"B0F9L1PZPL","n":"Eau de Toilette Peony and Lychee Frag\u2026","sku":"2900101615","kw6":29.78,"kw7":21.66,"kw8":7.24,"jan":79.55,"feb":73.9,"ytd":153.45,"u":20},{"a":"B0F9L1BB7R","n":"Eau de Toilette Lily of the Valley","sku":"2900101619","kw6":22.75,"kw7":15.01,"kw8":6.93,"jan":61.25,"feb":59.39,"ytd":120.65,"u":15},{"a":"B0G34XTCTK","n":"Conditioner Mango/Avocado INT","sku":"2925000015","kw6":20.99,"kw7":7.0,"kw8":20.99,"jan":34.99,"feb":62.98,"ytd":97.97,"u":14},{"a":"B0G34YFM93","n":"Shampoo Mango/Avocado INT","sku":"2925000014","kw6":0.0,"kw7":7.0,"kw8":27.99,"jan":55.8,"feb":41.99,"ytd":97.79,"u":13},{"a":"B0FZKFYCC8","n":"Rebuild Shampoo Almond/Keratin INT","sku":"2925000031","kw6":7.0,"kw7":7.0,"kw8":7.0,"jan":48.99,"feb":27.99,"ytd":76.98,"u":11},{"a":"B0FZKNTTC8","n":"Rebuild Conditioner Almond/Keratin INT","sku":"2925000032","kw6":14.0,"kw7":7.0,"kw8":7.0,"jan":41.99,"feb":34.99,"ytd":76.98,"u":11},{"a":"B0GJF3NZVP","n":"2in1 Mask Professional Advanced Repai\u2026","sku":"2925000044","kw6":9.63,"kw7":0.0,"kw8":0.0,"jan":0.0,"feb":0.0,"ytd":19.27,"u":2}];
+
+    // ========== UK ARTIKEL INIT ==========
+    (function initUkArt() {
+        const fmt = v => v.toLocaleString('de-DE', {minimumFractionDigits:2, maximumFractionDigits:2});
+        const fmtInt = v => Math.round(v).toLocaleString('de-DE');
+        const top10 = ukArtData.slice(0,10);
+        const top5  = ukArtData.slice(0,5);
+        const totalYtd   = ukArtData.reduce((s,p) => s+p.ytd, 0);
+        const totalUnits = ukArtData.reduce((s,p) => s+p.u, 0);
+        const totalKw8   = ukArtData.reduce((s,p) => s+p.kw8, 0);
+        const totalKw7   = ukArtData.reduce((s,p) => s+p.kw7, 0);
+        const trendPct   = totalKw7 > 0 ? ((totalKw8 - totalKw7) / totalKw7 * 100).toFixed(1) : 0;
+        const trendUp    = totalKw8 >= totalKw7;
+
+        // KPI Cards befüllen
+        document.getElementById('uk-art-ytd-total').textContent = fmtInt(totalYtd) + ' £';
+        document.getElementById('uk-art-units-total').textContent = fmtInt(totalUnits);
+        document.getElementById('uk-art-avg-price').textContent = 'Ø Preis: ' + fmt(totalYtd / totalUnits) + ' £';
+        document.getElementById('uk-art-top1-name').textContent = ukArtData[0].n;
+        document.getElementById('uk-art-top1-val').textContent = fmtInt(ukArtData[0].ytd) + ' £ YTD · ' + ukArtData[0].u + ' Units';
+        document.getElementById('uk-art-kw8-total').textContent = fmtInt(totalKw8) + ' £';
+        const kw8VsEl = document.getElementById('uk-art-kw8-vs-kw7');
+        kw8VsEl.textContent = 'vs. KW07: ' + (trendUp ? '▲' : '▼') + ' ' + Math.abs(trendPct) + '%';
+        kw8VsEl.style.color = trendUp ? 'var(--green)' : 'var(--red)';
+
+        // Farb-Palette für Top 5
+        const palette = ['#3f5a3f','#647c64','#ba6a49','#ed98df','#8b8577'];
+
+        // Chart 1: Top 10 Horizontal Bar YTD
+        new Chart(document.getElementById('ukArtTop10Chart'), {
+            type: 'bar',
+            data: {
+                labels: top10.map(p => p.n),
+                datasets: [{
+                    label: 'YTD (£)',
+                    data: top10.map(p => p.ytd),
+                    backgroundColor: top10.map((_,i) => i < 3 ? 'rgba(63,90,63,0.85)' : 'rgba(63,90,63,0.45)'),
+                    borderRadius: 4
+                }]
+            },
+            options: {
+                indexAxis: 'y',
+                responsive: true, maintainAspectRatio: false,
+                scales: {
+                    x: { beginAtZero: true, ticks: { callback: v => v >= 1000 ? (v/1000).toFixed(1)+'k £' : v+'£' }, grid: { color: 'rgba(0,0,0,0.05)' } },
+                    y: { ticks: { font: { size: 11 } }, grid: { display: false } }
+                },
+                plugins: { legend: { display: false }, tooltip: { callbacks: { label: c => fmt(c.parsed.x) + ' £' } } }
+            }
+        });
+
+        // Chart 2: Wöchentlicher Trend Top 5
+        new Chart(document.getElementById('ukArtTrendChart'), {
+            type: 'line',
+            data: {
+                labels: ['KW06', 'KW07', 'KW08'],
+                datasets: top5.map((p, i) => ({
+                    label: p.n,
+                    data: [p.kw6, p.kw7, p.kw8],
+                    borderColor: palette[i],
+                    backgroundColor: palette[i] + '22',
+                    pointBackgroundColor: palette[i],
+                    pointRadius: 5,
+                    pointBorderColor: '#fff',
+                    pointBorderWidth: 2,
+                    tension: 0.35,
+                    fill: false
+                }))
+            },
+            options: {
+                responsive: true, maintainAspectRatio: false,
+                scales: {
+                    y: { beginAtZero: true, ticks: { callback: v => v+'£' }, grid: { color: 'rgba(0,0,0,0.05)' } },
+                    x: { grid: { display: false } }
+                },
+                plugins: {
+                    legend: { position: 'bottom', labels: { usePointStyle: true, pointStyleWidth: 10, font: { size: 11 }, boxWidth: 10 } },
+                    tooltip: { callbacks: { label: c => c.dataset.label + ': ' + fmt(c.parsed.y) + ' £' } }
+                }
+            }
+        });
+
+        // Chart 3: Jan vs Feb Top 10
+        new Chart(document.getElementById('ukArtMonthChart'), {
+            type: 'bar',
+            data: {
+                labels: top10.map(p => p.n),
+                datasets: [
+                    { label: 'Januar', data: top10.map(p => p.jan), backgroundColor: 'rgba(63,90,63,0.5)', borderRadius: 3 },
+                    { label: 'Feb MTD', data: top10.map(p => p.feb), backgroundColor: 'rgba(186,106,73,0.6)', borderRadius: 3 }
+                ]
+            },
+            options: {
+                responsive: true, maintainAspectRatio: false,
+                scales: {
+                    x: { grid: { display: false }, ticks: { font: { size: 10 }, maxRotation: 30 } },
+                    y: { beginAtZero: true, ticks: { callback: v => v+'£' }, grid: { color: 'rgba(0,0,0,0.05)' } }
+                },
+                plugins: {
+                    legend: { position: 'top', labels: { usePointStyle: true, pointStyleWidth: 10 } },
+                    tooltip: { callbacks: { label: c => c.dataset.label + ': ' + fmt(c.parsed.y) + ' £' } }
+                }
+            }
+        });
+
+        // Tabelle initial rendern
+        renderUkArtTable();
+    })();
+
+    function renderUkArtTable() {
+        const fmt = v => v > 0 ? v.toLocaleString('de-DE', {minimumFractionDigits:2, maximumFractionDigits:2}) : '<span style="color:var(--muted)">–</span>';
+        const search = (document.getElementById('uk-art-search').value || '').toLowerCase();
+        const sortBy = document.getElementById('uk-art-sort').value;
+
+        let data = ukArtData.filter(p => !search || p.n.toLowerCase().includes(search) || p.sku.includes(search) || p.a.toLowerCase().includes(search));
+
+        data = [...data].sort((a, b) => {
+            if (sortBy === 'feb')   return b.feb - a.feb;
+            if (sortBy === 'kw8')   return b.kw8 - a.kw8;
+            if (sortBy === 'units') return b.u - a.u;
+            if (sortBy === 'trend') {
+                const ta = a.kw7 > 0 ? (a.kw8 - a.kw7) / a.kw7 : 0;
+                const tb = b.kw7 > 0 ? (b.kw8 - b.kw7) / b.kw7 : 0;
+                return tb - ta;
+            }
+            return b.ytd - a.ytd;
+        });
+
+        document.getElementById('uk-art-table-count').textContent = data.length + ' Artikel';
+
+        const tbody = document.getElementById('uk-art-tbody');
+        tbody.innerHTML = data.map((p, i) => {
+            const trendPct = p.kw7 > 0 ? ((p.kw8 - p.kw7) / p.kw7 * 100).toFixed(0) : null;
+            const trendStr = trendPct === null ? '<span style="color:var(--muted)">–</span>'
+                           : trendPct >= 0 ? `<span style="color:var(--green);font-weight:600">▲${trendPct}%</span>`
+                                           : `<span style="color:var(--red);font-weight:600">▼${Math.abs(trendPct)}%</span>`;
+            const rank = i < 3 ? `<strong style="color:var(--accent)">#${i+1}</strong>` : `<span style="color:var(--muted)">#${i+1}</span>`;
+            return `<tr style="border-bottom:1px solid var(--border)">
+                <td style="padding:8px 10px">${rank}</td>
+                <td style="padding:8px 10px;max-width:220px">
+                    <div style="font-weight:600;font-size:12px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis" title="${p.n}">${p.n}</div>
+                    <div style="font-size:10px;color:var(--muted);font-family:monospace">ASIN: ${p.a}</div>
+                </td>
+                <td style="text-align:right;padding:8px 10px;font-size:12px">${fmt(p.kw6)}</td>
+                <td style="text-align:right;padding:8px 10px;font-size:12px">${fmt(p.kw7)}</td>
+                <td style="text-align:right;padding:8px 10px;font-size:12px;font-weight:600">${fmt(p.kw8)}</td>
+                <td style="text-align:right;padding:8px 10px">${trendStr}</td>
+                <td style="text-align:right;padding:8px 10px;font-size:12px;color:var(--muted)">${fmt(p.jan)}</td>
+                <td style="text-align:right;padding:8px 10px;font-size:12px">${fmt(p.feb)}</td>
+                <td style="text-align:right;padding:8px 10px;font-size:13px;font-weight:700;color:var(--accent)">${fmt(p.ytd)}</td>
+                <td style="text-align:right;padding:8px 10px;font-size:12px">${p.u}</td>
+            </tr>`;
+        }).join('');
+    }
+    </script>
+
+
+    <!-- EU MÄRKTE -->
+    <div class="section-title">EU-Märkte &ndash; Paid Sales nach Jahr &amp; Budget 2026</div>
+
+    <div class="card">
+        <div class="card-header">
+            <h3 id="eu-sales-title">Paid Sales 2026 (nach Land) &ndash; Amazon Extern</h3>
+            <span class="badge badge-blue">Umsatz</span>
+        </div>
+        <div style="padding:0 0 12px; color:var(--muted); font-size:0.8rem; line-height:1.6; border-bottom:1px solid var(--border); margin-bottom:14px;">
+            <strong style="color:var(--text);">Externe Amazon Paid Sales</strong> &ndash; &Auml;quivalent zu Scannerzahlen im Handel. Nur Einnahmen die direkt &uuml;ber Paid Advertising erzielt wurden (kein Organic). Gesamt-Sales je Land werden monatlich aus den Budget Allocation-Dateien der L&auml;nder (Zeile: Overall) gezogen.
+        </div>
+        <div style="display:flex; gap:8px; margin-bottom:8px; flex-wrap:wrap;">
+            <button onclick="setSalesView('gesamt')" id="sales-btn-gesamt" style="padding:5px 14px; border-radius:20px; border:1px solid var(--accent); background:var(--accent); color:#fff; font-size:0.78rem; cursor:pointer; font-family:inherit; font-weight:500;">Gesamtzeitraum</button>
+            <button onclick="setSalesView('ytd')" id="sales-btn-ytd" style="padding:5px 14px; border-radius:20px; border:1px solid var(--border); background:transparent; color:var(--text); font-size:0.78rem; cursor:pointer; font-family:inherit;">YTD kumulativ</button>
+            <button onclick="setSalesView('monat')" id="sales-btn-monat" style="padding:5px 14px; border-radius:20px; border:1px solid var(--border); background:transparent; color:var(--text); font-size:0.78rem; cursor:pointer; font-family:inherit;">Monat</button>
+        </div>
+        <div style="display:flex; gap:8px; flex-wrap:wrap; margin-bottom:16px; align-items:center;">
+            <div style="font-size:12px; color:var(--muted); padding-top:2px;">Jahr:</div>
+            <button id="year-btn-2023" onclick="setYear(2023)" style="padding:5px 14px; border-radius:20px; border:1px solid var(--border); background:transparent; color:var(--text); font-size:0.78rem; cursor:pointer; font-family:inherit;">2023</button>
+            <button id="year-btn-2024" onclick="setYear(2024)" style="padding:5px 14px; border-radius:20px; border:1px solid var(--border); background:transparent; color:var(--text); font-size:0.78rem; cursor:pointer; font-family:inherit;">2024</button>
+            <button id="year-btn-2025" onclick="setYear(2025)" style="padding:5px 14px; border-radius:20px; border:1px solid var(--border); background:transparent; color:var(--text); font-size:0.78rem; cursor:pointer; font-family:inherit;">2025</button>
+            <button id="year-btn-2026" onclick="setYear(2026)" style="padding:4px 12px; border-radius:20px; border:1px solid var(--accent); background:var(--accent); color:#fff; font-size:11px; cursor:pointer; font-family:inherit; font-weight:500;">2026</button>
+            <button id="year-btn-alle" onclick="setYear('alle')" style="padding:5px 14px; border-radius:20px; border:1px solid var(--border); background:transparent; color:var(--text); font-size:0.78rem; cursor:pointer; font-family:inherit;">Alle Jahre</button>
+        </div>
+        <div id="monat-selector-sales" style="display:none; margin-bottom:12px;">
+            <select id="monat-picker-sales" onchange="updateSalesMonthView()" style="padding:6px 12px; border-radius:8px; border:1px solid var(--border); background:var(--card); color:var(--text); font-family:inherit; font-size:0.82rem;">
+                <option value="0">Januar</option><option value="1">Februar</option><option value="2">M&auml;rz</option>
+                <option value="3">April</option><option value="4">Mai</option><option value="5">Juni</option>
+                <option value="6">Juli</option><option value="7">August</option><option value="8">September</option>
+                <option value="9">Oktober</option><option value="10">November</option><option value="11">Dezember</option>
+            </select>
+        </div>
+        <div class="chart-container-lg">
+            <canvas id="salesCompareChart"></canvas>
+        </div>
+    </div>
+
+    <!-- DETAIL TABELLE ALLE LÄNDER -->
+    <div class="card" style="margin-top: 20px;">
+        <div class="card-header">
+            <h3>Alle Märkte &ndash; Spend &amp; Paid Sales 2025 vs. Budget 2026 (Referenz)</h3>
+        </div>
+        <p style="font-size:0.8rem; color:var(--muted); padding-bottom:12px; border-bottom:1px solid var(--border); margin-bottom:14px;">
+            Paid Sales = Amazon externe Einnahmen &uuml;ber Advertising. EU-M&auml;rkte in &euro;, USA separat in USD. Quelle: jeweilige L&auml;nder-Budget-Allocation (Gesamt-Spalte).<br>
+            <strong>Update-Rhythmus:</strong> &#128260; DE / UK / USA w&ouml;chentlich &nbsp;|&nbsp; &#128197; ES / FR / IT / NL / SE monatlich (14. des Monats f&uuml;r Vormonat)<br>
+            <strong>Net PPM Ziel: 40%</strong> &nbsp;|&nbsp;
+            <span style="color:var(--red);">&#9660; &lt;35% = Profitabilit&auml;tsrisiko</span> &nbsp;|&nbsp;
+            <span style="color:var(--green);">35&ndash;45% = Zielbereich</span> &nbsp;|&nbsp;
+            <span style="color:var(--yellow);">&#9650; &gt;45% = Preise pr&uuml;fen (zu viel Marge f&uuml;r Amazon)</span>
+        </p>
+        <div class="table-wrapper">
+            <table>
+                <thead>
+                    <tr>
+                        <th>Land</th>
+                        <th class="num">Budget 2026</th>
+                        <th class="num">Spend 2025</th>
+                        <th class="num">Paid Sales 2025</th>
+                        <th class="num">ROAS 2025</th>
+                        <th class="num">Net PPM 2025</th>
+                        <th class="num">Net PPM Jan &lsquo;26</th>
+                        <th class="num">Umsatzziel 2026</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td><strong>&#127465;&#127466; Deutschland</strong></td>
+                        <td class="num highlight">320.000 &euro;</td>
+                        <td class="num">236.775 &euro;</td>
+                        <td class="num">2.870.691 &euro;</td>
+                        <td class="num" style="color: var(--green)">12,12</td>
+                        <td class="num" style="color:var(--red);"><strong>32.2%</strong> &#9660;</td>
+                        <td class="num" style="color:var(--green);">36.1%</td>
+                        <td class="num">-</td>
+                    </tr>
+                    <tr>
+                        <td><strong>&#127468;&#127463; UK</strong></td>
+                        <td class="num highlight">100.000 &euro;</td>
+                        <td class="num">38.007 &euro;</td>
+                        <td class="num">47.832 &euro;</td>
+                        <td class="num" style="color: var(--yellow)">1,26</td>
+                        <td class="num" style="color:var(--muted)">–</td>
+                        <td class="num" style="color:var(--yellow);">47.3% &#9650;</td>
+                        <td class="num"><strong style="color:var(--accent)">480.000 &euro;</strong></td>
+                    </tr>
+                    <tr>
+                        <td><strong>&#127466;&#127480; Spanien</strong></td>
+                        <td class="num highlight">46.800 &euro;</td>
+                        <td class="num">35.596 &euro;</td>
+                        <td class="num">156.886 &euro;</td>
+                        <td class="num" style="color: var(--green)">4,41</td>
+                        <td class="num" style="color:var(--yellow);">45.9% &#9650;</td>
+                        <td class="num" style="color:var(--yellow);">52.2% &#9650;</td>
+                        <td class="num">208.000 &euro;</td>
+                    </tr>
+                    <tr>
+                        <td><strong>&#127467;&#127479; Frankreich</strong></td>
+                        <td class="num highlight">39.800 &euro;</td>
+                        <td class="num">27.606 &euro;</td>
+                        <td class="num">82.048 &euro;</td>
+                        <td class="num" style="color: var(--green)">2,97</td>
+                        <td class="num" style="color:var(--yellow);">49.4% &#9650;</td>
+                        <td class="num" style="color:var(--yellow);">52.9% &#9650;</td>
+                        <td class="num">79.000 &euro;</td>
+                    </tr>
+                    <tr>
+                        <td><strong>&#127470;&#127481; Italien</strong></td>
+                        <td class="num highlight">50.400 &euro;</td>
+                        <td class="num">43.572 &euro;</td>
+                        <td class="num">187.455 &euro;</td>
+                        <td class="num" style="color: var(--green)">4,30</td>
+                        <td class="num" style="color:var(--yellow);">49.1% &#9650;</td>
+                        <td class="num" style="color:var(--muted)">–</td>
+                        <td class="num">101.372 &euro;</td>
+                    </tr>
+                    <tr>
+                        <td><strong>&#127475;&#127473; Niederlande</strong></td>
+                        <td class="num highlight">5.000 &euro;</td>
+                        <td class="num">3.509 &euro;</td>
+                        <td class="num">35.020 &euro;</td>
+                        <td class="num" style="color: var(--green)">9,98</td>
+                        <td class="num" style="color:var(--green);">41.3%</td>
+                        <td class="num" style="color:var(--yellow);">49.9% &#9650;</td>
+                        <td class="num">-</td>
+                    </tr>
+                    <tr>
+                        <td><strong>&#127480;&#127466; Schweden</strong></td>
+                        <td class="num highlight">~5.200 &euro; <span style="font-size:10px;opacity:0.6;">(57.300 SEK)</span></td>
+                        <td class="num">2.439 &euro;</td>
+                        <td class="num">15.242 &euro;</td>
+                        <td class="num" style="color: var(--green)">6,25</td>
+                        <td class="num" style="color:var(--muted)">–</td>
+                        <td class="num" style="color:var(--green);">36.7%</td>
+                        <td class="num">-</td>
+                    </tr>
+                    <tr style="border-top: 1px solid var(--border);">
+                        <td><strong>&#127482;&#127480; USA</strong> <span style="font-size:0.75rem; color:var(--muted);">(USD)</span></td>
+                        <td class="num highlight">TBD</td>
+                        <td class="num">$78.422</td>
+                        <td class="num">$97.977</td>
+                        <td class="num" style="color: var(--yellow)">1,81</td>
+                        <td class="num" style="color:var(--muted)">–</td>
+                        <td class="num" style="color:var(--muted)">–</td>
+                        <td class="num">-</td>
+                    </tr>
+                    <tr style="font-weight: 700; border-top: 2px solid var(--accent);">
+                        <td>GESAMT EU <span style="font-size:0.75rem; font-weight:400; color:var(--muted);">exkl. USA</span></td>
+                        <td class="num" style="color: var(--accent)">619.300 &euro;</td>
+                        <td class="num">387.504 &euro;</td>
+                        <td class="num">3.395.174 &euro;</td>
+                        <td class="num">-</td>
+                        <td class="num">-</td>
+                        <td class="num">-</td>
+                        <td class="num">-</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+    <!-- MONATLICHE DETAILS PRO LAND -->
+    <div class="section-title">Monatliche Budget-Planung 2026 (alle Länder)</div>
+
+    <div class="card">
+        <div class="card-header">
+            <h3>Budget pro Monat und Land</h3>
+            <span class="badge badge-blue">Plan 2026</span>
+        </div>
+        <div class="chart-container-lg">
+            <canvas id="allCountriesMonthlyChart"></canvas>
+        </div>
+    </div>
+
+    <div class="card" style="margin-top: 20px;">
+        <div class="card-header">
+            <h3>Geplante Werbebudgets je Land 2026</h3>
+            <span class="badge badge-blue">Plan 2026</span>
+        </div>
+        <p style="font-size:0.8rem; color:var(--muted); padding-bottom:12px; border-bottom:1px solid var(--border); margin-bottom:14px;">
+            Monatliche Ad-Spend-Planung nach Markt in &euro;. Peak-Monate hervorgehoben: Prime Day (Juli), Prime Day 2 (Oktober), Black Friday (November).
+        </p>
+        <div class="table-wrapper">
+            <table>
+                <thead>
+                    <tr>
+                        <th>Monat</th>
+                        <th class="num">DE</th>
+                        <th class="num">UK</th>
+                        <th class="num">FR</th>
+                        <th class="num">ES</th>
+                        <th class="num">IT</th>
+                        <th class="num">NL</th>
+                        <th class="num">SE</th>
+                        <th class="num">GESAMT</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr><td>Januar</td><td class="num">18.000</td><td class="num">6.000</td><td class="num">2.000</td><td class="num">2.900</td><td class="num">2.080</td><td class="num">400</td><td class="num">4.775</td><td class="num highlight">36.155</td></tr>
+                    <tr><td>Februar</td><td class="num">21.000</td><td class="num">7.000</td><td class="num">2.600</td><td class="num">3.060</td><td class="num">4.000</td><td class="num">400</td><td class="num">4.775</td><td class="num highlight">42.835</td></tr>
+                    <tr><td>März</td><td class="num">21.500</td><td class="num">7.000</td><td class="num">3.000</td><td class="num">3.400</td><td class="num">4.000</td><td class="num">400</td><td class="num">4.775</td><td class="num highlight">44.075</td></tr>
+                    <tr><td>April</td><td class="num">21.000</td><td class="num">8.000</td><td class="num">2.700</td><td class="num">3.700</td><td class="num">3.800</td><td class="num">400</td><td class="num">4.775</td><td class="num highlight">44.375</td></tr>
+                    <tr><td>Mai</td><td class="num">22.000</td><td class="num">9.000</td><td class="num">2.900</td><td class="num">3.800</td><td class="num">5.000</td><td class="num">400</td><td class="num">4.775</td><td class="num highlight">47.875</td></tr>
+                    <tr><td>Juni</td><td class="num">22.500</td><td class="num">8.000</td><td class="num">3.100</td><td class="num">4.200</td><td class="num">3.800</td><td class="num">400</td><td class="num">4.775</td><td class="num highlight">46.775</td></tr>
+                    <tr style="background: rgba(63,90,63,0.04)"><td><strong>Juli (Prime Day)</strong></td><td class="num"><strong>27.000</strong></td><td class="num"><strong>10.000</strong></td><td class="num">3.600</td><td class="num">3.360</td><td class="num">4.080</td><td class="num">400</td><td class="num">4.775</td><td class="num highlight"><strong>53.215</strong></td></tr>
+                    <tr><td>August</td><td class="num">18.000</td><td class="num">4.000</td><td class="num">2.600</td><td class="num">3.000</td><td class="num">2.000</td><td class="num">400</td><td class="num">4.775</td><td class="num highlight">34.775</td></tr>
+                    <tr><td>September</td><td class="num">19.500</td><td class="num">6.000</td><td class="num">2.400</td><td class="num">3.000</td><td class="num">4.000</td><td class="num">400</td><td class="num">4.775</td><td class="num highlight">40.075</td></tr>
+                    <tr style="background: rgba(63,90,63,0.04)"><td><strong>Oktober (Prime Day 2)</strong></td><td class="num"><strong>33.500</strong></td><td class="num"><strong>12.000</strong></td><td class="num">4.400</td><td class="num">4.100</td><td class="num">5.640</td><td class="num">500</td><td class="num">4.775</td><td class="num highlight"><strong>64.915</strong></td></tr>
+                    <tr style="background: rgba(239,68,68,0.05)"><td><strong>November (Black Friday)</strong></td><td class="num"><strong>55.000</strong></td><td class="num"><strong>14.000</strong></td><td class="num"><strong>5.500</strong></td><td class="num"><strong>7.280</strong></td><td class="num"><strong>6.500</strong></td><td class="num">500</td><td class="num">4.775</td><td class="num highlight"><strong>93.555</strong></td></tr>
+                    <tr><td>Dezember</td><td class="num">41.000</td><td class="num">9.000</td><td class="num">5.000</td><td class="num">5.000</td><td class="num">5.500</td><td class="num">400</td><td class="num">4.775</td><td class="num highlight">70.675</td></tr>
+                    <tr style="font-weight: 700; border-top: 2px solid var(--accent);">
+                        <td>GESAMT</td>
+                        <td class="num" style="color: var(--accent)">320.000</td>
+                        <td class="num" style="color: var(--blue)">100.000</td>
+                        <td class="num" style="color: var(--cyan)">39.800</td>
+                        <td class="num" style="color: var(--orange)">46.800</td>
+                        <td class="num" style="color: var(--green)">50.400</td>
+                        <td class="num" style="color: var(--purple)">5.000</td>
+                        <td class="num" style="color: var(--pink)">~5.200</td>
+                        <td class="num highlight">567.200</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <!-- KEY INSIGHTS -->
+    <div class="section-title">Key Insights &amp; Handlungsfelder</div>
+
+    <div class="warning" style="background: rgba(74,124,89,0.1); border-color: rgba(74,124,89,0.3);">
+        <div class="icon">&#9989;</div>
+        <div class="text">
+            <strong style="color: var(--green)">Amazon DE: Februar 2026 – ROAS deutlich verbessert!</strong><br>
+            Feb (KW6–8): 428.214&euro; Total Sales | Paid ROAS: 16,90x (+21% vs. Jan 13,92x) | ACoS: 5,92% | Spend gut unter Budget (9.149€ von 21.000€) | YTD KW1–8: 1.272.967&euro;
+        </div>
+    </div>
+
+    <div class="grid grid-3">
+        <div class="card" style="border-left: 3px solid var(--green);">
+            <div class="card-header"><h3>Top Performer</h3></div>
+            <p style="font-size: 13px; margin-bottom: 12px;">
+                <strong style="color: var(--green)">Niederlande</strong> - ROAS '25: 9,98 bei minimalem Budget.<br>
+                <strong style="color: var(--green)">Spanien</strong> - ROAS '25: 4,41, konsistent stark.<br>
+                <strong style="color: var(--green)">Italien</strong> - ROAS '25: 3,84, Ziel von 3,8 gehalten.
+            </p>
+            <p style="font-size: 12px; color: var(--muted);">
+                Frage: Können wir in NL das Budget erhöhen? Bei ROAS 10 ist jeder Euro 10&euro; wert.
+            </p>
+        </div>
+        <div class="card" style="border-left: 3px solid var(--yellow);">
+            <div class="card-header"><h3>Wachstumspotenzial</h3></div>
+            <p style="font-size: 13px; margin-bottom: 12px;">
+                <strong style="color: var(--yellow)">UK</strong> - Budget +163% vs 2025. ROAS-Ziel: 4,0 (mit Amalyze) &bull; Jan 2026 bereits 2,83.<br>
+                <strong style="color: var(--yellow)">Schweden</strong> - Neuer Markt, keine Referenzdaten.
+            </p>
+            <p style="font-size: 12px; color: var(--muted);">
+                UK ist größter Wachstumshebel nach DE. Fulfilmentcrowd-Deal entscheidet über Logistikkosten.
+            </p>
+        </div>
+        <div class="card" style="border-left: 3px solid var(--red);">
+            <div class="card-header"><h3>Action Items</h3></div>
+            <p style="font-size: 13px;">
+                1. <strong>NL Budget prüfen</strong> &ndash; Bei ROAS 9,98 mehr investieren?<br>
+                2. <strong>SE ROAS-Ziele</strong> &ndash; Baseline für neuen Markt definieren<br>
+                3. <strong>UK Fulfilmentcrowd</strong> &ndash; Deal Q1 abschließen<br>
+                4. <strong>ES/FR/IT/NL/SE Update</strong> &ndash; Nächster Daten-Zug: 14. März (Feb-Zahlen)
+            </p>
+        </div>
+    </div>
+
+    <!-- QUICK LINKS -->
+    <div class="quick-links">
+        <a href="index.html" class="quick-link">
+            <div class="ql-icon">&#127968;</div>
+            <div class="ql-title">Übersicht</div>
+            <div class="ql-desc">Alle Dashboards</div>
+        </a>
+        <a href="ceo.html" class="quick-link">
+            <div class="ql-icon">&#128200;</div>
+            <div class="ql-title">CEO Dashboard</div>
+            <div class="ql-desc">Quartalsziele, 9 Steine, Roadmap</div>
+        </a>
+        <a href="webshop.html" class="quick-link">
+            <div class="ql-icon">&#128722;</div>
+            <div class="ql-title">Webshop Dashboard</div>
+            <div class="ql-desc">Umsatz, AOV, CR, Marketing-Kanäle</div>
+        </a>
+    </div>
+
+    <!-- FOOTER -->
+    <div class="footer">
+        Amazon J&L International Dashboard | Datenstand: 04.03.2026 | Nächstes Update: 09.03.2026<br>
+        Datenquellen: OneDrive Budget Allocation Files (READ-ONLY) | Erstellt mit Claude Code
+    </div>
+
+    <script>
+        // Color palette
+        const colors = {
+            de: '#3f5a3f',   // Salbeigrün (Hauptmarkt)
+            uk: '#647c64',   // Helles Salbei
+            fr: '#ba6a49',   // Terrakotta
+            es: '#d4956b',   // Helles Terrakotta
+            it: '#ed98df',   // Lavendel-Pink
+            nl: '#8b8577',   // Warmgrau
+            se: '#c8a992',   // Sand
+            usa: '#221e1b'   // Dunkelbraun
+        };
+
+        const months = ['Jan', 'Feb', 'Mär', 'Apr', 'Mai', 'Jun', 'Jul', 'Aug', 'Sep', 'Okt', 'Nov', 'Dez'];
+
+        // Chart defaults
+        Chart.defaults.color = '#8b8577';
+        Chart.defaults.borderColor = '#e6dcce';
+        Chart.defaults.font.family = "'Poppins', sans-serif";
+
+        // 1. Budget Pie Chart
+        new Chart(document.getElementById('budgetPieChart'), {
+            type: 'doughnut',
+            data: {
+                labels: ['DE', 'UK', 'FR', 'ES', 'IT', 'NL', 'SE'],
+                datasets: [{
+                    data: [320000, 100000, 39800, 46800, 50400, 5000, 5200],
+                    backgroundColor: [colors.de, colors.uk, colors.fr, colors.es, colors.it, colors.nl, colors.se],
+                    borderWidth: 0,
+                    hoverOffset: 8
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                cutout: '60%',
+                plugins: {
+                    legend: { position: 'right', labels: { padding: 16, usePointStyle: true, pointStyleWidth: 12 }},
+                    tooltip: {
+                        callbacks: {
+                            label: (ctx) => `${ctx.label}: ${ctx.parsed.toLocaleString('de-DE')}€ (${(ctx.parsed/619300*100).toFixed(1)}%)`
+                        }
+                    }
+                }
+            }
+        });
+
+        // 2. Monthly Budget DE vs Rest
+        const deBudget = [18000,21000,21500,21000,22000,22500,27000,18000,19500,33500,55000,41000];
+        const restBudget = [18155,21835,22575,23375,25875,24275,26215,16775,20575,31415,38555,29675];
+
+        new Chart(document.getElementById('monthlyBudgetChart'), {
+            type: 'bar',
+            data: {
+                labels: months,
+                datasets: [
+                    { label: 'Deutschland', data: deBudget, backgroundColor: colors.de, borderRadius: 4 },
+                    { label: 'Rest EU + UK', data: restBudget, backgroundColor: '#8b8577', borderRadius: 4 }
+                ]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                scales: {
+                    x: { stacked: true, grid: { display: false }},
+                    y: { stacked: true, ticks: { callback: v => (v/1000) + 'k€' }}
+                },
+                plugins: {
+                    legend: { position: 'top', labels: { usePointStyle: true, pointStyleWidth: 12 }},
+                    tooltip: { callbacks: { label: ctx => `${ctx.dataset.label}: ${ctx.parsed.y.toLocaleString('de-DE')}€` }}
+                }
+            }
+        });
+
+        // 3. DE Budget Monthly Chart
+        const deSpend2025 = [0,0,8930,9678,11364,11412,20611,14875,22812,30146,51527,38461];
+        new Chart(document.getElementById('deBudgetChart'), {
+            type: 'bar',
+            data: {
+                labels: months,
+                datasets: [
+                    { label: 'Budget 2026', data: deBudget, backgroundColor: 'rgba(63,90,63,0.7)', borderRadius: 4 },
+                    { label: 'Spend 2025 (Referenz)', data: deSpend2025, backgroundColor: 'rgba(63,90,63,0.25)', borderRadius: 4, borderWidth: 1, borderColor: 'rgba(63,90,63,0.5)', borderDash: [4,4] }
+                ]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                scales: {
+                    y: { ticks: { callback: v => (v/1000) + 'k€' }},
+                    x: { grid: { display: false }}
+                },
+                plugins: {
+                    legend: { position: 'top', labels: { usePointStyle: true, pointStyleWidth: 12 }},
+                    tooltip: { callbacks: { label: ctx => `${ctx.dataset.label}: ${ctx.parsed.y.toLocaleString('de-DE')}€` }}
+                }
+            }
+        });
+
+        // 4. UK ROAS – 2026 YTD (wöchentlich) + 2025 (monatlich, Referenz)
+        const ukLabels2026 = ['KW1', 'KW2', 'KW3', 'KW4', 'KW5', 'KW6', 'KW7', 'KW8'];
+        const ukSpend2026  = [1536, 1592, 1501, 1430, 1550, 1726, 1429, 1672];
+        const ukSales2026  = [3334, 4189, 4422, 3908, 5213, 6089, 3758, 3927];
+        const ukRoas2026   = [1.68, 2.05, 2.32, 2.3, 2.41, 2.42, 1.9, 1.78];
+
+        const ukRoas2025  = [null,null,null,null,null, 1.08, 1.46, 1.06, 1.01, 1.15, 1.19, 1.81];
+        const ukSpend2025 = [0,0,0,0,0, 935, 1972, 3412, 8313, 8508, 7709, 7158];
+        const ukSales2025 = [0,0,0,0,0, 932, 2995, 3908, 9142, 12160, 10752, 17080];
+
+        const ukChart = new Chart(document.getElementById('ukRoasChart'), {
+            type: 'bar',
+            data: {
+                labels: ukLabels2026,
+                datasets: [
+                    { label: 'Spend', data: ukSpend2026, backgroundColor: 'rgba(100,124,100,0.5)', borderRadius: 4, yAxisID: 'y' },
+                    { label: 'Total Sales', data: ukSales2026, type: 'line', borderColor: 'var(--accent)', backgroundColor: 'transparent', borderDash: [5,3], tension: 0.3, pointRadius: 4, pointBackgroundColor: 'var(--accent)', yAxisID: 'y', borderWidth: 2 },
+                    { label: 'ROAS', data: ukRoas2026, type: 'line', borderColor: colors.uk, backgroundColor: 'transparent', tension: 0.3, pointRadius: 5, pointBackgroundColor: colors.uk, yAxisID: 'y1' }
+                ]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                scales: {
+                    y: { ticks: { callback: v => (v/1000).toFixed(0) + 'k€' }, grid: { color: '#e6dcce' }, min: 0, suggestedMax: 8000 },
+                    y1: { position: 'right', min: 0, max: 3, ticks: { callback: v => v.toFixed(1) + 'x' }, grid: { display: false }},
+                    x: { grid: { display: false }}
+                },
+                plugins: {
+                    legend: { position: 'top', labels: { usePointStyle: true, pointStyleWidth: 12 }},
+                    tooltip: { callbacks: { label: ctx => ctx.dataset.label === 'ROAS' ? `ROAS: ${ctx.parsed.y.toFixed(2)}x` : `${ctx.dataset.label}: ${ctx.parsed.y.toLocaleString('de-DE')}€` }}
+                }
+            }
+        });
+
+        function setUkChart(year) {
+            const btn26 = document.getElementById('uk-chart-btn-2026');
+            const btn25 = document.getElementById('uk-chart-btn-2025');
+            const title = document.getElementById('uk-chart-title');
+            if (year === '2026') {
+                ukChart.data.labels = ukLabels2026;
+                ukChart.data.datasets[0].data = ukSpend2026;
+                ukChart.data.datasets[1].data = ukSales2026;
+                ukChart.data.datasets[2].data = ukRoas2026;
+                ukChart.options.scales.y.suggestedMax = 8000;
+                title.textContent = 'UK Performance 2026 – YTD (KW1–8)';
+                btn26.style.background = 'var(--accent)'; btn26.style.color = '#fff'; btn26.style.borderColor = 'var(--accent)';
+                btn25.style.background = 'transparent'; btn25.style.color = 'var(--text)'; btn25.style.borderColor = 'var(--border)';
+            } else {
+                ukChart.data.labels = months;
+                ukChart.data.datasets[0].data = ukSpend2025;
+                ukChart.data.datasets[1].data = ukSales2025;
+                ukChart.data.datasets[2].data = ukRoas2025;
+                ukChart.options.scales.y.suggestedMax = 20000;
+                title.textContent = 'UK Performance 2025 (Referenz)';
+                btn25.style.background = 'var(--accent)'; btn25.style.color = '#fff'; btn25.style.borderColor = 'var(--accent)';
+                btn26.style.background = 'transparent'; btn26.style.color = 'var(--text)'; btn26.style.borderColor = 'var(--border)';
+            }
+            ukChart.update();
+        }
+
+        // 5. Paid Sales Comparison (Amazon Extern – nach Land)
+
+        // 2023 Paid Sales (nach EU-Marktstart Feb/Mär 2023)
+        const esSales2023 = [0, 88, 1604, 1508, 1918, 2832, 4769, 3500, 4286, 5025, 4575, 4623];
+        const frSales2023 = [0, 158, 1040, 1104, 1886, 2946, 2995, 2493, 3227, 4114, 3797, 3862];
+        const itSales2023 = [0, 162, 1793, 1992, 3516, 4604, 5472, 3690, 3543, 4867, 4970, 5629];
+        const nlSales2023 = [0, 0, 31, 72, 65, 241, 376, 468, 479, 401, 509, 159];
+        const seSales2023 = [0, 0, 152, 67, 676, 1772, 1910, 5221, 2010, 1545, 3323, 4034];
+
+        // 2024 Paid Sales
+        const esSales2024 = [5849, 4928, 5714, 5952, 6225, 6224, 6364, 4767, 4447, 5609, 4464, 5162];
+        const frSales2024 = [3656, 3306, 5367, 4637, 4578, 5375, 6500, 5136, 5807, 5191, 6040, 7223];
+        const itSales2024 = [3375, 4284, 6879, 7932, 8451, 7728, 8044, 7884, 3112, 6269, 7494, 7778];
+        const nlSales2024 = [329, 444, 653, 1013, 1292, 1293, 1394, 1368, 1363, 820, 1398, 1739];
+        const seSales2024 = [3037, 3023, 3907, 3805, 4774, 4151, 5190, 6244, 5236, 3839, 7268, 6596];
+
+        // 2025 SE Paid Sales (only Dec available as yearly total)
+        const seSales2025 = [0,0,0,0,0,0,0,0,0,0,0,15242];
+
+        // 2026 Paid Sales (alle EU-Märkte: Jan verfügbar)
+        const esSales2026 = [48565, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
+        const frSales2026 = [44011, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
+        const itSales2026 = [68985, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
+        const nlSales2026 = [11277, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
+        const seSales2026 = [5094, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
+
+        // 2025 Paid Sales (existing)
+        const esSales = [5723,8153,10524,9264,11286,12364,13444,12839,12638,14803,23504,22248];
+        const frSales = [6524,3273,4135,2897,3440,2753,4655,5690,5353,9696,13743,19889];
+        const itSales = [7468,8364,12554,10000,12080,12034,12878,11235,12434,17834,32670,37841];
+        const nlSales = [1377,1374,2633,1736,2279,2838,2697,2031,3889,3743,5958,4465];
+
+        function cumSales(arr) { let s=0; return arr.map(v => (s+=v)); }
+
+        const salesChart = new Chart(document.getElementById('salesCompareChart'), {
+            type: 'bar',
+            data: {
+                labels: months,
+                datasets: [
+                    { label: 'ES', data: [...esSales2026], backgroundColor: colors.es + '99', borderRadius: 2 },
+                    { label: 'FR', data: [...frSales2026], backgroundColor: colors.fr + '99', borderRadius: 2 },
+                    { label: 'IT', data: [...itSales2026], backgroundColor: colors.it + '99', borderRadius: 2 },
+                    { label: 'NL', data: [...nlSales2026], backgroundColor: colors.nl + '99', borderRadius: 2 }
+                ]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                scales: {
+                    x: { stacked: true, grid: { display: false }},
+                    y: { stacked: true, ticks: { callback: v => (v/1000) + 'k€' }}
+                },
+                plugins: {
+                    legend: { position: 'top', labels: { usePointStyle: true, pointStyleWidth: 12 }},
+                    tooltip: { callbacks: { label: ctx => `${ctx.dataset.label}: ${ctx.parsed.y.toLocaleString('de-DE')}€` }}
+                }
+            }
+        });
+
+        function setSalesView(mode) {
+            ['gesamt','ytd','monat'].forEach(m => {
+                const btn = document.getElementById('sales-btn-' + m);
+                if (!btn) return;
+                const active = m === mode;
+                btn.style.background = active ? 'var(--accent)' : 'transparent';
+                btn.style.color = active ? '#fff' : 'var(--text)';
+                btn.style.borderColor = active ? 'var(--accent)' : 'var(--border)';
+            });
+            document.getElementById('monat-selector-sales').style.display = mode === 'monat' ? 'block' : 'none';
+            if (mode === 'gesamt') {
+                salesChart.data.labels = months;
+                salesChart.data.datasets[0].data = [...esSales];
+                salesChart.data.datasets[1].data = [...frSales];
+                salesChart.data.datasets[2].data = [...itSales];
+                salesChart.data.datasets[3].data = [...nlSales];
+                salesChart.options.scales.x.stacked = true;
+                salesChart.options.scales.y.stacked = true;
+            } else if (mode === 'ytd') {
+                salesChart.data.labels = months;
+                salesChart.data.datasets[0].data = cumSales(esSales);
+                salesChart.data.datasets[1].data = cumSales(frSales);
+                salesChart.data.datasets[2].data = cumSales(itSales);
+                salesChart.data.datasets[3].data = cumSales(nlSales);
+                salesChart.options.scales.x.stacked = false;
+                salesChart.options.scales.y.stacked = false;
+            } else if (mode === 'monat') {
+                updateSalesMonthView();
+                return;
+            }
+            salesChart.update();
+        }
+
+        function updateSalesMonthView() {
+            const idx = parseInt(document.getElementById('monat-picker-sales').value);
+            salesChart.data.labels = [months[idx]];
+            salesChart.data.datasets[0].data = [esSales[idx]];
+            salesChart.data.datasets[1].data = [frSales[idx]];
+            salesChart.data.datasets[2].data = [itSales[idx]];
+            salesChart.data.datasets[3].data = [nlSales[idx]];
+            salesChart.options.scales.x.stacked = false;
+            salesChart.options.scales.y.stacked = false;
+            salesChart.update();
+        }
+
+        // Jahr-Auswahl für Multi-Year Chart
+        let currentYear = 2026;
+        function setYear(yr) {
+            currentYear = yr;
+            // Titel aktualisieren
+            const titleEl = document.getElementById('eu-sales-title');
+            if (titleEl) {
+                const label = yr === 'alle' ? 'Alle Jahre' : yr;
+                titleEl.innerHTML = `Paid Sales ${label} (nach Land) &ndash; Amazon Extern`;
+            }
+            // Update button styles
+            [2023, 2024, 2025, 2026, 'alle'].forEach(y => {
+                const btn = document.getElementById('year-btn-' + y);
+                if (!btn) return;
+                const active = y === yr;
+                btn.style.background = active ? 'var(--accent)' : 'transparent';
+                btn.style.color = active ? '#fff' : 'var(--text)';
+                btn.style.borderColor = active ? 'var(--accent)' : 'var(--border)';
+                btn.style.fontWeight = active ? '500' : 'normal';
+            });
+
+            if (yr === 'alle') {
+                // Grouped bar: X = countries, datasets = years
+                salesChart.data.labels = ['ES', 'FR', 'IT', 'NL'];
+                salesChart.data.datasets = [
+                    { label: '2023', data: [34729, 27622, 40239, 2800], backgroundColor: '#6b7280' + 'cc', borderRadius: 3, borderSkipped: false },
+                    { label: '2024', data: [65706, 62816, 79230, 13107], backgroundColor: '#818cf8' + 'cc', borderRadius: 3, borderSkipped: false },
+                    { label: '2025', data: [156886, 82047, 187455, 34923], backgroundColor: '#4f46e5' + 'cc', borderRadius: 3, borderSkipped: false }
+                ];
+                salesChart.options.scales.x.stacked = false;
+                salesChart.options.scales.y.stacked = false;
+                salesChart.options.scales.y.ticks.callback = v => (v/1000).toFixed(0) + 'k€';
+                salesChart.options.plugins.tooltip.callbacks.label = ctx => `${ctx.dataset.label}: ${ctx.parsed.y.toLocaleString('de-DE')}€`;
+            } else {
+                const dataMap = {
+                    2023: [esSales2023, frSales2023, itSales2023, nlSales2023],
+                    2024: [esSales2024, frSales2024, itSales2024, nlSales2024],
+                    2025: [esSales, frSales, itSales, nlSales],
+                    2026: [esSales2026, frSales2026, itSales2026, nlSales2026]
+                };
+                const d = dataMap[yr];
+                salesChart.data.labels = months;
+                salesChart.data.datasets = [
+                    { label: 'ES', data: [...d[0]], backgroundColor: colors.es + '99', borderRadius: 2, borderSkipped: false },
+                    { label: 'FR', data: [...d[1]], backgroundColor: colors.fr + '99', borderRadius: 2, borderSkipped: false },
+                    { label: 'IT', data: [...d[2]], backgroundColor: colors.it + '99', borderRadius: 2, borderSkipped: false },
+                    { label: 'NL', data: [...d[3]], backgroundColor: colors.nl + '99', borderRadius: 2, borderSkipped: false }
+                ];
+                salesChart.options.scales.x.stacked = true;
+                salesChart.options.scales.y.stacked = true;
+            }
+            salesChart.update();
+        }
+
+        // 7. All Countries Monthly Stacked
+        const ukBudget26 = [6000,7000,7000,8000,9000,8000,10000,4000,6000,12000,14000,9000];
+        const frBudget26 = [2000,2600,3000,2700,2900,3100,3600,2600,2400,4400,5500,5000];
+        const esBudget26 = [2900,3060,3400,3700,3800,4200,3360,3000,3000,4100,7280,5000];
+        const itBudget26 = [2080,4000,4000,3800,5000,3800,4080,2000,4000,5640,6500,5500];
+        const nlBudget26 = [400,400,400,400,400,400,400,400,400,500,500,400];
+        const seBudget26 = [4775,4775,4775,4775,4775,4775,4775,4775,4775,4775,4775,4775];
+
+        new Chart(document.getElementById('allCountriesMonthlyChart'), {
+            type: 'bar',
+            data: {
+                labels: months,
+                datasets: [
+                    { label: 'DE', data: deBudget, backgroundColor: colors.de, borderRadius: 2 },
+                    { label: 'UK', data: ukBudget26, backgroundColor: colors.uk, borderRadius: 2 },
+                    { label: 'FR', data: frBudget26, backgroundColor: colors.fr, borderRadius: 2 },
+                    { label: 'ES', data: esBudget26, backgroundColor: colors.es, borderRadius: 2 },
+                    { label: 'IT', data: itBudget26, backgroundColor: colors.it, borderRadius: 2 },
+                    { label: 'NL', data: nlBudget26, backgroundColor: colors.nl, borderRadius: 2 },
+                    { label: 'SE', data: seBudget26, backgroundColor: colors.se, borderRadius: 2 },
+                ]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                scales: {
+                    x: { stacked: true, grid: { display: false }},
+                    y: { stacked: true, ticks: { callback: v => (v/1000) + 'k€' }}
+                },
+                plugins: {
+                    legend: { position: 'top', labels: { usePointStyle: true, pointStyleWidth: 12, padding: 16 }},
+                    tooltip: {
+                        callbacks: {
+                            label: ctx => `${ctx.dataset.label}: ${ctx.parsed.y.toLocaleString('de-DE')}€`,
+                            footer: items => `Gesamt: ${items.reduce((a,b) => a + b.parsed.y, 0).toLocaleString('de-DE')}€`
+                        }
+                    }
+                }
+            }
+        });
+
+    function parseEuro(str) {
+        // Parse "1.016.010€" or "1.016.010&euro;" → number
+        if (!str) return 0;
+        var s = str.replace(/&euro;/g, '').replace(/€/g, '').replace(/\./g, '').replace(/,/g, '.').trim();
+        var n = parseFloat(s);
+        return isNaN(n) ? 0 : n;
+    }
+
+    function setCardsView(year) {
+        // Toggle button styles
+        ['2025','2026'].forEach(function(y) {
+            var btn = document.getElementById('cards-btn-' + y);
+            var active = y === year;
+            btn.style.background = active ? 'var(--accent)' : 'transparent';
+            btn.style.color = active ? '#fff' : 'var(--text)';
+            btn.style.borderColor = active ? 'var(--accent)' : 'var(--border)';
+        });
+
+        // Update zeitraum label
+        var label = document.getElementById('cards-zeitraum-label');
+        if (year === '2025') {
+            label.textContent = 'Amazon Außenumsatz Gesamtjahr 2025 – alle Märkte';
+        } else {
+            label.textContent = 'Amazon Außenumsatz 2026 – DE/UK/USA KW1–8 YTD | ES/FR/IT/NL/SE: Jan';
+        }
+
+        // Update each card value + sum all visible card values
+        var total = 0;
+        document.querySelectorAll('[data-2025]').forEach(function(el) {
+            var val = el.getAttribute('data-' + year);
+            var lbl = el.getAttribute('data-label-' + year);
+            var valueEl = el.querySelector('.card-main-value');
+            var labelEl = el.querySelector('.card-time-label');
+            if (valueEl && val) {
+                valueEl.textContent = val;
+                total += parseEuro(val);
+            }
+            if (labelEl && lbl) labelEl.textContent = lbl;
+        });
+
+        // Update total-sum span if present
+        var totalSpan = document.getElementById('cards-total-sum');
+        if (totalSpan) {
+            totalSpan.textContent = total.toLocaleString('de-DE') + ' €';
+        }
+
+        // Update banner
+        var bannerVal = document.getElementById('banner-umsatz-value');
+        var bannerLbl = document.getElementById('banner-umsatz-label');
+        if (bannerVal) {
+            if (year === '2025') {
+                bannerVal.textContent = '9.220.581 €';
+                if (bannerLbl) bannerLbl.textContent = 'Amazon Außenumsatz Gesamtjahr 2025 alle Märkte';
+            } else {
+                bannerVal.textContent = '1.509.157 €';
+                if (bannerLbl) bannerLbl.textContent = 'Amazon Außenumsatz YTD alle Märkte';
+            }
+        }
+    }
+
+        // Sync with JL_DATA (shared data source)
+        if (window.JL_DATA) {
+          const d = window.JL_DATA;
+          // Update banner hero
+          const heroEl = document.getElementById('banner-hero-umsatz');
+          if (heroEl) heroEl.textContent = d.amazon.ytd_gesamt.toLocaleString('de-DE') + ' €';
+          const heroLbl = document.getElementById('banner-hero-label');
+          if (heroLbl) heroLbl.textContent = d.amazon.ytd_gesamt_label;
+          const yoyEl = document.getElementById('banner-yoy');
+          if (yoyEl && d.amazon.ytd_vorjahr) {
+            const yoyPct = Math.round(((d.amazon.ytd_gesamt / d.amazon.ytd_vorjahr) - 1) * 100);
+            yoyEl.innerHTML = `<span style="background:rgba(74,124,89,0.15);color:var(--green);font-size:13px;font-weight:700;padding:3px 10px;border-radius:12px;">+${yoyPct}% vs. Vorjahr (KW1&ndash;KW8 2025)</span>`;
+          }
+          // Update spend
+          const spendEl = document.querySelector('[data-kpi="spend"]');
+          if (spendEl) spendEl.textContent = d.amazon.ad_spend_ytd.toLocaleString('de-DE') + ' €';
+        }
+
+        // Default: Ansicht 2026 aktivieren
+        setCardsView('2026');
+    </script>
+
+
+  <!-- ═══════════════════════════════════════════════════════════ -->
+  <!-- VENDOR SALES KATEGORIEANALYSE – integriert aus vendor.html -->
+  <!-- ═══════════════════════════════════════════════════════════ -->
+  <div style="border-top: 3px solid var(--accent); margin: 40px 0 32px 0;"></div>
+  <div style="display:flex; align-items:center; gap:12px; margin-bottom:24px; padding: 0 24px; max-width:1400px; margin-left:auto; margin-right:auto;">
+    <div style="width:4px; height:32px; background:var(--accent); border-radius:2px;"></div>
+    <h2 style="font-size:22px; font-weight:700; color:var(--text);">Amazon Vendor Sales 2025 – Kategorieanalyse</h2>
+    <span style="font-size:12px; color:var(--muted); margin-left:4px;">Rausverkauf nach Produktkategorie · Quelle: Amazon Vendor Central</span>
+  </div>
+
+<div class="header">
+  <div>
+    <h1>Jean &amp; Len – Vendor Sales Dashboard</h1>
+    <div class="subtitle">Amazon Vendor · Manufacturing View · Jahresumsatz 2025 · 7 Märkte</div>
+  </div>
+  <div class="badge">Stand: 04.03.2026</div>
+</div>
+
+<div class="container">
+
+  <!-- KPI CARDS -->
+  <div class="kpi-grid">
+    <div class="kpi-card">
+      <div class="kpi-label">Gesamtumsatz (Ordered)</div>
+      <div class="kpi-value">9,19 Mio. €</div>
+      <div class="kpi-sub">01.01. – 31.12.2025</div>
+    </div>
+    <div class="kpi-card">
+      <div class="kpi-label">Verkaufte Units</div>
+      <div class="kpi-value">1,83 Mio.</div>
+      <div class="kpi-sub">Ordered Units gesamt</div>
+    </div>
+    <div class="kpi-card">
+      <div class="kpi-label">Ø Return Rate</div>
+      <div class="kpi-value">0,60 %</div>
+      <div class="kpi-sub">Customer Returns / Ordered Units</div>
+    </div>
+    <div class="kpi-card">
+      <div class="kpi-label">DE-Marktanteil</div>
+      <div class="kpi-value">84,1 %</div>
+      <div class="kpi-sub">Deutschland dominiert klar</div>
+    </div>
+  </div>
+
+  <!-- CHARTS: Donut + Stacked Bar -->
+  <h2 class="section-title">Umsatzverteilung nach Kategorie</h2>
+  <div class="charts-grid">
+    <!-- Donut -->
+    <div class="card">
+      <div class="chart-wrap" style="height:280px;">
+        <canvas id="donutChart"></canvas>
+      </div>
+      <div class="donut-grid" id="donutLegend"></div>
+    </div>
+    <!-- Stacked Bar -->
+    <div class="card">
+      <div class="chart-wrap" style="height:380px;">
+        <canvas id="stackedBar"></canvas>
+      </div>
+    </div>
+  </div>
+
+  <!-- REVENUE MATRIX TABLE -->
+  <h2 class="section-title">Umsatz-Matrix: Kategorie × Land (EUR)</h2>
+  <div class="table-wrap card" style="padding:0;">
+    <table id="matrixTable"></table>
+  </div>
+
+  <!-- RETURNS + CATEGORY TOTALS -->
+  <div class="two-col">
+    <!-- Returns by Category -->
+    <div>
+      <h2 class="section-title">Return-Quote pro Kategorie</h2>
+      <div class="card" style="padding:0;">
+        <table id="returnsTable"></table>
+      </div>
+    </div>
+    <!-- Category Revenue Summary -->
+    <div>
+      <h2 class="section-title">Kategorie-Übersicht</h2>
+      <div class="card" style="padding:0;">
+        <table id="catSummaryTable"></table>
+      </div>
+    </div>
+  </div>
+
+  <!-- TOP PRODUCTS PER CATEGORY -->
+  <h2 class="section-title">Top-Produkte pro Kategorie (Top 3 nach Umsatz)</h2>
+  <div class="top-grid" id="topProdsGrid"></div>
+
+  <div class="footer">Jean &amp; Len GmbH · Vendor Sales Dashboard 2025 · Daten: Amazon Vendor Central (Manufacturing View) · Erstellt: 25.02.2026</div>
+</div>
+
+<script>
+// ── Vendor Sales Kategorieanalyse Scripts ──────────────────────────────────
+const DATA = {
+  "grand_total": 9187609,
+  "total_units": 1826696,
+  "total_returns_rate": 0.6,
+  "de_pct": 84.1,
+  "cats_sorted": ["Nachfüller","Duft & Lifestyle","Handseife & Hand Wash","Duschgel & Körperwäsche","Sonstiges","Handcreme & Handbalsam","Sonnenschutz & After Sun","Shampoo","Haar-Treatments","Sets & Adventskalender","Körperpflege","Conditioner","Haushalt & Reinigung","Gesichtspflege","Deodorant","Lippenpflege"],
+  "cat_totals": {"Nachfüller":{"rev":2371936,"units":259840,"returns":1099,"pct":25.8,"ret_rate":0.42},"Duft & Lifestyle":{"rev":922736,"units":131038,"returns":1647,"pct":10.0,"ret_rate":1.26},"Handseife & Hand Wash":{"rev":771215,"units":169671,"returns":828,"pct":8.4,"ret_rate":0.49},"Duschgel & Körperwäsche":{"rev":733009,"units":237229,"returns":1353,"pct":8.0,"ret_rate":0.57},"Sonstiges":{"rev":693620,"units":117819,"returns":1239,"pct":7.5,"ret_rate":1.05},"Handcreme & Handbalsam":{"rev":649372,"units":212166,"returns":1590,"pct":7.1,"ret_rate":0.75},"Sonnenschutz & After Sun":{"rev":602299,"units":104186,"returns":476,"pct":6.6,"ret_rate":0.46},"Shampoo":{"rev":599910,"units":187551,"returns":839,"pct":6.5,"ret_rate":0.45},"Haar-Treatments":{"rev":455838,"units":128417,"returns":527,"pct":5.0,"ret_rate":0.41},"Sets & Adventskalender":{"rev":410049,"units":19669,"returns":276,"pct":4.5,"ret_rate":1.40},"Körperpflege":{"rev":285171,"units":71471,"returns":276,"pct":3.1,"ret_rate":0.39},"Conditioner":{"rev":235950,"units":68702,"returns":309,"pct":2.6,"ret_rate":0.45},"Haushalt & Reinigung":{"rev":167607,"units":39506,"returns":264,"pct":1.8,"ret_rate":0.67},"Gesichtspflege":{"rev":158593,"units":26638,"returns":112,"pct":1.7,"ret_rate":0.42},"Deodorant":{"rev":87053,"units":35206,"returns":121,"pct":0.9,"ret_rate":0.34},"Lippenpflege":{"rev":43251,"units":17587,"returns":42,"pct":0.5,"ret_rate":0.24}},
+  "cat_country": {"Nachfüller":{"DE":{"rev":2254701,"units":252138},"IT":{"rev":63879,"units":4045},"ES":{"rev":14826,"units":941},"FR":{"rev":5977,"units":358},"NL":{"rev":16395,"units":1097},"GB":{"rev":3847,"units":303},"SE":{"rev":3837,"units":370}},"Duft & Lifestyle":{"DE":{"rev":658073,"units":97568},"IT":{"rev":18787,"units":2011},"ES":{"rev":5249,"units":544},"FR":{"rev":208636,"units":26263},"NL":{"rev":3654,"units":634},"GB":{"rev":1823,"units":207},"SE":{"rev":81,"units":8}},"Handseife & Hand Wash":{"DE":{"rev":693863,"units":161284},"IT":{"rev":24620,"units":2920},"ES":{"rev":17872,"units":1917},"FR":{"rev":1305,"units":296},"NL":{"rev":11905,"units":870},"GB":{"rev":16104,"units":1495},"SE":{"rev":2671,"units":257}},"Duschgel & Körperwäsche":{"DE":{"rev":717408,"units":234429},"IT":{"rev":0,"units":0},"ES":{"rev":2075,"units":359},"FR":{"rev":753,"units":102},"NL":{"rev":646,"units":103},"GB":{"rev":9028,"units":1044},"SE":{"rev":2664,"units":1083}},"Sonstiges":{"DE":{"rev":39353,"units":4446},"IT":{"rev":198832,"units":35922},"ES":{"rev":308151,"units":46791},"FR":{"rev":80672,"units":15225},"NL":{"rev":17766,"units":3481},"GB":{"rev":67,"units":3},"SE":{"rev":16164,"units":4382}},"Handcreme & Handbalsam":{"DE":{"rev":602559,"units":207267},"IT":{"rev":20933,"units":2055},"ES":{"rev":11613,"units":1121},"FR":{"rev":0,"units":0},"NL":{"rev":239,"units":21},"GB":{"rev":12014,"units":1097},"SE":{"rev":1444,"units":307}},"Sonnenschutz & After Sun":{"DE":{"rev":533652,"units":96184},"IT":{"rev":10525,"units":1192},"ES":{"rev":36413,"units":3717},"FR":{"rev":9370,"units":1482},"NL":{"rev":8277,"units":838},"GB":{"rev":0,"units":0},"SE":{"rev":2419,"units":492}},"Shampoo":{"DE":{"rev":537308,"units":176147},"IT":{"rev":39666,"units":7267},"ES":{"rev":0,"units":0},"FR":{"rev":9144,"units":1399},"NL":{"rev":6499,"units":1603},"GB":{"rev":5866,"units":723},"SE":{"rev":621,"units":213}},"Haar-Treatments":{"DE":{"rev":407085,"units":120172},"IT":{"rev":26773,"units":4355},"ES":{"rev":7897,"units":1383},"FR":{"rev":1591,"units":248},"NL":{"rev":4350,"units":893},"GB":{"rev":5489,"units":641},"SE":{"rev":1810,"units":508}},"Sets & Adventskalender":{"DE":{"rev":380264,"units":17863},"IT":{"rev":13037,"units":783},"ES":{"rev":13399,"units":790},"FR":{"rev":87,"units":5},"NL":{"rev":2057,"units":145},"GB":{"rev":32,"units":2},"SE":{"rev":987,"units":73}},"Körperpflege":{"DE":{"rev":252988,"units":65835},"IT":{"rev":25106,"units":4257},"ES":{"rev":932,"units":173},"FR":{"rev":479,"units":84},"NL":{"rev":3301,"units":558},"GB":{"rev":10,"units":3},"SE":{"rev":1783,"units":437}},"Conditioner":{"DE":{"rev":220848,"units":66641},"IT":{"rev":5816,"units":697},"ES":{"rev":0,"units":0},"FR":{"rev":1022,"units":159},"NL":{"rev":3491,"units":570},"GB":{"rev":4423,"units":550},"SE":{"rev":273,"units":64}},"Haushalt & Reinigung":{"DE":{"rev":152121,"units":36525},"IT":{"rev":0,"units":0},"ES":{"rev":0,"units":0},"FR":{"rev":0,"units":0},"NL":{"rev":15471,"units":2978},"GB":{"rev":0,"units":0},"SE":{"rev":0,"units":0}},"Gesichtspflege":{"DE":{"rev":150555,"units":25494},"IT":{"rev":1945,"units":268},"ES":{"rev":2954,"units":353},"FR":{"rev":2391,"units":407},"NL":{"rev":252,"units":32},"GB":{"rev":0,"units":0},"SE":{"rev":247,"units":44}},"Deodorant":{"DE":{"rev":83399,"units":34213},"IT":{"rev":2021,"units":471},"ES":{"rev":0,"units":0},"FR":{"rev":0,"units":0},"NL":{"rev":581,"units":127},"GB":{"rev":7,"units":1},"SE":{"rev":728,"units":307}},"Lippenpflege":{"DE":{"rev":42946,"units":17509},"IT":{"rev":258,"units":63},"ES":{"rev":0,"units":0},"FR":{"rev":0,"units":0},"NL":{"rev":0,"units":0},"GB":{"rev":0,"units":0},"SE":{"rev":16,"units":4}}},
+  "cat_top3": {"Nachfüller":[{"asin":"B085Z1SP6J","title":"Jean & Len Hand & Body Wash Rosemary und Ginger im Nachfüllbeutel, reinigt und pflegt die Haut","rev":1353031},{"asin":"B078VBX61T","title":"Jean & Len Handseife Rosemary & Ginger, reinigt beanspruchte Hände, Flüssigseife im nachfüllbaren Pumpspender, 250 ml","rev":300776},{"asin":"B092V7KGMQ","title":"Jean & Len Hand & Body Wash Rosemary und Ginger im Kanister, reinigt und pflegt die Haut","rev":251287}],"Sets & Adventskalender":[{"asin":"B0FL24DH5M","title":"Jean & Len Adventskalender 2025, weihnachtliche 3D DIY-Szenerie, inklusive zwei Produkte","rev":161255},{"asin":"B0DMT2G73R","title":"Jean & Len Haarpflege Set Rosemary & Ginger für trockenes und glanzloses Haar","rev":50643},{"asin":"B0DMSZCL7H","title":"Jean & Len Haarpflege Set Rosemary & Ginger für trockenes und glanzloses Haar","rev":48500}],"Handseife & Hand Wash":[{"asin":"B07XCLTNB7","title":"Jean & Len Hand & Body Wash Rosemary und Ginger, reinigt und pflegt die Haut, Würzig-frischer Duft","rev":183510},{"asin":"B0DMFM92B6","title":"Jean & Len Handseife Bergamot & Cedarwood, reinigt beanspruchte Hände","rev":100711},{"asin":"B0CN19FVL5","title":"Jean & Len Hand & Body Cleanser Bergamot & Cedarwood, für ein duftendes Reinigungserlebnis","rev":78272}],"Sonnenschutz & After Sun":[{"asin":"B0B1J27BXY","title":"Jean & Len Sensitiv Sonnenspray 50 LSF wasserfest, für empfindliche Haut","rev":176335},{"asin":"B01DSTM0ZW","title":"Jean & Len Sensitiv Sonnenspray 30 LSF wasserfest, für empfindliche Haut","rev":90586},{"asin":"B092V6BVLJ","title":"Jean & Len Sensitiv Sonnencreme 50+ LSF wasserfest, Sofortschutz für empfindliche Haut","rev":69961}],"Handcreme & Handbalsam":[{"asin":"B085ZCQ7Q2","title":"Jean & Len Sehr geile Handcreme Rosemary & Ginger, mit Urea, Handpflege für trockene Hände","rev":136437},{"asin":"B0CN3KV3X2","title":"Jean & Len Heavenly Hand- & Body Balm Rosemary & Ginger, für ein duftendes Pflegeerlebnis","rev":97176},{"asin":"B0DF7QFSZ8","title":"Jean & Len Heavenly Hand- & Body Balm Bergamot & Cedarwood","rev":49414}],"Haar-Treatments":[{"asin":"B0CV4GJ575","title":"Jean & Len Beat The Heat Hitzeschutzspray, mit Mango Duft, leichte Konsistenz","rev":80599},{"asin":"B0CV42KNY6","title":"Jean & Len Haartonikum Rosmarin, wirkt anregend, regt das Haarwachstum an","rev":72595},{"asin":"B0DG9S89YW","title":"Jean & Len Hair Mask Rosemary und Ginger, für stark strapaziertes, trockenes und glanzloses Haar","rev":33617}],"Shampoo":[{"asin":"B0BVWMYMFX","title":"Jean & Len Traumlocken Shampoo Reiswasser & Açaibeere, für lockiges & welliges Haar","rev":72458},{"asin":"B0DG9LDPB9","title":"Jean & Len Feuchtigkeit Shampoo Rosemary & Ginger, für trockenes und sprödes Haar","rev":70773},{"asin":"B092V71TDJ","title":"Jean & Len Volumen Shampoo Holunder & Jasmin, für kraftloses und feines Haar","rev":37398}],"Duft & Lifestyle":[{"asin":"B0CN1G8V9Q","title":"Jean & Len Scent Experience Rosemary & Ginger, Eau de Toilette mit Rosmarin & Ingwer","rev":61671},{"asin":"B0C8621QK5","title":"Jean & Len Duftkerze Amber & Vanilla, für gemütliche Abende Zuhause, Handgemacht","rev":60600},{"asin":"B0BSG1Y9WX","title":"Jean & Len Rosemary & Ginger Eau de Parfum, würzig-frischer Duft nach Rosmarin & Ingwer","rev":59714}],"Duschgel & Körperwäsche":[{"asin":"B0CNH86WTH","title":"Jean & Len Vitalizing Shower Gel To Mousse Rosemary & Ginger, mit Mandel-, Jojobaöl","rev":58926},{"asin":"B0CQM4DMDH","title":"Jean & Len Reichhaltiger Traumschaum Kokos & Hafermilch, Gel-to-Mousse Technologie","rev":57446},{"asin":"B0CWL5B42T","title":"Jean & Len Duschgel Orange & Ingwer, pH-hautideal, erfrischendes Duscherlebnis","rev":53135}],"Conditioner":[{"asin":"B0BTDVS3WG","title":"Jean & Len Traumlocken Conditioner Reiswasser & Açaibeere, für lockiges & welliges Haar","rev":54651},{"asin":"B0DG9FM6T4","title":"Jean & Len Conditioner Feuchtigkeit Rosemary & Ginger, für stumpfes und glanzloses Haar","rev":31873},{"asin":"B07ZTDSPKD","title":"Jean & Len Conditioner Repair Kokos & Macadamia, für geschädigtes und kraftloses Haar","rev":29588}],"Haushalt & Reinigung":[{"asin":"B0CG9X4D83","title":"Jean & Len Faserschonendes Feinwaschmittel Wolle & Feines Veilchen & Jasmin","rev":35709},{"asin":"B0D1RJT6N4","title":"Jean & Len Universalwaschmittel Wasserlilie & Hibiskus, Fasertiefe Reinigung","rev":25753},{"asin":"B0CP62LPJW","title":"Jean & Len Body Ceremony Peony und Lychee Hand- und Körperreiniger","rev":17287}],"Gesichtspflege":[{"asin":"B0DL5KYFR1","title":"Jean & Len Ultimate Glow Cream, ideal für jeden Hauttyp, sorgt für ein strahlendes Hautbild","rev":28642},{"asin":"B0CDL6F2KK","title":"Jean & Len Feuchtigkeitsspendende Gesichtscreme Kaktusfeige & Hyaluron","rev":22800},{"asin":"B0DLH5XMY7","title":"Jean & Len Hydrating Booster Serum, tiefenwirksame 24h-Feuchtigkeit","rev":14422}],"Körperpflege":[{"asin":"B0CWLFXF5X","title":"Jean & Len Body Butter Cranberry & Vanille, versorgt die Haut ausreichend mit Feuchtigkeit","rev":52947},{"asin":"B08FC3HPVG","title":"Jean & Len Fußcreme Sheabutter & Calendula, für trockene & beanspruchte Haut","rev":25102},{"asin":"B085ZKWF2T","title":"Jean & Len Reichhaltige Bodymilk mit Sheabutter, pflegt trockene Haut intensiv","rev":24885}],"Lippenpflege":[{"asin":"B0C8B2V31C","title":"Jean & Len Intensiv pflegender Lip Balm, für geschmeidig weiche Lippen","rev":22770},{"asin":"B0C5RXYHJ3","title":"Jean & Len Sensitiver Lip Balm mit Bio-Sheabutter & Bio-Mandelöl","rev":15690},{"asin":"B0F4KSKKXL","title":"Jean & Len Lip Balm Beere, bewahrt die Lippenhaut vor dem Austrocknen","rev":3734}],"Deodorant":[{"asin":"B092V85LL8","title":"Jean & Len Deobalsam Baumwolle, schenkt auf natürliche Weise bis zu 24h Deo-Schutz","rev":22278},{"asin":"B0BFJ7ZZTX","title":"Jean & Len Deobalsam Rosenwasser, schenkt auf natürliche Weise bis zu 24h Deo-Schutz","rev":12741},{"asin":"B092V8PPZF","title":"Jean & Len Deobalsam Wasserlilie, schenkt auf natürliche Weise bis zu 24h Deo-Schutz","rev":11167}],"Sonstiges":[{"asin":"B0FPGGP951","title":"Jean & Len Aufbewahrungskorb, rund, aus Baumwolle und Stroh","rev":3460},{"asin":"B0984DBNS9","title":"Jean & Len Desinfektionsmittel für Hände, Hautschonender Hand Sanitizer","rev":3240},{"asin":"B0FPM97YN3","title":"Jean & Len Kosmetikspiegel, aus Eisen, robust und Kratzfest, Mattes & stilvolles Finish","rev":2866}]},
+  "countries": ["DE","IT","ES","FR","NL","GB","SE"]
+};
+
+const PALETTE = [
+  '#3f5a3f','#4a7c59','#6aab7d','#a8d5b5','#c8e6d5',
+  '#7c4f3f','#b8735a','#e09070','#d4a574','#e8c89a',
+  '#3f4f7c','#5a6fab','#8a9fd4','#b5bfe8','#6b3f7c',
+  '#b85ab8'
+];
+
+const cats = DATA.cats_sorted;
+const countries = DATA.countries;
+const countryLabels = {'DE':'Deutschland','IT':'Italien','ES':'Spanien','FR':'Frankreich','NL':'Niederlande','GB':'Großbritannien','SE':'Schweden'};
+
+// DONUT CHART
+(function() {
+  const ctx = document.getElementById('donutChart').getContext('2d');
+  // Filter out Sonstiges from donut for cleaner view, show separate
+  const chartCats = cats.filter(c => c !== 'Sonstiges').concat(['Sonstiges']);
+  const vals = chartCats.map(c => DATA.cat_totals[c].rev);
+  const colors = chartCats.map((c, i) => PALETTE[i % PALETTE.length]);
+
+  new Chart(ctx, {
+    type: 'doughnut',
+    data: {
+      labels: chartCats,
+      datasets: [{ data: vals, backgroundColor: colors, borderWidth: 2, borderColor: '#fff', hoverOffset: 8 }]
+    },
+    options: {
+      responsive: true,
+      maintainAspectRatio: false,
+      cutout: '62%',
+      plugins: {
+        legend: { display: false },
+        tooltip: {
+          callbacks: {
+            label: ctx => ` ${ctx.label}: ${(ctx.raw/1000).toFixed(0)}k€ (${DATA.cat_totals[ctx.label].pct}%)`
+          }
+        }
+      }
+    }
+  });
+
+  // Legend
+  const legend = document.getElementById('donutLegend');
+  chartCats.forEach((cat, i) => {
+    const item = document.createElement('div');
+    item.className = 'legend-item';
+    item.innerHTML = `<span class="legend-dot" style="background:${colors[i]}"></span><span>${cat}</span><span class="legend-pct">${DATA.cat_totals[cat].pct}%</span>`;
+    legend.appendChild(item);
+  });
+})();
+
+// STACKED BAR CHART
+(function() {
+  const ctx = document.getElementById('stackedBar').getContext('2d');
+  // Show top 8 categories by revenue for readability
+  const topCats = cats.slice(0, 9).filter(c => c !== 'Sonstiges');
+
+  const datasets = topCats.map((cat, i) => ({
+    label: cat,
+    data: countries.map(c => Math.round((DATA.cat_country[cat][c]?.rev || 0) / 1000)),
+    backgroundColor: PALETTE[i % PALETTE.length],
+    borderWidth: 0,
+    borderRadius: 2
+  }));
+
+  new Chart(ctx, {
+    type: 'bar',
+    data: {
+      labels: countries.map(c => countryLabels[c] || c),
+      datasets
+    },
+    options: {
+      responsive: true,
+      maintainAspectRatio: false,
+      scales: {
+        x: { stacked: true, grid: { display: false }, ticks: { font: { family: 'Poppins', size: 11 } } },
+        y: {
+          stacked: true,
+          grid: { color: '#e6dcce' },
+          ticks: {
+            font: { family: 'Poppins', size: 10 },
+            callback: v => v + 'k€'
+          },
+          title: { display: true, text: 'Umsatz (Tsd. EUR)', font: { family: 'Poppins', size: 11 } }
+        }
+      },
+      plugins: {
+        legend: {
+          position: 'bottom',
+          labels: { font: { family: 'Poppins', size: 10 }, boxWidth: 12, padding: 10 }
+        },
+        tooltip: {
+          callbacks: {
+            label: ctx => ` ${ctx.dataset.label}: ${ctx.raw}k€`
+          }
+        }
+      }
+    }
+  });
+})();
+
+// MATRIX TABLE
+(function() {
+  const table = document.getElementById('matrixTable');
+  let html = '<thead><tr><th>Kategorie</th>';
+  countries.forEach(c => { html += `<th>${c}</th>`; });
+  html += '<th>Gesamt</th><th>Anteil</th></tr></thead><tbody>';
+
+  cats.forEach(cat => {
+    const total = DATA.cat_totals[cat].rev;
+    html += `<tr><td>${cat}</td>`;
+    countries.forEach(c => {
+      const rev = DATA.cat_country[cat][c]?.rev || 0;
+      html += `<td>${rev > 0 ? (rev/1000).toFixed(0)+'k' : '–'}</td>`;
+    });
+    html += `<td><strong>${(total/1000).toFixed(0)}k€</strong></td>`;
+    html += `<td><span class="pct-pill">${DATA.cat_totals[cat].pct}%</span></td>`;
+    html += '</tr>';
+  });
+
+  // Totals row
+  html += '<tr class="total-row"><td>GESAMT</td>';
+  countries.forEach(c => {
+    const tot = cats.reduce((s, cat) => s + (DATA.cat_country[cat][c]?.rev || 0), 0);
+    html += `<td>${(tot/1000).toFixed(0)}k</td>`;
+  });
+  html += `<td>${(DATA.grand_total/1000000).toFixed(2)} Mio. €</td><td>100%</td></tr>`;
+  html += '</tbody>';
+  table.innerHTML = html;
+})();
+
+// RETURNS TABLE
+(function() {
+  const table = document.getElementById('returnsTable');
+  let html = '<thead><tr><th style="text-align:left;padding:11px 12px;background:var(--accent);color:#fff;font-size:0.75rem;font-weight:600;">Kategorie</th><th style="text-align:center;padding:11px 12px;background:var(--accent);color:#fff;font-size:0.75rem;font-weight:600;">Return Rate</th><th style="text-align:right;padding:11px 12px;background:var(--accent);color:#fff;font-size:0.75rem;font-weight:600;">Returns</th></tr></thead><tbody>';
+
+  const sorted = [...cats].sort((a,b) => DATA.cat_totals[b].ret_rate - DATA.cat_totals[a].ret_rate);
+  sorted.forEach(cat => {
+    const rr = DATA.cat_totals[cat].ret_rate;
+    const ret = DATA.cat_totals[cat].returns;
+    let cls = rr < 0.5 ? 'ret-green' : rr <= 1.5 ? 'ret-orange' : 'ret-red';
+    html += `<tr>
+      <td style="padding:8px 12px;font-size:0.8rem;font-weight:500;">${cat}</td>
+      <td style="padding:8px 12px;text-align:center;"><span class="ret-badge ${cls}">${rr.toFixed(2)}%</span></td>
+      <td style="padding:8px 12px;text-align:right;font-size:0.8rem;color:var(--text-muted);">${ret.toLocaleString('de-DE')}</td>
+    </tr>`;
+  });
+  html += '</tbody>';
+  table.innerHTML = html;
+})();
+
+// CATEGORY SUMMARY TABLE
+(function() {
+  const table = document.getElementById('catSummaryTable');
+  let html = '<thead><tr><th style="text-align:left;padding:11px 12px;background:var(--accent);color:#fff;font-size:0.75rem;font-weight:600;">Kategorie</th><th style="text-align:right;padding:11px 12px;background:var(--accent);color:#fff;font-size:0.75rem;font-weight:600;">Umsatz</th><th style="text-align:right;padding:11px 12px;background:var(--accent);color:#fff;font-size:0.75rem;font-weight:600;">Units</th><th style="text-align:right;padding:11px 12px;background:var(--accent);color:#fff;font-size:0.75rem;font-weight:600;">Ø Preis</th></tr></thead><tbody>';
+
+  cats.forEach((cat, i) => {
+    const d = DATA.cat_totals[cat];
+    const avgPrice = d.units > 0 ? (d.rev / d.units).toFixed(2) : '–';
+    const bg = i % 2 === 1 ? 'background:#faf7f4;' : '';
+    html += `<tr style="${bg}">
+      <td style="padding:8px 12px;font-size:0.79rem;font-weight:500;">${cat}</td>
+      <td style="padding:8px 12px;text-align:right;font-size:0.79rem;font-weight:600;">${(d.rev/1000).toFixed(0)}k€</td>
+      <td style="padding:8px 12px;text-align:right;font-size:0.79rem;color:var(--text-muted);">${d.units.toLocaleString('de-DE')}</td>
+      <td style="padding:8px 12px;text-align:right;font-size:0.79rem;color:var(--text-muted);">${avgPrice}€</td>
+    </tr>`;
+  });
+  html += '</tbody>';
+  table.innerHTML = html;
+})();
+
+// TOP PRODUCTS GRID
+(function() {
+  const grid = document.getElementById('topProdsGrid');
+  // Show all meaningful categories (not Sonstiges)
+  const showCats = cats.filter(c => c !== 'Sonstiges');
+
+  showCats.forEach((cat, ci) => {
+    const prods = DATA.cat_top3[cat] || [];
+    if (!prods.length) return;
+    let prodsHtml = '';
+    prods.forEach((p, i) => {
+      const shortTitle = p.title.length > 72 ? p.title.substring(0, 72) + '…' : p.title;
+      prodsHtml += `<div class="top-prod">
+        <div class="top-rank">${i+1}</div>
+        <div style="flex:1;">
+          <div class="top-prod-title">${shortTitle}</div>
+          <div style="font-size:0.67rem;color:var(--text-muted);margin-top:2px;">${p.asin}</div>
+        </div>
+        <div class="top-prod-rev">${(p.rev/1000).toFixed(0)}k€</div>
+      </div>`;
+    });
+    grid.innerHTML += `<div class="top-cat-card">
+      <div class="top-cat-title" style="border-left:3px solid ${PALETTE[ci % PALETTE.length]};padding-left:8px;">${cat}</div>
+      ${prodsHtml}
+    </div>`;
+  });
+})();
+</script>
+
+</body>
+</html>
