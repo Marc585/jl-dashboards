@@ -178,7 +178,7 @@
 <div class="header">
     <h1>E-Commerce CEO Dashboard</h1>
     <div class="sub">Q1 2026 | Marc Böhle, CDO</div>
-    <div class="meta" id="header-meta">Stand: 22.03.2026 | KW10 | Datenquellen: Jessis Reporting, Amazon Allocation, Inventory Dashboard</div>
+    <div class="meta" id="header-meta">Stand: 27.03.2026 | KW13 | Datenquellen: Jessis Reporting, Amazon Allocation, Inventory Dashboard</div>
 </div>
 
 <!-- Datenstand-Leiste -->
@@ -217,16 +217,16 @@
         </div>
     </div>
 
-    <!-- EINTRAG: Amazon Jahresverhandlungen -->
-    <div style="background:rgba(245,158,11,0.06); border-left:4px solid #f59e0b; border-radius:0 8px 8px 0; padding:14px 16px; display:flex; gap:14px; align-items:flex-start;">
-        <span style="font-size:18px; flex-shrink:0; margin-top:1px;">&#128233;</span>
+    <!-- EINTRAG: Amazon Jahresverhandlungen – ABGESCHLOSSEN -->
+    <div style="background:rgba(74,124,89,0.06); border-left:4px solid var(--green); border-radius:0 8px 8px 0; padding:14px 16px; display:flex; gap:14px; align-items:flex-start;">
+        <span style="font-size:18px; flex-shrink:0; margin-top:1px;">&#9989;</span>
         <div>
-            <div style="font-size:11px; font-weight:700; color:#b45309; text-transform:uppercase; letter-spacing:0.5px; margin-bottom:3px;">Amazon</div>
+            <div style="font-size:11px; font-weight:700; color:var(--green); text-transform:uppercase; letter-spacing:0.5px; margin-bottom:3px;">Amazon</div>
             <div style="font-weight:600; font-size:13px; margin-bottom:4px;">
-                Jahresverhandlungen Amazon
-                <span style="background:rgba(245,158,11,0.2); color:#b45309; font-size:10px; font-weight:700; padding:1px 7px; border-radius:4px; margin-left:6px;">IN VERHANDLUNG</span>
+                Jahresverhandlungen Amazon &ndash; Einigung erzielt
+                <span style="background:rgba(74,124,89,0.15); color:var(--green); font-size:10px; font-weight:700; padding:1px 7px; border-radius:4px; margin-left:6px;">ABGESCHLOSSEN</span>
             </div>
-            <div style="font-size:12px; color:var(--muted); line-height:1.7;">Noch kein Abschluss. Verhandlungen laufen.</div>
+            <div style="font-size:12px; color:var(--muted); line-height:1.7;">-3% Kopfkonditionen, davon 1% in Overstock Allowance. Einsparung ca. 290.000&euro; dieses Jahr.</div>
         </div>
     </div>
 
@@ -248,7 +248,7 @@
         <ul style="margin:0;padding-left:18px;font-size:13px;line-height:2.2;">
             <li><strong>UK Expansion</strong> <span style="background:rgba(228,36,39,0.12);color:#e52427;font-size:10px;font-weight:700;padding:1px 6px;border-radius:4px;margin-left:4px;">HOCH</span></li>
             <li><strong>Einführung ROPT</strong> — Content-Automatisierung Amazon <span style="background:rgba(63,90,63,0.15);color:var(--accent);font-size:10px;font-weight:700;padding:1px 6px;border-radius:4px;margin-left:4px;">NEU</span></li>
-            <li><strong>Jahresverhandlungen Amazon</strong> <span style="background:rgba(245,158,11,0.15);color:#b45309;font-size:10px;font-weight:700;padding:1px 6px;border-radius:4px;margin-left:4px;">OFFEN</span></li>
+            <li><strong>Jahresverhandlungen Amazon</strong> &ndash; Einigung: -3% Kopfkonditionen, ~290k&euro; Einsparung <span style="background:rgba(74,124,89,0.15);color:var(--green);font-size:10px;font-weight:700;padding:1px 6px;border-radius:4px;margin-left:4px;">ERLEDIGT</span></li>
         </ul>
     </div>
 </div>
@@ -327,24 +327,24 @@ function wsYoYPct() {
 
 // --- Datenstand (für Freshness-Anzeige) ---
 const datenstand = {
-    webshop: { datum: "05.03.2026", quelle: "Jessis Reporting Excel" },
-    amazon:  { datum: "KW8 (21.02.2026)", quelle: "Budget Tracker Excel" },
-    dashboard: { datum: "06.03.2026", autor: "Marc / Claude" }
+    webshop: { datum: "21.03.2026", quelle: "Jessis Reporting Excel" },
+    amazon:  { datum: "KW10 (07.03.2026)", quelle: "Budget Tracker Excel" },
+    dashboard: { datum: "27.03.2026", autor: "Marc / Claude" }
 };
 
 // --- Kern-KPIs ---
 const kpis = [
     {
         name: "Webshop – YTD Umsatz",
-        ist: 693088, ziel: 836924, unit: "€",
+        ist: 877739, ziel: 836924, unit: "€",
         trend: "up",
-        massnahme: "Quelle: Jessis Reporting | Stand: 05.03.2026",
+        massnahme: "Quelle: Jessis Reporting | Stand: 21.03.2026",
         color: "--green",
         yoy: wsYoYPct()
     },
     {
         name: "Webshop AOV",
-        ist: 45.40, ziel: 49.15, unit: "€",
+        ist: 45.93, ziel: 49.15, unit: "€",
         trend: "up",
         massnahme: "Customer Journey Workshop + Bug-Fixes für höheren Warenkorb",
         color: "--orange"
@@ -359,19 +359,19 @@ const kpis = [
     },
     {
         name: "Webshop CR",
-        ist: 2.83, ziel: 2.81, unit: "%",
+        ist: 2.93, ziel: 2.81, unit: "%",
         trend: "up",
-        massnahme: "CRO-Optimierung läuft, fast am Ziel",
-        color: "--yellow"
+        massnahme: "CRO-Optimierung — Ziel übertroffen!",
+        color: "--green"
     },
     {
         name: "Amazon J&L (Q1 Umsatz)",
-        ist: 1508279, ziel: 2147000, unit: "€",
+        ist: 1842526, ziel: 2147000, unit: "€",
         trend: "up",
-        massnahme: "DE/USA/UK KW1–8. IT/ES/FR/NL/SE Jan eingetragen.",
+        massnahme: "DE/USA/UK KW1–10. IT/ES/FR/NL/SE Jan eingetragen.",
         color: "--accent",
-        linearPlan: Math.round(2147000 / 13 * 8),
-        dataWeeks: 8,
+        linearPlan: Math.round(2147000 / 13 * 10),
+        dataWeeks: 10,
         totalWeeks: 13,
         yoy: 67
     }
@@ -389,7 +389,7 @@ const steineWebshopQ1 = [
 ];
 
 const steineAmazonQ1 = [
-    { name: "Jahresgespräche Amazon", detail: "Kurz vor Abschluss – Ziel: -3% Kopfkonditionen", owner: "Marc", status: "yellow", meilenstein: "Abschluss Q1", deadline: "Q1" },
+    { name: "Jahresgespräche Amazon", detail: "Einigung erzielt: -3% Kopfkonditionen, 1% davon in Overstock Allowance. Einsparung ca. 290.000€/Jahr.", owner: "Marc", status: "green", meilenstein: "Abgeschlossen ✓", deadline: "Q1" },
     { name: "UK Expansion", detail: "Ziel: 5.000 GBP/Woche fast erreicht – Break-even Pick & Pack in Reichweite", owner: "Lena", status: "yellow", meilenstein: "5.000 GBP/Woche stabil halten", deadline: "Q1" },
     { name: "Amazon USA – Handseifen Launch", detail: "Buchhalterische Schwierigkeiten gelöst – Go-Live mit Bestand im Laufe der Woche", owner: "Karina", status: "yellow", meilenstein: "Live mit Bestand KW10", deadline: "KW10" },
     { name: "Amazon TOX", detail: "Hybrid-Projekt gestartet, externer Berater an Bord", owner: "Marc", status: "yellow", meilenstein: "Projekt-Abschluss in 4 Monaten", deadline: "Jun" },
@@ -427,7 +427,7 @@ const roadmapItems = [
     { name: "Beiersdorf Produktliste", start: 6, end: 8, phase: "Abstimmung → Umsetzung", color: "var(--yellow)" },
     { name: "INCI-Check Tool", start: 1, end: 7, phase: "Entwicklung → Live", color: "var(--green)" }
 ];
-const currentKW = 9; // Aktuelle Kalenderwoche
+const currentKW = 13; // Aktuelle Kalenderwoche
 const kwStart = 1;
 const kwEnd = 13;
 
@@ -445,23 +445,23 @@ const projekte = [
 const umsatz = {
     webshop: {
         label: "Webshop J&L",
-        ist: 693088,    // YTD Summe aus Jessis Reporting (bis 05.03.)
+        ist: 877739,    // YTD Summe aus Jessis Reporting (bis 21.03.)
         plan: 836924,   // Q1-Umsatzziel (836.923,62€)
         planJahr: 5042156, // Jahresprognose 2026
-        zeitraum: "YTD (01.01.–05.03.)",
-        detail: "64 Tage | Ø 10.830€/Tag | 15.267 Bestellungen",
+        zeitraum: "YTD (01.01.–21.03.)",
+        detail: "80 Tage | Ø 10.972€/Tag | 19.109 Bestellungen",
         color: "var(--green)"
     },
     amazon: {
         label: "Amazon J&L (alle Märkte)",
-        ist: 1508279, // DE/UK/USA KW1-8 + IT/ES/FR/NL/SE Jan
+        ist: 1842526, // DE/UK/USA KW1-10 + IT/ES/FR/NL/SE Jan
         plan: 2147000, // Q1 Prognose (11,3 Mio € Jahresprognose = 19%)
         planJahr: 11300000, // Jahresprognose
-        linearPlan: 1321231, // Linearer Plan KW1-8 (2.147.000 * 8/13)
-        dataWeeks: 8, // Wochen mit Daten
+        linearPlan: 1651538, // Linearer Plan KW1-10 (2.147.000 * 10/13)
+        dataWeeks: 10, // Wochen mit Daten
         totalWeeks: 13, // Q1 Gesamtwochen
-        zeitraum: "YTD (KW1–KW8)",
-        detail: "DE/USA/UK KW8 | IT Feb | ES/FR/NL/SE Jan eingetragen",
+        zeitraum: "YTD (KW1–KW10)",
+        detail: "DE/USA/UK KW10 | IT/ES/FR/NL/SE Jan eingetragen",
         monatsPlan: { jan: 791000, feb: 565000 }, // Aus DE Budget Tracker (ERP Monthly Plan)
         color: "var(--accent)"
     }
@@ -471,14 +471,14 @@ const umsatz = {
 // Daten aus Budget Tracker Excel (OneDrive), aktualisiert Mi wöchentlich
 // Total Sales Amazon = Paid + Organic Sales
 const amazonLaender = [
-    { flag: "&#127465;&#127466;", name: "Deutschland", budgetQ1: 60500, istQ1: 1272967, adSpend: 34798, roas: 14.46, orders: 87577, budgetJahr: 320000, status: "active", datenstand: "KW1–8" },
-    { flag: "&#127468;&#127463;", name: "UK", budgetQ1: 20000, istQ1: 34839, adSpend: 12436, roas: 2.11, orders: 2858, budgetJahr: 100000, status: "growth", datenstand: "KW1–8", note: "GBP→EUR" },
+    { flag: "&#127465;&#127466;", name: "Deutschland", budgetQ1: 60500, istQ1: 1603270, adSpend: 42219, roas: 14.83, orders: 107756, budgetJahr: 320000, status: "active", datenstand: "KW1–10" },
+    { flag: "&#127468;&#127463;", name: "UK", budgetQ1: 20000, istQ1: 34839, adSpend: 12436, roas: 2.11, orders: 2858, budgetJahr: 100000, status: "growth", datenstand: "KW1–10", note: "GBP→EUR" },
     { flag: "&#127466;&#127480;", name: "Spanien", budgetQ1: 9360, istQ1: 48565, adSpend: 3475, roas: null, orders: null, budgetJahr: 46800, status: "active", datenstand: "Jan '26" },
     { flag: "&#127467;&#127479;", name: "Frankreich", budgetQ1: 7600, istQ1: 44011, adSpend: 3215, roas: null, orders: null, budgetJahr: 39800, status: "active", datenstand: "Jan '26" },
-    { flag: "&#127470;&#127481;", name: "Italien", budgetQ1: 10080, istQ1: 68985, adSpend: 5479, roas: null, orders: null, budgetJahr: 50400, status: "active", datenstand: "Feb '26" },
+    { flag: "&#127470;&#127481;", name: "Italien", budgetQ1: 10080, istQ1: 68985, adSpend: 5479, roas: null, orders: null, budgetJahr: 50400, status: "active", datenstand: "Jan '26" },
     { flag: "&#127475;&#127473;", name: "Niederlande", budgetQ1: 1200, istQ1: 11277, adSpend: 600, roas: null, orders: null, budgetJahr: 5000, status: "active", datenstand: "Jan '26" },
     { flag: "&#127480;&#127466;", name: "Schweden", budgetQ1: 14325, istQ1: 5094, adSpend: 637, roas: null, orders: null, budgetJahr: 57300, status: "new", datenstand: "Jan '26" },
-    { flag: "&#127482;&#127480;", name: "USA", budgetQ1: null, istQ1: 22541, adSpend: 13783, roas: 0.71, orders: 799, budgetJahr: null, status: "launch", datenstand: "KW1–8", note: "USD→EUR" }
+    { flag: "&#127482;&#127480;", name: "USA", budgetQ1: null, istQ1: 26485, adSpend: 15412, roas: 0.75, orders: 974, budgetJahr: null, status: "launch", datenstand: "KW1–10", note: "USD→EUR" }
 ];
 
 // --- Artikelgruppen (Platzhalter für Power BI Daten) ---

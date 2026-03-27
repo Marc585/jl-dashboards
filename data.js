@@ -4,7 +4,7 @@
  * WICHTIG: Diese Datei wird automatisch durch master_update.py generiert.
  *          NICHT manuell bearbeiten – Script ausführen!
  *
- * Letztes Update: 22.03.2026 | KW10
+ * Letztes Update: 27.03.2026 | KW10
  */
 window.JL_DATA = {
 
@@ -12,8 +12,8 @@ window.JL_DATA = {
   stand: {
     amazon_weekly:  "KW10 (01.03 - 07.03)",
     amazon_monthly: "ES/FR/IT/NL/SE: Januar 2026",
-    webshop:        "21.03.2026",
-    dashboard:      "22.03.2026"
+    webshop:        "22.03.2026",
+    dashboard:      "27.03.2026"
   },
 
   // ─── AMAZON ADS 2026 ──────────────────────────────────────────
@@ -59,7 +59,7 @@ window.JL_DATA = {
     aov_ziel:         49.15,
     cr:               2.93,
     cr_ziel:          2.81,
-    tages_schnitt:    10972
+    tages_schnitt:    10836
   },
 
   // ─── OOS-QUOTE ────────────────────────────────────────────────
@@ -67,6 +67,6 @@ window.JL_DATA = {
     ist:    3.24,
     ziel:   4.0,
     status: "fallback",
-    stand:  "22.03.2026"
+    stand:  "27.03.2026"
   }
 };
