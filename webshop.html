@@ -540,6 +540,15 @@ let customRawData = null; // für eigenen Zeitraum
 const charts = {};
 const colNames = { ytd: 'KW', quarterly: 'KW', custom: 'Datum' };
 const _fmtDate = s => s.slice(8)+'.'+s.slice(5,7)+'.'+s.slice(0,4);
+// Letztes Datendatum = Sonntag der letzten KW (Montag + 6), max. heute
+function _lastDataDate(data) {
+    if (!data.length) return data[0]?.datum || '2026-01-01';
+    const d = new Date(data[data.length-1].datum);
+    d.setDate(d.getDate() + 6);
+    const t = new Date(); t.setHours(0,0,0,0);
+    const end = d <= t ? d : t;
+    return end.toISOString().slice(0,10);
+}
 
 function getActiveRaw() {
     if (currentMode === 'custom' && customRawData) return customRawData;
@@ -557,7 +566,7 @@ function switchPeriod(mode, btn) {
     document.getElementById('customRangeBar').style.display = 'none';
 
     const activeRaw = getActiveRaw();
-    const _last = _fmtDate(activeRaw[activeRaw.length-1].datum);
+    const _last = _fmtDate(_lastDataDate(activeRaw));
     const _first = _fmtDate(activeRaw[0].datum);
     const modeLabels = {
         quarterly: `Quartal ${getQuarter(activeRaw[activeRaw.length-1].datum)} 2026 (${_first} – ${_last})`,
@@ -1171,7 +1180,7 @@ function renderCatShare() {
     document.getElementById('btnYtd').classList.add('active');
     document.getElementById('dateFrom').value = raw[0].datum;
     document.getElementById('dateTo').value = raw[raw.length-1].datum;
-    const _last = _fmtDate(raw[raw.length-1].datum);
+    const _last = _fmtDate(_lastDataDate(raw));
     document.getElementById('periodLabel').textContent = `Ansicht: Year-to-Date (01.01. – ${_last})`;
     renderAll();
     renderCatShare();
