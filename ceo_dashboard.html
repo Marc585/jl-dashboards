@@ -327,9 +327,9 @@ function wsYoYPct() {
 
 // --- Datenstand (für Freshness-Anzeige) ---
 const datenstand = {
-    webshop: { datum: "21.03.2026", quelle: "Jessis Reporting Excel" },
+    webshop: { datum: "22.03.2026", quelle: "Jessis Reporting Excel" },
     amazon:  { datum: "KW10 (07.03.2026)", quelle: "Budget Tracker Excel" },
-    dashboard: { datum: "27.03.2026", autor: "Marc / Claude" }
+    dashboard: { datum: "30.03.2026", autor: "Marc / Claude" }
 };
 
 // --- Kern-KPIs ---
@@ -338,7 +338,7 @@ const kpis = [
         name: "Webshop – YTD Umsatz",
         ist: 877739, ziel: 836924, unit: "€",
         trend: "up",
-        massnahme: "Quelle: Jessis Reporting | Stand: 21.03.2026",
+        massnahme: "Quelle: Jessis Reporting | Stand: 22.03.2026",
         color: "--green",
         yoy: wsYoYPct()
     },
@@ -445,10 +445,10 @@ const projekte = [
 const umsatz = {
     webshop: {
         label: "Webshop J&L",
-        ist: 877739,    // YTD Summe aus Jessis Reporting (bis 21.03.)
+        ist: 877739,    // YTD Summe aus Jessis Reporting (bis 22.03.)
         plan: 836924,   // Q1-Umsatzziel (836.923,62€)
         planJahr: 5042156, // Jahresprognose 2026
-        zeitraum: "YTD (01.01.–21.03.)",
+        zeitraum: "YTD (01.01.–22.03.)",
         detail: "80 Tage | Ø 10.972€/Tag | 19.109 Bestellungen",
         color: "var(--green)"
     },
@@ -883,7 +883,7 @@ function renderFreshness() {
 // --- Render All ---
 renderFreshness();
 document.getElementById('dashboardFooter').innerHTML =
-    `J&L CEO Dashboard | Letzte Aktualisierung: ${datenstand.dashboard.datum} | Webshop-Daten: ${datenstand.webshop.datum} | Amazon-Daten: ${datenstand.amazon.datum}<br>Nächstes Update: 17.02.2026 (Montag) | Erstellt mit Claude Code`;
+    `J&L CEO Dashboard | Letzte Aktualisierung: ${datenstand.dashboard.datum} | Webshop-Daten: ${datenstand.webshop.datum} | Amazon-Daten: ${datenstand.amazon.datum}<br>Nächstes Update: 06.04.2026 (Montag) | Erstellt mit Claude Code`;
 renderKPIs();
 renderUmsatz();
 renderCountries();
