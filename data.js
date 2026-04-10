@@ -4,35 +4,35 @@
  * WICHTIG: Diese Datei wird automatisch durch master_update.py generiert.
  *          NICHT manuell bearbeiten – Script ausführen!
  *
- * Letztes Update: 30.03.2026 | KW10
+ * Letztes Update: 10.04.2026 | ?
  */
 window.JL_DATA = {
 
   // ─── DATENSTAND ───────────────────────────────────────────────
   stand: {
-    amazon_weekly:  "KW10 (01.03 - 07.03)",
+    amazon_weekly:  "? ()",
     amazon_monthly: "ES/FR/IT/NL/SE: Januar 2026",
     webshop:        "22.03.2026",
-    dashboard:      "30.03.2026"
+    dashboard:      "10.04.2026"
   },
 
   // ─── AMAZON ADS 2026 ──────────────────────────────────────────
   amazon: {
-    ytd_gesamt:       1996383,
+    ytd_gesamt:       255143,
     ytd_gesamt_label: "Amazon Außenumsatz YTD 2026 – alle 8 Märkte",
     ads_budget_jahr:   567200,
     q1_plan:          2147000,
     jahresprognose:  11300000,
-    data_weeks:             10,
-    ad_spend_ytd:       70067,
-    paid_roas_ytd:       11.9,
-    interner_roas:       33.8,
+    data_weeks:             ?,
+    ad_spend_ytd:       27848,
+    paid_roas_ytd:       2.1,
+    interner_roas:       null,
 
     laender: {
-      DE:  { ytd: 1603270, spend: 42219, orders: 107756, paid_roas: 14.83, label: "KW1–KW10 YTD '26", budget_jahr: 320000 },
-      UK:  { ytd: 34839, spend: 12436, orders: 2858, paid_roas: 2.11, label: "KW1–KW10 YTD '26", budget_jahr: 100000 },
-      USA: { ytd: 26485, spend: 15412, orders: 974, paid_roas: 0.75, label: "KW1–KW10 YTD '26 (USD→EUR)", budget_jahr: null },
-      IT:  { ytd: 137970, spend:  8335, orders:  null, paid_roas:  null, label: "Jan–Feb '26", budget_jahr: 50400 },
+      DE:  { ytd: 0, spend: 0, orders: 0, paid_roas: null, label: "KW1–? YTD '26", budget_jahr: 320000 },
+      UK:  { ytd: 34839, spend: 12436, orders: 2858, paid_roas: 2.11, label: "KW1–? YTD '26", budget_jahr: 100000 },
+      USA: { ytd: 26485, spend: 15412, orders: 974, paid_roas: 0.75, label: "KW1–? YTD '26 (USD→EUR)", budget_jahr: null },
+      IT:  { ytd: 0, spend:  0, orders:  null, paid_roas:  null, label: "Jan '26", budget_jahr: 50400 },
       ES:  { ytd: 89673, spend:  5733, orders:  null, paid_roas:  null, label: "Jan–Feb '26", budget_jahr: 46800 },
       FR:  { ytd: 77481, spend:  5041, orders:  null, paid_roas:  null, label: "Jan–Feb '26", budget_jahr: 39800 },
       NL:  { ytd: 18224, spend:    794, orders:  null, paid_roas:  null, label: "Jan–Feb '26", budget_jahr: 5000 },
@@ -67,6 +67,6 @@ window.JL_DATA = {
     ist:    3.24,
     ziel:   4.0,
     status: "fallback",
-    stand:  "30.03.2026"
+    stand:  "10.04.2026"
   }
 };
