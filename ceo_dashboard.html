@@ -379,13 +379,13 @@ const kpis = [
     },
     {
         name: "Amazon J&L (Q1 Umsatz)",
-        ist: 1842526, ziel: 2147000, unit: "€",
+        ist: 2845052, ziel: 2147000, unit: "€",
         trend: "up",
-        massnahme: "DE/UK/USA KW1–13. IT/ES/FR/NL/SE Jan–Mär eingetragen.",
+        massnahme: "DE/UK/USA KW1–14 YTD. IT/ES/FR/NL/SE Jan–Mär eingetragen.",
         color: "--accent",
-        linearPlan: Math.round(2147000 / 13 * 10),
-        dataWeeks: 10,
-        totalWeeks: 13,
+        linearPlan: Math.round(2147000 / 13 * 14),
+        dataWeeks: 14,
+        totalWeeks: 14,
         yoy: 67
     }
 ];
@@ -528,18 +528,52 @@ function renderKPIs() {
 
         // Spezialfall: Amazon mit Plan-Vergleich (linearPlan vorhanden)
         if (k.linearPlan) {
-            const diff = k.ist - k.linearPlan;
-            const ahead = diff > 0;
-            const aheadPct = ((k.ist / k.linearPlan) - 1) * 100;
+            const q1Complete = k.dataWeeks >= 13; // Q1 hat 13 Wochen
             const istStr  = (k.ist / 1000).toFixed(0) + 'K ' + k.unit;
-            const planStr = (k.linearPlan / 1000).toFixed(0) + 'K ' + k.unit;
-            const diffStr = (Math.abs(diff) / 1000).toFixed(0) + 'K ' + k.unit;
             const zielStr = fmt2(k.ziel / 1000000) + ' Mio ' + k.unit;
-            const badgeClass = ahead ? 'badge-green' : 'badge-red';
-            const badgeText = ahead ? '+' + aheadPct.toFixed(1) + '% über Plan' : aheadPct.toFixed(1) + '% unter Plan';
             const istDisplay = k.ist >= 1000000
                 ? fmt2(k.ist / 1000000) + '\u202FMio\u202F' + k.unit
                 : fmt(Math.round(k.ist)) + '\u202F' + k.unit;
+
+            if (q1Complete) {
+                // Q1 abgeschlossen — direkter Vergleich Ist vs. Q1-Ziel
+                const diff = k.ist - k.ziel;
+                const ahead = diff > 0;
+                const aheadPct = ((k.ist / k.ziel) - 1) * 100;
+                const diffStr = (Math.abs(diff) / 1000).toFixed(0) + 'K ' + k.unit;
+                const badgeClass = ahead ? 'badge-green' : 'badge-red';
+                const badgeText = ahead ? '+' + aheadPct.toFixed(1) + '% vs. Q1-Ziel' : aheadPct.toFixed(1) + '% vs. Q1-Ziel';
+                return `<div class="card kpi-card" style="border-color:${ahead ? 'rgba(74,124,89,0.3)' : 'rgba(229,36,39,0.3)'}">
+                    <div class="kpi-header">
+                        <span class="kpi-name">${k.name}</span>
+                        <span class="badge ${badgeClass}">${badgeText}</span>
+                    </div>
+                    <div class="kpi-values" style="flex-wrap:wrap;">
+                        <span class="kpi-ist" style="color:var(${k.color});font-size:28px;white-space:nowrap;">${istDisplay}</span>
+                    </div>
+                    ${k.yoy ? `<div style="margin-bottom:8px;"><span style="background:rgba(74,124,89,0.15);color:var(--green);font-size:11px;font-weight:700;padding:2px 8px;border-radius:10px;">+${k.yoy}% vs. Vorjahr</span></div>` : ''}
+                    <div style="font-size:12px;color:var(--muted);margin-bottom:10px;">
+                        Q1-Ziel: <strong>${zielStr}</strong> &nbsp;|&nbsp; Q1 abgeschlossen
+                    </div>
+                    <div style="display:flex;align-items:center;gap:10px;padding:9px 12px;background:${ahead ? 'rgba(74,124,89,0.08)' : 'rgba(229,36,39,0.08)'};border-radius:8px;margin-bottom:8px;">
+                        <span style="font-size:16px">${ahead ? '&#9650;' : '&#9660;'}</span>
+                        <div>
+                            <div style="font-size:13px;font-weight:700;color:${ahead ? 'var(--green)' : 'var(--red)'}">${diffStr} ${ahead ? 'über' : 'unter'} Q1-Ziel</div>
+                            <div style="font-size:11px;color:var(--muted)">YTD inkl. KW14 &bull; Ziel: ${zielStr} &#8594; Ist: ${istStr}</div>
+                        </div>
+                    </div>
+                    <div class="kpi-context" style="font-size:11px;color:var(--muted)">&#9432; ${k.massnahme}</div>
+                </div>`;
+            }
+
+            // Q1 läuft noch — Pace-Vergleich
+            const diff = k.ist - k.linearPlan;
+            const ahead = diff > 0;
+            const aheadPct = ((k.ist / k.linearPlan) - 1) * 100;
+            const planStr = (k.linearPlan / 1000).toFixed(0) + 'K ' + k.unit;
+            const diffStr = (Math.abs(diff) / 1000).toFixed(0) + 'K ' + k.unit;
+            const badgeClass = ahead ? 'badge-green' : 'badge-red';
+            const badgeText = ahead ? '+' + aheadPct.toFixed(1) + '% über Plan' : aheadPct.toFixed(1) + '% unter Plan';
 
             return `<div class="card kpi-card" style="border-color:${ahead ? 'rgba(74,124,89,0.3)' : 'rgba(229,36,39,0.3)'}">
                 <div class="kpi-header">
@@ -551,7 +585,7 @@ function renderKPIs() {
                 </div>
                 ${k.yoy ? `<div style="margin-bottom:8px;"><span style="background:rgba(74,124,89,0.15);color:var(--green);font-size:11px;font-weight:700;padding:2px 8px;border-radius:10px;">+${k.yoy}% vs. Vorjahr</span></div>` : ''}
                 <div style="font-size:12px;color:var(--muted);margin-bottom:10px;">
-                    Q1-Ziel: <strong>${zielStr}</strong> &nbsp;|&nbsp; KW\u202F${k.dataWeeks}\u202Fvon\u202F${k.totalWeeks}
+                    Q1-Ziel: <strong>${zielStr}</strong> &nbsp;|&nbsp; KW\u202F${k.dataWeeks}\u202Fvon\u202F13
                 </div>
                 <div style="display:flex;align-items:center;gap:10px;padding:9px 12px;background:${ahead ? 'rgba(74,124,89,0.08)' : 'rgba(229,36,39,0.08)'};border-radius:8px;margin-bottom:8px;">
                     <span style="font-size:16px">${ahead ? '&#9650;' : '&#9660;'}</span>
@@ -929,9 +963,10 @@ renderKategorien();
   // Amazon Q1 KPI
   if (window.kpis && kpis[2]) {
     kpis[2].ist = am.ytd_gesamt;
-    kpis[2].linearPlan = Math.round(am.q1_plan / 13 * am.data_weeks);
+    kpis[2].linearPlan = Math.round(am.q1_plan / 13 * Math.min(am.data_weeks, 13));
     kpis[2].ziel = am.q1_plan;
     kpis[2].dataWeeks = am.data_weeks;
+    kpis[2].totalWeeks = am.data_weeks;
   }
 
   // Umsatz-Block
