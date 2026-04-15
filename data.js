@@ -4,39 +4,39 @@
  * WICHTIG: Diese Datei wird automatisch durch master_update.py generiert.
  *          NICHT manuell bearbeiten – Script ausführen!
  *
- * Letztes Update: 10.04.2026 | ?
+ * Letztes Update: 15.04.2026 | Marc Böhle / Claude
  */
 window.JL_DATA = {
 
   // ─── DATENSTAND ───────────────────────────────────────────────
   stand: {
-    amazon_weekly:  "? ()",
-    amazon_monthly: "ES/FR/IT/NL/SE: Januar 2026",
-    webshop:        "22.03.2026",
-    dashboard:      "10.04.2026"
+    amazon_weekly:  "KW13 (22.03. - 28.03.) / UK: KW14",
+    amazon_monthly: "IT/ES/FR/NL/SE: März 2026",
+    webshop:        "15.04.2026 | KW16",
+    dashboard:      "15.04.2026"
   },
 
   // ─── AMAZON ADS 2026 ──────────────────────────────────────────
   amazon: {
-    ytd_gesamt:       255143,
+    ytd_gesamt:       2676462,
     ytd_gesamt_label: "Amazon Außenumsatz YTD 2026 – alle 8 Märkte",
     ads_budget_jahr:   567200,
     q1_plan:          2147000,
     jahresprognose:  11300000,
-    data_weeks:             ?,
-    ad_spend_ytd:       27848,
-    paid_roas_ytd:       2.1,
-    interner_roas:       null,
+    data_weeks:             13,
+    ad_spend_ytd:      102099,
+    paid_roas_ytd:      10.95,
+    interner_roas:      28.59,
 
     laender: {
-      DE:  { ytd: 0, spend: 0, orders: 0, paid_roas: null, label: "KW1–? YTD '26", budget_jahr: 320000 },
-      UK:  { ytd: 34839, spend: 12436, orders: 2858, paid_roas: 2.11, label: "KW1–? YTD '26", budget_jahr: 100000 },
-      USA: { ytd: 26485, spend: 15412, orders: 974, paid_roas: 0.75, label: "KW1–? YTD '26 (USD→EUR)", budget_jahr: null },
-      IT:  { ytd: 0, spend:  0, orders:  null, paid_roas:  null, label: "Jan '26", budget_jahr: 50400 },
-      ES:  { ytd: 89673, spend:  5733, orders:  null, paid_roas:  null, label: "Jan–Feb '26", budget_jahr: 46800 },
-      FR:  { ytd: 77481, spend:  5041, orders:  null, paid_roas:  null, label: "Jan–Feb '26", budget_jahr: 39800 },
-      NL:  { ytd: 18224, spend:    794, orders:  null, paid_roas:  null, label: "Jan–Feb '26", budget_jahr: 5000 },
-      SE:  { ytd:  8441, spend:    824, orders:  null, paid_roas:  null, label: "Jan–Feb '26", budget_jahr: 5200 }
+      DE:  { ytd: 2102764, spend:  55461, orders: 140322, paid_roas: 14.67, label: "KW1–KW13 YTD '26",           budget_jahr: 320000 },
+      UK:  { ytd:   63540, spend:  24466, orders:   4943, paid_roas:  1.90, label: "KW1–KW14 YTD '26",           budget_jahr: 100000 },
+      USA: { ytd:   47389, spend:  22172, orders:   1779, paid_roas:  0.84, label: "KW1–KW13 YTD '26 (USD→EUR)", budget_jahr:   null },
+      IT:  { ytd:  161631, spend:  11152, orders:   null, paid_roas:  null, label: "Jan–Mär '26",                budget_jahr:  50400 },
+      ES:  { ytd:  142595, spend:   9037, orders:   null, paid_roas:  null, label: "Jan–Mär '26",                budget_jahr:  46800 },
+      FR:  { ytd:  116016, spend:   6945, orders:   null, paid_roas:  null, label: "Jan–Mär '26",                budget_jahr:  39800 },
+      NL:  { ytd:   29142, spend:    934, orders:   null, paid_roas:  null, label: "Jan–Mär '26",                budget_jahr:   5000 },
+      SE:  { ytd:   13385, spend:    950, orders:   null, paid_roas:  null, label: "Jan–Mär '26",                budget_jahr:   5200 }
     },
 
     laender_2025: {
@@ -53,13 +53,13 @@ window.JL_DATA = {
 
   // ─── WEBSHOP 2026 ─────────────────────────────────────────────
   webshop: {
-    ytd_umsatz:       877739,
-    ytd_bestellungen: 19109,
-    aov:              45.93,
-    aov_ziel:         49.15,
-    cr:               2.93,
-    cr_ziel:          2.81,
-    tages_schnitt:    10836
+    ytd_umsatz:       1145569,
+    ytd_bestellungen:   24972,
+    aov:                45.87,
+    aov_ziel:           49.15,
+    cr:                  2.85,
+    cr_ziel:             2.81,
+    tages_schnitt:      10910
   },
 
   // ─── OOS-QUOTE ────────────────────────────────────────────────
@@ -67,6 +67,6 @@ window.JL_DATA = {
     ist:    3.24,
     ziel:   4.0,
     status: "fallback",
-    stand:  "10.04.2026"
+    stand:  "15.04.2026"
   }
 };
