@@ -178,7 +178,7 @@
 <div class="header">
     <h1>E-Commerce CEO Dashboard</h1>
     <div class="sub">Q1 2026 | Marc Böhle, CDO</div>
-    <div class="meta" id="header-meta">Stand: 30.03.2026 | KW13 | Datenquellen: Jessis Reporting, Amazon Allocation, Inventory Dashboard</div>
+    <div class="meta" id="header-meta">Stand: 15.04.2026 | KW13 | Datenquellen: Jessis Reporting, Amazon Allocation, Inventory Dashboard</div>
 </div>
 
 <!-- Datenstand-Leiste -->
@@ -190,6 +190,19 @@
     <span style="font-size:11px; color:var(--muted); background:var(--card); border:1px solid var(--border); border-radius:12px; padding:2px 10px;">nur diese Woche relevant</span>
 </div>
 <div style="display:flex; flex-direction:column; gap:10px; margin-bottom:32px;">
+    <!-- EINTRAG: Neue Webshop Customer Journey -->
+    <div style="background:rgba(74,124,89,0.06); border-left:4px solid var(--green); border-radius:0 8px 8px 0; padding:14px 16px; display:flex; gap:14px; align-items:flex-start;">
+        <span style="font-size:18px; flex-shrink:0; margin-top:1px;">🗺️</span>
+        <div>
+            <div style="font-size:11px; font-weight:700; color:var(--green); text-transform:uppercase; letter-spacing:0.5px; margin-bottom:3px;">Webshop</div>
+            <div style="font-weight:600; font-size:13px; margin-bottom:4px;">
+                Neue Webshop Customer Journey
+                <span style="background:rgba(74,124,89,0.15); color:var(--green); font-size:10px; font-weight:700; padding:1px 7px; border-radius:4px; margin-left:6px;">IN ARBEIT</span>
+            </div>
+            <div style="font-size:12px; color:var(--muted); line-height:1.7;">Überarbeitung der Webshop Customer Journey in Arbeit.</div>
+        </div>
+    </div>
+    <!-- /EINTRAG -->
 
     <!-- EINTRAG: ROPT Content-Automatisierung Amazon -->
     <div style="background:rgba(74,124,89,0.06); border-left:4px solid var(--green); border-radius:0 8px 8px 0; padding:14px 16px; display:flex; gap:14px; align-items:flex-start;">
@@ -327,7 +340,7 @@ function wsYoYPct() {
 
 // --- Datenstand (für Freshness-Anzeige) ---
 const datenstand = {
-    webshop: { datum: "22.03.2026", quelle: "Jessis Reporting Excel" },
+    webshop: { datum: "15.04.2026", quelle: "Jessis Reporting Excel" },
     amazon:  { datum: "KW10 (07.03.2026)", quelle: "Budget Tracker Excel" },
     dashboard: { datum: "30.03.2026", autor: "Marc / Claude" }
 };
@@ -336,9 +349,9 @@ const datenstand = {
 const kpis = [
     {
         name: "Webshop – YTD Umsatz",
-        ist: 877739, ziel: 836924, unit: "€",
+        ist: 1145569, ziel: 836924, unit: "€",
         trend: "up",
-        massnahme: "Quelle: Jessis Reporting | Stand: 22.03.2026",
+        massnahme: "Quelle: Jessis Reporting | Stand: 15.04.2026",
         color: "--green",
         yoy: wsYoYPct()
     },
@@ -368,7 +381,7 @@ const kpis = [
         name: "Amazon J&L (Q1 Umsatz)",
         ist: 1842526, ziel: 2147000, unit: "€",
         trend: "up",
-        massnahme: "DE/USA/UK KW1–10. IT/ES/FR/NL/SE Jan eingetragen.",
+        massnahme: "DE/UK/USA KW1–13. IT/ES/FR/NL/SE Jan–Mär eingetragen.",
         color: "--accent",
         linearPlan: Math.round(2147000 / 13 * 10),
         dataWeeks: 10,
@@ -448,19 +461,19 @@ const umsatz = {
         ist: 877739,    // YTD Summe aus Jessis Reporting (bis 22.03.)
         plan: 836924,   // Q1-Umsatzziel (836.923,62€)
         planJahr: 5042156, // Jahresprognose 2026
-        zeitraum: "YTD (01.01.–22.03.)",
+        zeitraum: "YTD (01.01.–15.04.)",
         detail: "80 Tage | Ø 10.972€/Tag | 19.109 Bestellungen",
         color: "var(--green)"
     },
     amazon: {
         label: "Amazon J&L (alle Märkte)",
-        ist: 1842526, // DE/UK/USA KW1-10 + IT/ES/FR/NL/SE Jan
+        ist: 2676462, // Alle 8 Märkte Jan–Mär + DE/UK/USA KW1–13
         plan: 2147000, // Q1 Prognose (11,3 Mio € Jahresprognose = 19%)
         planJahr: 11300000, // Jahresprognose
-        linearPlan: 1651538, // Linearer Plan KW1-10 (2.147.000 * 10/13)
+        linearPlan: 2147000, // Q1-Plan erreicht (KW1-13 = Ende Q1)
         dataWeeks: 10, // Wochen mit Daten
         totalWeeks: 13, // Q1 Gesamtwochen
-        zeitraum: "YTD (KW1–KW10)",
+        zeitraum: "YTD (KW1–KW13)",
         detail: "DE/USA/UK KW10 | IT/ES/FR/NL/SE Jan eingetragen",
         monatsPlan: { jan: 791000, feb: 565000 }, // Aus DE Budget Tracker (ERP Monthly Plan)
         color: "var(--accent)"
@@ -471,14 +484,14 @@ const umsatz = {
 // Daten aus Budget Tracker Excel (OneDrive), aktualisiert Mi wöchentlich
 // Total Sales Amazon = Paid + Organic Sales
 const amazonLaender = [
-    { flag: "&#127465;&#127466;", name: "Deutschland", budgetQ1: 60500, istQ1: 1603270, adSpend: 42219, roas: 14.83, orders: 107756, budgetJahr: 320000, status: "active", datenstand: "KW1–10" },
-    { flag: "&#127468;&#127463;", name: "UK", budgetQ1: 20000, istQ1: 34839, adSpend: 12436, roas: 2.11, orders: 2858, budgetJahr: 100000, status: "growth", datenstand: "KW1–10", note: "GBP→EUR" },
-    { flag: "&#127466;&#127480;", name: "Spanien", budgetQ1: 9360, istQ1: 48565, adSpend: 3475, roas: null, orders: null, budgetJahr: 46800, status: "active", datenstand: "Jan '26" },
-    { flag: "&#127467;&#127479;", name: "Frankreich", budgetQ1: 7600, istQ1: 44011, adSpend: 3215, roas: null, orders: null, budgetJahr: 39800, status: "active", datenstand: "Jan '26" },
-    { flag: "&#127470;&#127481;", name: "Italien", budgetQ1: 10080, istQ1: 68985, adSpend: 5479, roas: null, orders: null, budgetJahr: 50400, status: "active", datenstand: "Jan '26" },
-    { flag: "&#127475;&#127473;", name: "Niederlande", budgetQ1: 1200, istQ1: 11277, adSpend: 600, roas: null, orders: null, budgetJahr: 5000, status: "active", datenstand: "Jan '26" },
-    { flag: "&#127480;&#127466;", name: "Schweden", budgetQ1: 14325, istQ1: 5094, adSpend: 637, roas: null, orders: null, budgetJahr: 57300, status: "new", datenstand: "Jan '26" },
-    { flag: "&#127482;&#127480;", name: "USA", budgetQ1: null, istQ1: 26485, adSpend: 15412, roas: 0.75, orders: 974, budgetJahr: null, status: "launch", datenstand: "KW1–10", note: "USD→EUR" }
+    { flag: "&#127465;&#127466;", name: "Deutschland", budgetQ1: 60500, istQ1: 2271354, adSpend: 60151, roas: 14.63, orders: 152192, budgetJahr: 320000, status: "active", datenstand: "KW1–14" },
+    { flag: "&#127468;&#127463;", name: "UK", budgetQ1: 20000, istQ1: 63540, adSpend: 24466, roas: 1.9, orders: 4943, budgetJahr: 100000, status: "growth", datenstand: "KW1–14", note: "GBP→EUR" },
+    { flag: "&#127466;&#127480;", name: "Spanien", budgetQ1: 9360, istQ1: 142595, adSpend: 9037, roas: null, orders: null, budgetJahr: 46800, status: "active", datenstand: "Jan–Mär '26" },
+    { flag: "&#127467;&#127479;", name: "Frankreich", budgetQ1: 7600, istQ1: 116016, adSpend: 6945, roas: null, orders: null, budgetJahr: 39800, status: "active", datenstand: "Jan–Mär '26" },
+    { flag: "&#127470;&#127481;", name: "Italien", budgetQ1: 10080, istQ1: 161631, adSpend: 11152, roas: null, orders: null, budgetJahr: 50400, status: "active", datenstand: "Jan–Mär '26" },
+    { flag: "&#127475;&#127473;", name: "Niederlande", budgetQ1: 1200, istQ1: 29142, adSpend: 934, roas: null, orders: null, budgetJahr: 5000, status: "active", datenstand: "Jan–Mär '26" },
+    { flag: "&#127480;&#127466;", name: "Schweden", budgetQ1: 14325, istQ1: 13385, adSpend: 950, roas: null, orders: null, budgetJahr: 57300, status: "new", datenstand: "Jan–Mär '26" },
+    { flag: "&#127482;&#127480;", name: "USA", budgetQ1: null, istQ1: 47389, adSpend: 22172, roas: 0.84, orders: 1779, budgetJahr: null, status: "launch", datenstand: "KW1–14", note: "USD→EUR" }
 ];
 
 // --- Artikelgruppen (Platzhalter für Power BI Daten) ---
