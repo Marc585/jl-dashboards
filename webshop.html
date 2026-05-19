@@ -155,21 +155,7 @@
         <span style="font-size:11px; color:var(--muted); background:var(--card); border:1px solid var(--border); border-radius:12px; padding:2px 10px;">nur diese Woche relevant</span>
     </div>
     <div style="display:flex; flex-direction:column; gap:10px; margin-bottom:28px;" id="aktuelleThemenList">
-        <!-- EINTRAG: Neue Webshop Customer Journey -->
-        <div style="background:rgba(63,90,63,0.06); border-left:4px solid var(--green); border-radius:0 8px 8px 0; padding:14px 16px; display:flex; gap:14px; align-items:flex-start;">
-            <span style="font-size:20px; flex-shrink:0; margin-top:1px;">🗺️</span>
-            <div>
-                <div style="font-weight:600; font-size:13px; margin-bottom:4px;">
-                    Neue Webshop Customer Journey
-                    <span style="background:rgba(63,90,63,0.2); color:var(--green); font-size:10px; font-weight:700; padding:1px 7px; border-radius:4px; margin-left:6px;">IN ARBEIT</span>
-                </div>
-                <div style="font-size:12px; color:var(--muted); line-height:1.7;">
-                    Überarbeitung der Webshop Customer Journey in Arbeit.
-                </div>
-            </div>
-        </div>
-        <!-- /EINTRAG -->
-
+        <!-- Aktuelles-Box geleert am 19.05.2026 -->
     </div>
 </div>
 
@@ -605,11 +591,12 @@ function renderGoals() {
     const pAov = ytdAov ? Math.min(Math.round((ytdAov / goalAov) * 100), 100) : 0;
     const pCr  = ytdCr  ? Math.min(Math.round((ytdCr  / goalCr)  * 100), 100) : 0;
     const pUmsatz = Math.min(Math.round((ytdUmsatz / goalUmsatz) * 100), 100);
-    const oosIst = 3.24; // Quelle: rekla.jeanlen.de/inventory-dashboard/
-    const pOos = Math.min(Math.round(((goalOos - oosIst) / goalOos) * 100 + 50), 100); // invertiert: je niedriger desto besser
+    const oosIst = null; // TBD — manuell prüfen: rekla.jeanlen.de/inventory-dashboard/
+    const pOos = oosIst !== null ? Math.min(Math.round(((goalOos - oosIst) / goalOos) * 100 + 50), 100) : 50;
 
     const barColor = (pct) => pct >= 100 ? 'var(--green)' : pct >= 90 ? 'linear-gradient(90deg,var(--yellow),var(--green))' : 'linear-gradient(90deg,var(--red),var(--orange))';
-    const oosColor = oosIst <= goalOos ? 'var(--green)' : 'var(--red)';
+    const oosColor = (oosIst === null) ? 'var(--muted)' : (oosIst <= goalOos ? 'var(--green)' : 'var(--red)');
+    const oosLabel = (oosIst === null) ? 'TBD' : `${oosIst}%`;
 
     document.getElementById('q1GoalsCard').innerHTML = `
         <div class="goal-row">
@@ -634,8 +621,8 @@ function renderGoals() {
         </div>
         <div class="goal-row">
             <div class="goal-label">OOS-Quote</div>
-            <div class="goal-bar-wrap"><div class="goal-bar"><div class="goal-fill" style="width:100%;background:${oosColor}">${oosIst}% ✓</div></div></div>
-            <div class="goal-values" style="color:${oosColor}"><strong>${oosIst}%</strong> / &lt; ${goalOos}%</div>
+            <div class="goal-bar-wrap"><div class="goal-bar"><div class="goal-fill" style="width:${pOos}%;background:${oosColor}">${oosLabel}</div></div></div>
+            <div class="goal-values" style="color:${oosColor}"><strong>${oosLabel}</strong> / &lt; ${goalOos}%</div>
         </div>`;
 }
 

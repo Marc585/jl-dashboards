@@ -178,7 +178,7 @@
 <div class="header">
     <h1>E-Commerce CEO Dashboard</h1>
     <div class="sub">Q1 2026 | Marc Böhle, CDO</div>
-    <div class="meta" id="header-meta">Stand: 19.05.2026 | KW13 | Datenquellen: Jessis Reporting, Amazon Allocation, Inventory Dashboard</div>
+    <div class="meta" id="header-meta">Stand: 19.05.2026 | KW21 | Datenquellen: Jessis Reporting, Amazon Allocation, Inventory Dashboard</div>
 </div>
 
 <!-- Datenstand-Leiste -->
@@ -204,6 +204,19 @@
     </div>
     <!-- /EINTRAG -->
 
+    <!-- EINTRAG: JoyBuy China-Plattform -->
+    <div style="background:rgba(228,36,39,0.06); border-left:4px solid #e52427; border-radius:0 8px 8px 0; padding:14px 16px; display:flex; gap:14px; align-items:flex-start;">
+        <span style="font-size:18px; flex-shrink:0; margin-top:1px;">🚨</span>
+        <div>
+            <div style="font-size:11px; font-weight:700; color:#e52427; text-transform:uppercase; letter-spacing:0.5px; margin-bottom:3px;">Amazon</div>
+            <div style="font-weight:600; font-size:13px; margin-bottom:4px;">
+                JoyBuy verkauft J&amp;L-Produkte unter Preis
+                <span style="background:rgba(228,36,39,0.15); color:#e52427; font-size:10px; font-weight:700; padding:1px 7px; border-radius:4px; margin-left:6px;">HOCH</span>
+            </div>
+            <div style="font-size:12px; color:var(--muted); line-height:1.7;">Neue Plattform aus China bietet unsere Produkte günstiger als Amazon und im Handel an. Maßnahmen ergriffen, um Preise stabil zu halten. Eigener Seller wird wieder wichtiger.</div>
+        </div>
+    </div>
+
     <!-- EINTRAG: ROPT Content-Automatisierung Amazon -->
     <div style="background:rgba(74,124,89,0.06); border-left:4px solid var(--green); border-radius:0 8px 8px 0; padding:14px 16px; display:flex; gap:14px; align-items:flex-start;">
         <span style="font-size:18px; flex-shrink:0; margin-top:1px;">🤖</span>
@@ -211,35 +224,9 @@
             <div style="font-size:11px; font-weight:700; color:var(--green); text-transform:uppercase; letter-spacing:0.5px; margin-bottom:3px;">Amazon</div>
             <div style="font-weight:600; font-size:13px; margin-bottom:4px;">
                 Einführung ROPT &ndash; Content-Automatisierung Amazon
-                <span style="background:rgba(74,124,89,0.15); color:var(--green); font-size:10px; font-weight:700; padding:1px 7px; border-radius:4px; margin-left:6px;">NEU</span>
+                <span style="background:rgba(74,124,89,0.15); color:var(--green); font-size:10px; font-weight:700; padding:1px 7px; border-radius:4px; margin-left:6px;">LÄUFT</span>
             </div>
-            <div style="font-size:12px; color:var(--muted); line-height:1.7;">Listings, A+ Content und Bullet Points werden künftig automatisiert über ROPT generiert und ausgespielt. Start der Einführungsphase.</div>
-        </div>
-    </div>
-
-    <!-- EINTRAG: Datenschutzvorfall Webshop – behoben -->
-    <div style="background:rgba(74,124,89,0.06); border-left:4px solid var(--green); border-radius:0 8px 8px 0; padding:14px 16px; display:flex; gap:14px; align-items:flex-start;">
-        <span style="font-size:18px; flex-shrink:0; margin-top:1px;">&#9989;</span>
-        <div>
-            <div style="font-size:11px; font-weight:700; color:var(--green); text-transform:uppercase; letter-spacing:0.5px; margin-bottom:3px;">Webshop</div>
-            <div style="font-weight:600; font-size:13px; margin-bottom:4px;">
-                Malwareangriff behoben &ndash; Shopware-Plugin mit Backdoor
-                <span style="background:rgba(74,124,89,0.15); color:var(--green); font-size:10px; font-weight:700; padding:1px 7px; border-radius:4px; margin-left:6px;">BEHOBEN</span>
-            </div>
-            <div style="font-size:12px; color:var(--muted); line-height:1.7;">Fr&uuml;hzeitig erkannt &ndash; Schadcode entfernt. DSB informiert, Beh&ouml;rdenmeldung erfolgt. Kein Datenverlust best&auml;tigt.</div>
-        </div>
-    </div>
-
-    <!-- EINTRAG: Amazon Jahresverhandlungen – ABGESCHLOSSEN -->
-    <div style="background:rgba(74,124,89,0.06); border-left:4px solid var(--green); border-radius:0 8px 8px 0; padding:14px 16px; display:flex; gap:14px; align-items:flex-start;">
-        <span style="font-size:18px; flex-shrink:0; margin-top:1px;">&#9989;</span>
-        <div>
-            <div style="font-size:11px; font-weight:700; color:var(--green); text-transform:uppercase; letter-spacing:0.5px; margin-bottom:3px;">Amazon</div>
-            <div style="font-weight:600; font-size:13px; margin-bottom:4px;">
-                Jahresverhandlungen Amazon &ndash; Einigung erzielt
-                <span style="background:rgba(74,124,89,0.15); color:var(--green); font-size:10px; font-weight:700; padding:1px 7px; border-radius:4px; margin-left:6px;">ABGESCHLOSSEN</span>
-            </div>
-            <div style="font-size:12px; color:var(--muted); line-height:1.7;">-3% Kopfkonditionen, davon 1% in Overstock Allowance. Einsparung ca. 290.000&euro; dieses Jahr.</div>
+            <div style="font-size:12px; color:var(--muted); line-height:1.7;">Listings, A+ Content und Bullet Points werden automatisiert über ROPT generiert und ausgespielt.</div>
         </div>
     </div>
 
@@ -340,52 +327,53 @@ function wsYoYPct() {
 
 // --- Datenstand (für Freshness-Anzeige) ---
 const datenstand = {
-    webshop: { datum: "15.04.2026", quelle: "Jessis Reporting Excel" },
-    amazon:  { datum: "KW10 (07.03.2026)", quelle: "Budget Tracker Excel" },
-    dashboard: { datum: "30.03.2026", autor: "Marc / Claude" }
+    webshop: { datum: "18.05.2026", quelle: "Jessis Reporting Excel (daily)" },
+    amazon:  { datum: "KW18 (04.05.2026)", quelle: "Budget Tracker Excel" },
+    dashboard: { datum: "19.05.2026", autor: "Marc / Claude" }
 };
 
 // --- Kern-KPIs ---
 const kpis = [
     {
         name: "Webshop – YTD Umsatz",
-        ist: 1145569, ziel: 836924, unit: "€",
+        ist: 1524050, ziel: 836924, unit: "€",
         trend: "up",
-        massnahme: "Quelle: Jessis Reporting | Stand: 15.04.2026",
+        massnahme: "Quelle: Jessis Reporting | Stand: 18.05.2026 | Q1-Ziel zu 182% erfüllt",
         color: "--green",
         yoy: wsYoYPct()
     },
     {
         name: "Webshop AOV",
-        ist: 45.93, ziel: 49.15, unit: "€",
+        ist: 46.02, ziel: 49.15, unit: "€",
         trend: "up",
         massnahme: "Customer Journey Workshop + Bug-Fixes für höheren Warenkorb",
         color: "--orange"
     },
     {
         name: "OOS-Quote",
-        ist: 3.24, ziel: 4.0, unit: "%",
+        ist: null, ziel: 4.0, unit: "%",
         trend: "down", // niedriger = besser
-        massnahme: "Quelle: rekla.jeanlen.de/inventory-dashboard/ – Ziel: unter 4%",
-        color: "--green",
-        invertiert: true // kleiner ist besser
+        massnahme: "TBD – manuell prüfen: rekla.jeanlen.de/inventory-dashboard/ (Login erforderlich)",
+        color: "--muted",
+        invertiert: true,
+        anzeige: "TBD"
     },
     {
         name: "Webshop CR",
-        ist: 2.93, ziel: 2.81, unit: "%",
+        ist: 2.91, ziel: 2.81, unit: "%",
         trend: "up",
         massnahme: "CRO-Optimierung — Ziel übertroffen!",
         color: "--green"
     },
     {
         name: "Amazon J&L (Q1 Umsatz)",
-        ist: 2845052, ziel: 2147000, unit: "€",
+        ist: 2671943, ziel: 2147000, unit: "€",
         trend: "up",
-        massnahme: "DE/UK/USA KW1–14 YTD. IT/ES/FR/NL/SE Jan–Mär eingetragen.",
+        massnahme: "Q1 abgeschlossen: alle 8 Märkte. Ziel zu 124% erfüllt. YTD (KW18): 3,65 Mio €.",
         color: "--accent",
-        linearPlan: Math.round(2147000 / 13 * 14),
-        dataWeeks: 14,
-        totalWeeks: 14,
+        linearPlan: 2147000,
+        dataWeeks: 13,
+        totalWeeks: 13,
         yoy: 67
     }
 ];
@@ -398,7 +386,7 @@ const steineWebshopQ1 = [
     { name: "AOV auf 49,15€ steigern", detail: "Ist: 45,50€ | Ziel: 49,15€ — Aktionen & Bug-Fixes für höheren Warenkorb", owner: "Jessi", status: "yellow", meilenstein: "AOV auf Zielwert heben", deadline: "Q1" },
     { name: "ROSI (KI-Bot) live schalten", detail: "Eigener KI-Bot für Beratung, Zendesk-Anbindung, DHL-Tracking im Chat", owner: "Valerian", status: "green", meilenstein: "Live, weitere Verbesserungen in Planung", deadline: "Q1" },
     { name: "Staging Setup (Zero-Error-Testing)", detail: "Vollständiges End-to-End Testsystem aufgesetzt", owner: "Marcel", status: "green", meilenstein: "Live genommen", deadline: "Q1" },
-    { name: "OOS-Quote < 4% halten", detail: "Aktuell 3,24% (Quelle: rekla.jeanlen.de/inventory-dashboard/)", owner: "Marc/Jessi", status: "green", meilenstein: "Quote dauerhaft unter 4% halten", deadline: "laufend" },
+    { name: "OOS-Quote < 4% halten", detail: "Aktuell TBD – Login erforderlich (Quelle: rekla.jeanlen.de/inventory-dashboard/)", owner: "Marc/Jessi", status: "yellow", meilenstein: "Quote dauerhaft unter 4% halten", deadline: "laufend" },
 ];
 
 const steineAmazonQ1 = [
@@ -600,12 +588,15 @@ function renderKPIs() {
 
         // Invertierter Fall (OOS: kleiner ist besser)
         if (k.invertiert) {
-            const ok = k.ist <= k.ziel;
-            const barW = Math.min(Math.round((k.ist / k.ziel) * 100), 100);
-            const barCol = ok ? 'var(--green)' : 'var(--red)';
-            return `<div class="card kpi-card" style="border-color:${ok ? 'rgba(74,124,89,0.3)' : 'rgba(229,36,39,0.3)'}">
-                <div class="kpi-header"><span class="kpi-name">${k.name}</span><span class="kpi-trend" style="color:${ok?'var(--green)':'var(--red)'}">&#${ok?'9989':'9888'};</span></div>
-                <div class="kpi-values"><span class="kpi-ist" style="color:${barCol}">${fmt2(k.ist)} ${k.unit}</span><span class="kpi-pct" style="color:${barCol}">${ok ? '✓ OK' : '⚠'}</span></div>
+            const isTbd = (k.ist === null || k.ist === undefined);
+            const ok = isTbd ? false : k.ist <= k.ziel;
+            const barW = isTbd ? 0 : Math.min(Math.round((k.ist / k.ziel) * 100), 100);
+            const barCol = isTbd ? 'var(--muted)' : (ok ? 'var(--green)' : 'var(--red)');
+            const istLabel = isTbd ? (k.anzeige || 'TBD') : `${fmt2(k.ist)} ${k.unit}`;
+            const trendChar = isTbd ? '8943' : (ok ? '9989' : '9888');
+            return `<div class="card kpi-card" style="border-color:${isTbd ? 'rgba(120,120,120,0.25)' : (ok ? 'rgba(74,124,89,0.3)' : 'rgba(229,36,39,0.3)')}">
+                <div class="kpi-header"><span class="kpi-name">${k.name}</span><span class="kpi-trend" style="color:${barCol}">&#${trendChar};</span></div>
+                <div class="kpi-values"><span class="kpi-ist" style="color:${barCol}">${istLabel}</span><span class="kpi-pct" style="color:${barCol}">${isTbd ? '⋯ ausstehend' : (ok ? '✓ OK' : '⚠')}</span></div>
                 <div class="kpi-bar"><div class="kpi-fill" style="width:${barW}%;background:${barCol};"></div></div>
                 <div style="font-size:12px;color:var(--muted);margin-bottom:6px;">Ziel: &lt; ${fmt2(k.ziel)} ${k.unit}</div>
                 <div class="kpi-context">&#9432; ${k.massnahme}</div>
@@ -957,16 +948,32 @@ renderKategorien();
   // Header-Meta live aktualisieren
   const headerMeta = document.getElementById('header-meta');
   if (headerMeta) {
-    headerMeta.textContent = `Stand: ${D.stand.dashboard} | Datenquellen: Jessis Reporting, Amazon Allocation, Power BI`;
+    // KW aus stand.amazon_weekly ("KW18 (04.05 - ...)") extrahieren
+    const kwMatch = (D.stand.amazon_weekly || '').match(/KW\d+/);
+    const kwStr = kwMatch ? kwMatch[0] : '';
+    // Heute-KW grob aus dashboard-Datum (TT.MM.YYYY)
+    const sd = (D.stand.dashboard || '').split('.');
+    let aktKw = '';
+    if (sd.length === 3) {
+      const dObj = new Date(`${sd[2]}-${sd[1]}-${sd[0]}`);
+      const jan1 = new Date(dObj.getFullYear(), 0, 1);
+      const days = Math.floor((dObj - jan1) / 86400000);
+      aktKw = 'KW' + Math.ceil((days + jan1.getDay() + 1) / 7);
+    }
+    headerMeta.textContent = `Stand: ${D.stand.dashboard} | ${aktKw || kwStr} | Datenquellen: Jessis Reporting, Amazon Allocation, Inventory Dashboard`;
   }
 
-  // Amazon Q1 KPI
-  if (window.kpis && kpis[2]) {
-    kpis[2].ist = am.ytd_gesamt;
-    kpis[2].linearPlan = Math.round(am.q1_plan / 13 * Math.min(am.data_weeks, 13));
-    kpis[2].ziel = am.q1_plan;
-    kpis[2].dataWeeks = am.data_weeks;
-    kpis[2].totalWeeks = am.data_weeks;
+  // Amazon Q1 KPI (Index 4 — siehe kpis-Array)
+  const amazonKpiIdx = window.kpis ? kpis.findIndex(k => k.name && k.name.startsWith('Amazon')) : -1;
+  if (amazonKpiIdx >= 0 && kpis[amazonKpiIdx]) {
+    // Q1 abgeschlossen — Wert bleibt Q1-Final (hardcoded), nicht überschreiben.
+    // Nur Pace-Felder synchronisieren, falls Q1 noch laufen würde:
+    if (am.data_weeks < 13) {
+      kpis[amazonKpiIdx].ist = am.ytd_gesamt;
+      kpis[amazonKpiIdx].linearPlan = Math.round(am.q1_plan / 13 * am.data_weeks);
+      kpis[amazonKpiIdx].dataWeeks = am.data_weeks;
+      kpis[amazonKpiIdx].totalWeeks = am.data_weeks;
+    }
   }
 
   // Umsatz-Block
