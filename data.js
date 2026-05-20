@@ -18,7 +18,7 @@ window.JL_DATA = {
 
   // ─── AMAZON ADS 2026 ──────────────────────────────────────────
   amazon: {
-    ytd_gesamt:       3892346,
+    ytd_gesamt:       3902404,
     ytd_gesamt_label: "Amazon Außenumsatz YTD 2026 – alle 8 Märkte",
     ads_budget_jahr:   567200,
     q1_plan:          2147000,
@@ -35,7 +35,7 @@ window.JL_DATA = {
       IT:  { ytd: 207870, spend:  13874, orders:  null, paid_roas:  null, label: "Jan–Apr '26", budget_jahr: 50400 },
       ES:  { ytd: 195634, spend:  11962, orders:  null, paid_roas:  null, label: "Jan–Apr '26", budget_jahr: 46800 },
       FR:  { ytd: 151747, spend:  8549, orders:  null, paid_roas:  null, label: "Jan–Apr '26", budget_jahr: 39800 },
-      NL:  { ytd: 29142, spend:    934, orders:  null, paid_roas:  null, label: "Jan–Mär '26", budget_jahr: 5000 },
+      NL:  { ytd: 39200, spend:    1060, orders:  null, paid_roas:  null, label: "Jan–Apr '26", budget_jahr: 5000 },
       SE:  { ytd:  18403, spend:    1089, orders:  null, paid_roas:  null, label: "Jan–Apr '26", budget_jahr: 5200 }
     },
 

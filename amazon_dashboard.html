@@ -523,7 +523,7 @@
     <!-- TOTAL BANNER -->
     <div class="total-banner">
         <div class="label">Amazon Ads 2026 &ndash; Budget &amp; Performance</div>
-        <div id="banner-hero-umsatz" class="amount" style="color:var(--accent);">3.892.346 &euro;</div>
+        <div id="banner-hero-umsatz" class="amount" style="color:var(--accent);">3.902.404 &euro;</div>
         <div id="banner-hero-label" style="font-size: 15px; font-weight:600; color: var(--text); margin-bottom: 4px;">Amazon Au&szlig;enumsatz YTD 2026 &ndash; alle 8 M&auml;rkte</div>
         <div id="banner-yoy" style="margin-bottom:6px;"></div>
         <div style="font-size:13px; color:var(--muted); margin-bottom: 8px;">Ads Jahresbudget 2026: <strong>619.300 &euro;</strong> (alle 8 M&auml;rkte)</div>
@@ -533,7 +533,7 @@
                 <div style="font-size: 11px; color: var(--muted);">Paid ROAS YTD (EU)</div>
             </div>
             <div style="text-align: center;">
-                <div id="banner-umsatz-value" style="font-size: 28px; font-weight: 800; color: var(--accent);">3.892.346 &euro;</div>
+                <div id="banner-umsatz-value" style="font-size: 28px; font-weight: 800; color: var(--accent);">3.902.404 &euro;</div>
                 <div id="banner-umsatz-label" style="font-size: 11px; color: var(--muted);">Amazon Au&szlig;enumsatz YTD alle M&auml;rkte</div>
             </div>
             <div style="text-align: center;">
@@ -603,7 +603,7 @@
             <div class="budget-line">Jahresbudget '26: <strong>39.800&euro;</strong> <span class="roas-tag roas-green">Total ROAS '25: 2,97</span></div>
             <div class="sub">Stabil | Ziel '26: 79.000&euro;</div>
         </div>
-        <div class="card kpi" data-2025="87.987&euro;" data-2026="29.142&euro;" data-label-2025="Amazon Au&szlig;enumsatz 2025" data-label-2026="Amazon Au&szlig;enumsatz Jan&ndash;M&auml;r &rsquo;26">
+        <div class="card kpi" data-2025="87.987&euro;" data-2026="39.200&euro;" data-label-2025="Amazon Au&szlig;enumsatz 2025" data-label-2026="Amazon Au&szlig;enumsatz Jan&ndash;Apr &rsquo;26">
             <div class="flag">&#127475;&#127473;</div>
             <div class="country">Niederlande</div>
             <div class="value card-main-value" style="color: var(--purple)">87.987&euro;</div>
@@ -1620,7 +1620,7 @@
         const esSales2026 = [195634, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
         const frSales2026 = [151747, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
         const itSales2026 = [207870, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
-        const nlSales2026 = [29142, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
+        const nlSales2026 = [39200, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
         const seSales2026 = [18403, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
 
         // 2025 Paid Sales (existing)
@@ -1808,23 +1808,54 @@
         // Toggle button styles
         ['2025','2026'].forEach(function(y) {
             var btn = document.getElementById('cards-btn-' + y);
+            if (!btn) return;
             var active = y === year;
             btn.style.background = active ? 'var(--accent)' : 'transparent';
             btn.style.color = active ? '#fff' : 'var(--text)';
             btn.style.borderColor = active ? 'var(--accent)' : 'var(--border)';
         });
 
-        // Update zeitraum label
+        // Update zeitraum label dynamisch aus data.js
         var label = document.getElementById('cards-zeitraum-label');
-        if (year === '2025') {
-            label.textContent = 'Amazon Außenumsatz Gesamtjahr 2025 – alle Märkte';
-        } else {
-            label.textContent = 'Amazon Außenumsatz 2026 – DE/UK/USA KW1–13 YTD | IT/ES/FR/NL/SE: Jan–Mär'[data-kpi="spend"]');
-          if (spendEl) spendEl.textContent = d.amazon.ad_spend_ytd.toLocaleString('de-DE') + ' €';
+        if (label) {
+            if (year === '2025') {
+                label.textContent = 'Amazon Außenumsatz Gesamtjahr 2025 – alle Märkte';
+            } else {
+                var d = (typeof window !== 'undefined' && window.JL_DATA) ? window.JL_DATA : null;
+                var l = d && d.amazon && d.amazon.laender ? d.amazon.laender : {};
+                var deLbl = (l.DE && l.DE.label) ? l.DE.label.replace(" YTD '26", "") : 'KW?';
+                var ukLbl = (l.UK && l.UK.label) ? l.UK.label.replace(" YTD '26", "") : 'KW?';
+                var usLbl = (l.USA && l.USA.label) ? l.USA.label.replace(" YTD '26", "").replace(" (USD→EUR)", "") : 'KW?';
+                var euLbl = (l.IT && l.IT.label) ? l.IT.label.replace(" '26", "") : 'Jan';
+                label.textContent = 'Amazon Außenumsatz 2026 – DE ' + deLbl + ' | UK ' + ukLbl + ' | USA ' + usLbl + ' | IT/ES/FR/NL/SE: ' + euLbl;
+            }
         }
 
-        // Default: Ansicht 2026 aktivieren
+        // Karten umschalten (data-2025 vs data-2026) und Summe berechnen
+        var total = 0;
+        document.querySelectorAll('.card.kpi[data-' + year + ']').forEach(function(card) {
+            var val = card.getAttribute('data-' + year);
+            var lbl = card.getAttribute('data-label-' + year);
+            var valEl = card.querySelector('.card-main-value');
+            var lblEl = card.querySelector('.card-time-label');
+            if (valEl && val) valEl.innerHTML = val;
+            if (lblEl && lbl) lblEl.innerHTML = lbl;
+            if (val) total += parseEuro(val);
+        });
+
+        // Summe oben rechts setzen
+        var totalEl = document.getElementById('cards-total-sum');
+        if (totalEl) {
+            totalEl.innerHTML = Math.round(total).toLocaleString('de-DE') + '&nbsp;&euro;';
+        }
+    }
+
+    // Default: Ansicht 2026 aktivieren (warten bis data.js geladen ist)
+    if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', function() { setCardsView('2026'); });
+    } else {
         setCardsView('2026');
+    }
     </script>
 
 
