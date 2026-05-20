@@ -746,15 +746,20 @@ function renderCountries() {
 
 // --- Section 2: Rocks ---
 function renderSteineGroup(arr, gridId, summaryId) {
+    const grid = document.getElementById(gridId);
+    if (!grid) return;
     if (summaryId) {
+        const summary = document.getElementById(summaryId);
         const counts = { green: 0, yellow: 0, red: 0 };
         arr.forEach(s => counts[s.status]++);
-        document.getElementById(summaryId).innerHTML =
-            `<span class="sum-item" style="color:var(--green)">&#9679; ${counts.green} On Track</span>` +
-            `<span class="sum-item" style="color:var(--yellow)">&#9679; ${counts.yellow} At Risk</span>` +
-            (counts.red > 0 ? `<span class="sum-item" style="color:var(--red)">&#9679; ${counts.red} Blocker</span>` : '');
+        if (summary) {
+            summary.innerHTML =
+                `<span class="sum-item" style="color:var(--green)">&#9679; ${counts.green} On Track</span>` +
+                `<span class="sum-item" style="color:var(--yellow)">&#9679; ${counts.yellow} At Risk</span>` +
+                (counts.red > 0 ? `<span class="sum-item" style="color:var(--red)">&#9679; ${counts.red} Blocker</span>` : '');
+        }
     }
-    document.getElementById(gridId).innerHTML = arr.map(s => {
+    grid.innerHTML = arr.map(s => {
         const statusEmoji = s.status === 'green' ? '&#9989;' : s.status === 'yellow' ? '&#9888;&#65039;' : '&#128308;';
         return `<div class="card stein-card ${s.status}">
             <div class="stein-name">${statusEmoji} ${s.name}</div>
@@ -773,7 +778,9 @@ function renderSteine() {
 
 // --- Section 3: Fuck-ups ---
 function renderFuckups() {
-    document.getElementById('fuckupList').innerHTML = fuckups.map(f => {
+    const list = document.getElementById('fuckupList');
+    if (!list) return;
+    list.innerHTML = fuckups.map(f => {
         const badgeClass = f.status === 'active' ? 'badge-red' : 'badge-green';
         const badgeText = f.status === 'active' ? 'Offen' : 'Gelöst';
         return `<div class="card fuckup-card ${f.status === 'resolved' ? 'resolved' : ''}">
@@ -794,6 +801,7 @@ function renderFuckups() {
 // --- Section 4: Roadmap ---
 function renderRoadmap() {
     const container = document.getElementById('roadmap');
+    if (!container) return;
     const totalKWs = kwEnd - kwStart + 1;
 
     // KW Header
@@ -824,7 +832,9 @@ function renderRoadmap() {
 
 // --- Section 5: Innovation ---
 function renderInnovation() {
-    document.getElementById('innovationGrid').innerHTML = projekte.map(p => {
+    const grid = document.getElementById('innovationGrid');
+    if (!grid) return;
+    grid.innerHTML = projekte.map(p => {
         const statusClass = p.status === 'live' ? 'badge-green' : p.status === 'in_development' ? 'badge-yellow' : 'badge-muted';
         const impactClass = p.status === 'live' ? '' : 'planned';
         return `<div class="card innovation-card">
@@ -846,6 +856,7 @@ function renderInnovation() {
 let katChart = null;
 function renderKategorien() {
     const card = document.getElementById('kategorienCard');
+    if (!card) return;
     const total = kategorien.reduce((s,k) => s+k.absatz, 0);
 
     // Layout: Donut links, Legende rechts
@@ -920,8 +931,11 @@ function renderFreshness() {
 
 // --- Render All ---
 renderFreshness();
-document.getElementById('dashboardFooter').innerHTML =
-    `J&L CEO Dashboard | Letzte Aktualisierung: ${datenstand.dashboard.datum} | Webshop-Daten: ${datenstand.webshop.datum} | Amazon-Daten: ${datenstand.amazon.datum}<br>Nächstes Update: 26.05.2026 (Montag) | Erstellt mit Claude Code`;
+const dashboardFooter = document.getElementById('dashboardFooter');
+if (dashboardFooter) {
+    dashboardFooter.innerHTML =
+        `J&L CEO Dashboard | Letzte Aktualisierung: ${datenstand.dashboard.datum} | Webshop-Daten: ${datenstand.webshop.datum} | Amazon-Daten: ${datenstand.amazon.datum}<br>Nächstes Update: 26.05.2026 (Montag) | Erstellt mit Claude Code`;
+}
 renderKPIs();
 renderUmsatz();
 renderCountries();
