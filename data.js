@@ -18,7 +18,7 @@ window.JL_DATA = {
 
   // ─── AMAZON ADS 2026 ──────────────────────────────────────────
   amazon: {
-    ytd_gesamt:       3856615,
+    ytd_gesamt:       3892346,
     ytd_gesamt_label: "Amazon Außenumsatz YTD 2026 – alle 8 Märkte",
     ads_budget_jahr:   567200,
     q1_plan:          2147000,
@@ -30,11 +30,11 @@ window.JL_DATA = {
 
     laender: {
       DE:  { ytd: 3141695, spend: 84437, orders: 207283, paid_roas: 14.18, label: "KW1–KW19 YTD '26", budget_jahr: 320000 },
-      UK:  { ytd: 77010, spend: 30060, orders: 5909, paid_roas: 1.89, label: "KW1–KW19 YTD '26", budget_jahr: 100000 },
-      USA: { ytd: 70845, spend: 34084, orders: 3448, paid_roas: 0.95, label: "KW1–KW19 YTD '26 (USD→EUR)", budget_jahr: null },
+      UK:  { ytd: 77010, spend: 30060, orders: 5909, paid_roas: 1.89, label: "KW1–KW17 YTD '26", budget_jahr: 100000 },
+      USA: { ytd: 70845, spend: 34084, orders: 3448, paid_roas: 0.95, label: "KW1–KW18 YTD '26 (USD→EUR)", budget_jahr: null },
       IT:  { ytd: 207870, spend:  13874, orders:  null, paid_roas:  null, label: "Jan–Apr '26", budget_jahr: 50400 },
       ES:  { ytd: 195634, spend:  11962, orders:  null, paid_roas:  null, label: "Jan–Apr '26", budget_jahr: 46800 },
-      FR:  { ytd: 116016, spend:  6945, orders:  null, paid_roas:  null, label: "Jan–Mär '26", budget_jahr: 39800 },
+      FR:  { ytd: 151747, spend:  8549, orders:  null, paid_roas:  null, label: "Jan–Apr '26", budget_jahr: 39800 },
       NL:  { ytd: 29142, spend:    934, orders:  null, paid_roas:  null, label: "Jan–Mär '26", budget_jahr: 5000 },
       SE:  { ytd:  18403, spend:    1089, orders:  null, paid_roas:  null, label: "Jan–Apr '26", budget_jahr: 5200 }
     },
