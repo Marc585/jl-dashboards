@@ -327,24 +327,24 @@ function wsYoYPct() {
 
 // --- Datenstand (für Freshness-Anzeige) ---
 const datenstand = {
-    webshop: { datum: "18.05.2026", quelle: "Jessis Reporting Excel (daily)" },
-    amazon:  { datum: "KW18 (04.05.2026)", quelle: "Budget Tracker Excel" },
-    dashboard: { datum: "19.05.2026", autor: "Marc / Claude" }
+    webshop: { datum: "19.05.2026", quelle: "Jessis Reporting Excel (daily)" },
+    amazon:  { datum: "KW19 (03.05 - 09.05)", quelle: "Budget Tracker Excel" },
+    dashboard: { datum: "20.05.2026", autor: "Marc / Claude" }
 };
 
 // --- Kern-KPIs ---
 const kpis = [
     {
         name: "Webshop – YTD Umsatz",
-        ist: 1524050, ziel: 836924, unit: "€",
+        ist: 1532559, ziel: 836924, unit: "€",
         trend: "up",
-        massnahme: "Quelle: Jessis Reporting | Stand: 18.05.2026 | Q1-Ziel zu 182% erfüllt",
+        massnahme: "Quelle: Jessis Reporting | Stand: 19.05.2026 | Q1-Ziel zu 183% erfüllt",
         color: "--green",
         yoy: wsYoYPct()
     },
     {
         name: "Webshop AOV",
-        ist: 46.02, ziel: 49.15, unit: "€",
+        ist: 45.99, ziel: 49.15, unit: "€",
         trend: "up",
         massnahme: "Customer Journey Workshop + Bug-Fixes für höheren Warenkorb",
         color: "--orange"
@@ -360,7 +360,7 @@ const kpis = [
     },
     {
         name: "Webshop CR",
-        ist: 2.91, ziel: 2.81, unit: "%",
+        ist: 2.9, ziel: 2.81, unit: "%",
         trend: "up",
         massnahme: "CRO-Optimierung — Ziel übertroffen!",
         color: "--green"
@@ -369,7 +369,7 @@ const kpis = [
         name: "Amazon J&L (Q1 Umsatz)",
         ist: 2671943, ziel: 2147000, unit: "€",
         trend: "up",
-        massnahme: "Q1 abgeschlossen: alle 8 Märkte. Ziel zu 124% erfüllt. YTD (KW18): 3,65 Mio €.",
+        massnahme: "Q1 abgeschlossen: alle 8 Märkte. Ziel zu 124% erfüllt. YTD (KW19): 3,86 Mio €.",
         color: "--accent",
         linearPlan: 2147000,
         dataWeeks: 13,
