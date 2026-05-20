@@ -30,7 +30,7 @@ window.JL_DATA = {
 
     laender: {
       DE:  { ytd: 2935414, spend: 78736, orders: 194056, paid_roas: 14.28, label: "KW1–KW18 YTD '26", budget_jahr: 320000 },
-      UK:  { ytd: 77010, spend: 30060, orders: 5909, paid_roas: 1.89, label: "KW1–KW18 YTD '26", budget_jahr: 100000 },
+      UK:  { ytd: 77010, spend: 30060, orders: 5909, paid_roas: 1.89, label: "KW1–KW17 YTD '26", budget_jahr: 100000 },
       USA: { ytd: 70845, spend: 34084, orders: 3448, paid_roas: 0.95, label: "KW1–KW18 YTD '26 (USD→EUR)", budget_jahr: null },
       IT:  { ytd: 207870, spend:  13874, orders:  null, paid_roas:  null, label: "Jan–Apr '26", budget_jahr: 50400 },
       ES:  { ytd: 195634, spend:  11962, orders:  null, paid_roas:  null, label: "Jan–Apr '26", budget_jahr: 46800 },
