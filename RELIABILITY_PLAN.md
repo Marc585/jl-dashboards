@@ -46,7 +46,7 @@
 - **Wirkung:** würde 20.05.-Bug zu 100 % gefangen haben
 
 ### B. Templates statt regex-Patching
-- Jinja2-Template `templates/amazon_dashboard.html` mit `{{ banner_hero }}`, `{% for card in cards %}` etc.
+- Jinja2-Template `templates/amazon_dashboard.html` mit Platzhaltern wie `banner_hero` und Schleifen über `cards`.
 - update_amazon.py rendert Template komplett neu statt Patch
 - **Aufwand:** ~4-6 h (großer Refaktor, 3 Templates + alle Update-Skripte)
 - **Wirkung:** eliminiert die ganze Klasse "regex zerschießt HTML" für immer
