@@ -178,7 +178,7 @@
 <div class="header">
     <h1>E-Commerce CEO Dashboard</h1>
     <div class="sub">Q1 2026 | Marc Böhle, CDO</div>
-    <div class="meta" id="header-meta">Stand: 04.07.2026 | KW21 | Datenquellen: Jessis Reporting, Amazon Allocation, Inventory Dashboard</div>
+    <div class="meta" id="header-meta">Stand: 07.07.2026 | KW21 | Datenquellen: Jessis Reporting, Amazon Allocation, Inventory Dashboard</div>
 </div>
 
 <!-- Datenstand-Leiste -->
@@ -190,7 +190,19 @@
     <span style="font-size:11px; color:var(--muted); background:var(--card); border:1px solid var(--border); border-radius:12px; padding:2px 10px;">nur diese Woche relevant</span>
 </div>
 <div style="display:flex; flex-direction:column; gap:10px; margin-bottom:32px;">
-    <!-- Aktuelles-Box geleert am 12.06.2026 -->
+    <!-- EINTRAG: Amazon UK 1 Jahr -->
+    <div style="background:rgba(74,124,89,0.06); border-left:4px solid var(--green); border-radius:0 8px 8px 0; padding:14px 16px; display:flex; gap:14px; align-items:flex-start;">
+        <span style="font-size:18px; flex-shrink:0; margin-top:1px;">🇬🇧</span>
+        <div>
+            <div style="font-size:11px; font-weight:700; color:var(--green); text-transform:uppercase; letter-spacing:0.5px; margin-bottom:3px;">Amazon</div>
+            <div style="font-weight:600; font-size:13px; margin-bottom:4px;">
+                Amazon UK wird 1 Jahr alt &ndash; erste Produkte organisch auf Seite 1
+                <span style="background:rgba(74,124,89,0.15); color:var(--green); font-size:10px; font-weight:700; padding:1px 7px; border-radius:4px; margin-left:6px;">MEILENSTEIN</span>
+            </div>
+            <div style="font-size:12px; color:var(--muted); line-height:1.7;">Ein Jahr nach Launch ranken einige Produkte in UK organisch auf Seite 1. UK-Umsatz YTD 101.565 € &ndash; bereits +78 % über dem Gesamtjahr 2025 (56.971 €).</div>
+        </div>
+    </div>
+    <!-- /EINTRAG -->
 </div>
 
 <!-- ===== DIESE WOCHE WICHTIG ===== -->
@@ -297,7 +309,7 @@ const datenstand = {
 const kpis = [
     {
         name: "Webshop – YTD Umsatz",
-        ist: 2103198, ziel: 836924, unit: "€",
+        ist: 2138512, ziel: 836924, unit: "€",
         trend: "up",
         massnahme: "Quelle: Jessis Reporting | Stand: 19.05.2026 | Q1-Ziel zu 183% erfüllt",
         color: "--green",
@@ -305,7 +317,7 @@ const kpis = [
     },
     {
         name: "Webshop AOV",
-        ist: 46.19, ziel: 49.15, unit: "€",
+        ist: 46.18, ziel: 49.15, unit: "€",
         trend: "up",
         massnahme: "Customer Journey Workshop + Bug-Fixes für höheren Warenkorb",
         color: "--orange"
@@ -321,7 +333,7 @@ const kpis = [
     },
     {
         name: "Webshop CR",
-        ist: 3.08, ziel: 2.81, unit: "%",
+        ist: 3.09, ziel: 2.81, unit: "%",
         trend: "up",
         massnahme: "CRO-Optimierung — Ziel übertroffen!",
         color: "--green"
