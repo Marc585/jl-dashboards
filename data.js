@@ -4,33 +4,33 @@
  * WICHTIG: Diese Datei wird automatisch durch master_update.py generiert.
  *          NICHT manuell bearbeiten – Script ausführen!
  *
- * Letztes Update: 07.07.2026 | KW25
+ * Letztes Update: 09.07.2026 | KW26
  */
 window.JL_DATA = {
 
   // ─── DATENSTAND ───────────────────────────────────────────────
   stand: {
-    amazon_weekly:  "KW25 (14.06 - 20.06)",
+    amazon_weekly:  "KW26 (21.06 - 27.06)",
     amazon_monthly: "ES/FR/IT/NL/SE: Mai 2026",
-    webshop:        "05.07.2026",
-    dashboard:      "07.07.2026"
+    webshop:        "08.07.2026",
+    dashboard:      "09.07.2026"
   },
 
   // ─── AMAZON ADS 2026 ──────────────────────────────────────────
   amazon: {
-    ytd_gesamt:       5107645,
+    ytd_gesamt:       5348277,
     ytd_gesamt_label: "Amazon Außenumsatz YTD 2026 – alle 8 Märkte",
     ads_budget_jahr:   567200,
     q1_plan:          2147000,
     jahresprognose:  11300000,
-    data_weeks:             25,
-    ad_spend_ytd:       197352,
-    paid_roas_ytd:       10.2,
-    interner_roas:       28.0,
+    data_weeks:             26,
+    ad_spend_ytd:       213955,
+    paid_roas_ytd:       9.8,
+    interner_roas:       26.2,
 
     laender: {
-      DE:  { ytd: 4146847, spend: 123917, orders: 272882, paid_roas: 12.84, label: "KW1–KW25 YTD '26", budget_jahr: 320000 },
-      UK:  { ytd: 101565, spend: 39351, orders: 7595, paid_roas: 1.89, label: "KW1–KW22 YTD '26", budget_jahr: 100000 },
+      DE:  { ytd: 4376042, spend: 136870, orders: 287162, paid_roas: 12.32, label: "KW1–KW26 YTD '26", budget_jahr: 320000 },
+      UK:  { ytd: 113002, spend: 43001, orders: 8355, paid_roas: 1.92, label: "KW1–KW25 YTD '26", budget_jahr: 100000 },
       USA: { ytd: 70845, spend: 34084, orders: 3448, paid_roas: 0.95, label: "KW1–KW18 YTD '26 (USD→EUR)", budget_jahr: null },
       IT:  { ytd: 264662, spend:  17804, orders:  null, paid_roas:  null, label: "Jan–Mai '26", budget_jahr: 50400 },
       ES:  { ytd: 256627, spend:  16172, orders:  null, paid_roas:  null, label: "Jan–Mai '26", budget_jahr: 46800 },
@@ -53,13 +53,13 @@ window.JL_DATA = {
 
   // ─── WEBSHOP 2026 ─────────────────────────────────────────────
   webshop: {
-    ytd_umsatz:       2138512,
-    ytd_bestellungen: 46309,
-    aov:              46.18,
+    ytd_umsatz:       2178594,
+    ytd_bestellungen: 47157,
+    aov:              46.2,
     aov_ziel:         49.15,
-    cr:               3.09,
+    cr:               3.1,
     cr_ziel:          2.81,
-    tages_schnitt:    11497
+    tages_schnitt:    11527
   },
 
   // ─── OOS-QUOTE ────────────────────────────────────────────────
@@ -67,6 +67,6 @@ window.JL_DATA = {
     ist:    3.24,
     ziel:   4.0,
     status: "fallback",
-    stand:  "07.07.2026"
+    stand:  "09.07.2026"
   }
 };

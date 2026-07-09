@@ -178,7 +178,7 @@
 <div class="header">
     <h1>E-Commerce CEO Dashboard</h1>
     <div class="sub">Q1 2026 | Marc Böhle, CDO</div>
-    <div class="meta" id="header-meta">Stand: 07.07.2026 | KW21 | Datenquellen: Jessis Reporting, Amazon Allocation, Inventory Dashboard</div>
+    <div class="meta" id="header-meta">Stand: 09.07.2026 | KW21 | Datenquellen: Jessis Reporting, Amazon Allocation, Inventory Dashboard</div>
 </div>
 
 <!-- Datenstand-Leiste -->
@@ -309,7 +309,7 @@ const datenstand = {
 const kpis = [
     {
         name: "Webshop – YTD Umsatz",
-        ist: 2138512, ziel: 836924, unit: "€",
+        ist: 2178594, ziel: 836924, unit: "€",
         trend: "up",
         massnahme: "Quelle: Jessis Reporting | Stand: 19.05.2026 | Q1-Ziel zu 183% erfüllt",
         color: "--green",
@@ -317,7 +317,7 @@ const kpis = [
     },
     {
         name: "Webshop AOV",
-        ist: 46.18, ziel: 49.15, unit: "€",
+        ist: 46.2, ziel: 49.15, unit: "€",
         trend: "up",
         massnahme: "Customer Journey Workshop + Bug-Fixes für höheren Warenkorb",
         color: "--orange"
@@ -333,7 +333,7 @@ const kpis = [
     },
     {
         name: "Webshop CR",
-        ist: 3.09, ziel: 2.81, unit: "%",
+        ist: 3.1, ziel: 2.81, unit: "%",
         trend: "up",
         massnahme: "CRO-Optimierung — Ziel übertroffen!",
         color: "--green"
@@ -445,14 +445,14 @@ const umsatz = {
 // Daten aus Budget Tracker Excel (OneDrive), aktualisiert Mi wöchentlich
 // Total Sales Amazon = Paid + Organic Sales
 const amazonLaender = [
-    { flag: "&#127465;&#127466;", name: "Deutschland", budgetQ1: 60500, istQ1: 4146847, adSpend: 123917, roas: 12.84, orders: 272882, budgetJahr: 320000, status: "active", datenstand: "KW1–25" },
-    { flag: "&#127468;&#127463;", name: "UK", budgetQ1: 20000, istQ1: 101565, adSpend: 39351, roas: 1.89, orders: 7595, budgetJahr: 100000, status: "growth", datenstand: "KW1–25", note: "GBP→EUR" },
+    { flag: "&#127465;&#127466;", name: "Deutschland", budgetQ1: 60500, istQ1: 4376042, adSpend: 136870, roas: 12.32, orders: 287162, budgetJahr: 320000, status: "active", datenstand: "KW1–26" },
+    { flag: "&#127468;&#127463;", name: "UK", budgetQ1: 20000, istQ1: 113002, adSpend: 43001, roas: 1.92, orders: 8355, budgetJahr: 100000, status: "growth", datenstand: "KW1–26", note: "GBP→EUR" },
     { flag: "&#127466;&#127480;", name: "Spanien", budgetQ1: 9360, istQ1: 256627, adSpend: 16172, roas: null, orders: null, budgetJahr: 46800, status: "active", datenstand: "Jan–Mai '26" },
     { flag: "&#127467;&#127479;", name: "Frankreich", budgetQ1: 7600, istQ1: 193082, adSpend: 11208, roas: null, orders: null, budgetJahr: 39800, status: "active", datenstand: "Jan–Mai '26" },
     { flag: "&#127470;&#127481;", name: "Italien", budgetQ1: 10080, istQ1: 264662, adSpend: 17804, roas: null, orders: null, budgetJahr: 50400, status: "active", datenstand: "Jan–Mai '26" },
     { flag: "&#127475;&#127473;", name: "Niederlande", budgetQ1: 1200, istQ1: 49876, adSpend: 1233, roas: null, orders: null, budgetJahr: 5000, status: "active", datenstand: "Jan–Mai '26" },
     { flag: "&#127480;&#127466;", name: "Schweden", budgetQ1: 14325, istQ1: 24141, adSpend: 1263, roas: null, orders: null, budgetJahr: 57300, status: "new", datenstand: "Jan–Mai '26" },
-    { flag: "&#127482;&#127480;", name: "USA", budgetQ1: null, istQ1: 70845, adSpend: 34084, roas: 0.95, orders: 3448, budgetJahr: null, status: "launch", datenstand: "KW1–25", note: "USD→EUR" }
+    { flag: "&#127482;&#127480;", name: "USA", budgetQ1: null, istQ1: 70845, adSpend: 34084, roas: 0.95, orders: 3448, budgetJahr: null, status: "launch", datenstand: "KW1–26", note: "USD→EUR" }
 ];
 
 // --- Artikelgruppen (Platzhalter für Power BI Daten) ---
